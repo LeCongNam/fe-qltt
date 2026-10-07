@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   WalletCards,
 } from "lucide-react"
+import Link from "next/link"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
 
 import {
@@ -30,7 +31,6 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { MetricCard } from "@/components/dashboard/metric-card"
-import { useDashboardNavigation } from "@/components/dashboard/dashboard-navigation"
 
 const chartData = [
   { day: "T2", borrowed: 58, returned: 42 },
@@ -55,14 +55,12 @@ const loanRows = [
 ]
 
 export function DashboardOverview() {
-  const { activeItem, onSelect } = useDashboardNavigation()
-
   return (
     <>
       <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <p className="text-xs font-medium text-[#738078]">Thứ Tư, 30 tháng 9, 2026</p>
-          <h1 className="mt-1.5 text-[26px] font-semibold leading-tight text-[#1c2c26]">{activeItem}</h1>
+          <h1 className="mt-1.5 text-[26px] font-semibold leading-tight text-[#1c2c26]">Tổng quan</h1>
           <p className="mt-1.5 text-sm text-[#758078]">Tình hình hoạt động và các đầu việc trong thư viện.</p>
         </div>
         <button type="button" className="inline-flex h-9 items-center justify-center gap-2 self-start rounded-md border border-[#dfe5df] bg-white px-3 text-xs font-medium text-[#45554c] shadow-sm transition-colors hover:bg-[#f9faf8] sm:self-auto">
@@ -125,22 +123,22 @@ export function DashboardOverview() {
             <span className="flex size-8 items-center justify-center rounded-md bg-[#fbefe3] text-[#bd713c]"><AlertCircle className="size-4" aria-hidden="true" /></span>
           </div>
           <div className="mt-4 divide-y divide-[#eef0ec]">
-            <button type="button" onClick={() => onSelect("Mượn - trả")} className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
+            <Link href="/phieu-muon" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
               <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#fbefe3] text-[#bd713c]"><Clock3 className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Phiếu mượn đến hạn</span><span className="mt-0.5 block text-[11px] text-[#87918b]">Cần nhắc độc giả trả sách</span></span></span>
               <span className="text-sm font-semibold tabular-nums text-[#bd713c]">18</span>
-            </button>
-            <button type="button" onClick={() => onSelect("Tiền phạt")} className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
+            </Link>
+            <Link href="/phat" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
               <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#f8e9e6] text-[#bb6759]"><WalletCards className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Khoản phạt chưa thu</span><span className="mt-0.5 block text-[11px] text-[#87918b]">Từ 7 phiếu quá hạn</span></span></span>
               <span className="text-sm font-semibold tabular-nums text-[#bb6759]">1,25 tr</span>
-            </button>
-            <button type="button" onClick={() => onSelect("Đặt trước")} className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
+            </Link>
+            <Link href="/dat-truoc" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
               <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#e9f0f3] text-[#537687]"><BookMarked className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Yêu cầu đặt trước</span><span className="mt-0.5 block text-[11px] text-[#87918b]">Đang chờ xác nhận</span></span></span>
               <span className="text-sm font-semibold tabular-nums text-[#537687]">32</span>
-            </button>
+            </Link>
           </div>
-          <button type="button" onClick={() => onSelect("Báo cáo")} className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-[#147d64] hover:text-[#0e634f]">
+          <Link href="/bao-cao" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-[#147d64] hover:text-[#0e634f]">
             Xem báo cáo <ArrowUpRight className="size-3.5" aria-hidden="true" />
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -150,10 +148,10 @@ export function DashboardOverview() {
             <h2 className="text-sm font-semibold text-[#293a32]">Phiếu mượn gần đây</h2>
             <p className="mt-1 text-xs text-[#87918b]">Theo dõi tình trạng các giao dịch mới nhất</p>
           </div>
-          <button type="button" onClick={() => onSelect("Mượn - trả")} className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#e5e9e4] px-2.5 text-xs font-medium text-[#58665e] hover:bg-[#f8f9f7]">
+          <Link href="/phieu-muon" className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#e5e9e4] px-2.5 text-xs font-medium text-[#58665e] hover:bg-[#f8f9f7]">
             <ListFilter className="size-3.5" aria-hidden="true" />
             Tất cả phiếu
-          </button>
+          </Link>
         </div>
         <Table>
           <TableHeader>

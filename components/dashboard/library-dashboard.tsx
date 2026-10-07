@@ -1,33 +1,45 @@
 "use client"
 
-import { useState } from "react"
-import { Bell, ChevronDown, Search } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { Bell, ChevronDown, LogOut, Search } from "lucide-react"
+import { useRouter, usePathname } from "next/navigation"
 
-import { DashboardNavigationContext } from "@/components/dashboard/dashboard-navigation"
 import { LibrarySidebar } from "@/components/dashboard/library-sidebar"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { logout, useAuth } from "@/hooks/use-auth"
+import { findNavLabel } from "@/lib/navigation"
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) ?? "").toUpperCase()
+}
 
 export function LibraryDashboard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [selectedItem, setSelectedItem] = useState("Tổng quan")
-  const activeItem =
-    pathname === "/add-doc-gia"
-      ? "Người dùng & tài khoản"
-      : selectedItem === "Người dùng & tài khoản"
-        ? "Tổng quan"
-        : selectedItem
+  const router = useRouter()
+  const { user } = useAuth()
+  const activeItem = findNavLabel(pathname)
+
+  function handleLogout() {
+    logout()
+    router.replace("/login")
+  }
 
   return (
-    <DashboardNavigationContext.Provider value={{ activeItem, onSelect: setSelectedItem }}>
-      <SidebarProvider>
-        <LibrarySidebar activeItem={activeItem} onSelect={setSelectedItem} />
-        <SidebarInset className="min-h-svh bg-[#f6f7f4]">
+    <SidebarProvider>
+      <LibrarySidebar />
+      <SidebarInset className="min-h-svh bg-[#f6f7f4]">
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-[#e7e9e4] bg-white/95 px-4 backdrop-blur sm:px-7">
           <div className="flex min-w-0 items-center gap-3">
             <SidebarTrigger className="-ml-2 text-[#526159]" />
@@ -49,19 +61,31 @@ export function LibraryDashboard({ children }: { children: React.ReactNode }) {
               <span className="absolute right-2 top-2 size-1.5 rounded-full bg-[#d16b53]" />
             </button>
             <span className="hidden h-7 w-px bg-[#e7e9e4] sm:block" />
-            <button type="button" className="flex items-center gap-2 rounded-md p-1 text-left hover:bg-[#f6f7f4]">
-              <span className="flex size-8 items-center justify-center rounded-full bg-[#f3e8d8] text-[11px] font-semibold text-[#845c35]">LT</span>
-              <span className="hidden text-xs font-medium text-[#35463d] lg:block">Linh Trần</span>
-              <ChevronDown className="hidden size-3.5 text-[#89938d] lg:block" aria-hidden="true" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 rounded-md p-1 text-left outline-none hover:bg-[#f6f7f4] focus-visible:ring-2 focus-visible:ring-[#147d64]/40">
+                <span className="flex size-8 items-center justify-center rounded-full bg-[#f3e8d8] text-[11px] font-semibold text-[#845c35]">{user ? initials(user.hoTen) : ""}</span>
+                <span className="hidden text-xs font-medium text-[#35463d] lg:block">{user?.hoTen}</span>
+                <ChevronDown className="hidden size-3.5 text-[#89938d] lg:block" aria-hidden="true" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-48">
+                <div className="px-2 py-1.5">
+                  <p className="text-xs font-semibold text-[#283831]">{user?.hoTen}</p>
+                  <p className="text-[11px] text-[#78847d]">{user?.maNguoiDung} · {user?.tenDangNhap}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut aria-hidden="true" />
+                  Đăng xuất
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
           <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 px-4 py-6 sm:px-7 sm:py-8">
             {children}
           </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </DashboardNavigationContext.Provider>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

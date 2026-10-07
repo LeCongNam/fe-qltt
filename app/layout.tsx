@@ -17,18 +17,13 @@ export const metadata: Metadata = {
   description: "Bảng điều khiển quản lý thư viện số.",
 };
 
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { Toaster } from "@/components/ui/toast"
-import { LibraryDashboard } from "@/components/dashboard/library-dashboard"
+import { Providers } from "@/components/providers"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <TooltipProvider>
-          <Toaster />
-          <LibraryDashboard>{children}</LibraryDashboard>
-        </TooltipProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )
