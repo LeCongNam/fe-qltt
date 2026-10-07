@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Thư viện số | Quản trị",
-  description: "Bảng điều khiển quản lý thư viện số.",
+  title: "Quản lý thư viện",
+  description: "Hệ thống quản lý thư viện trường đại học - Nhóm 8.",
 };
 
 import { Providers } from "@/components/providers"

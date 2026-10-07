@@ -1,6 +1,6 @@
 "use client"
 
-import { BookOpenCheck, Settings2 } from "lucide-react"
+import { BookOpen, Settings2 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -57,11 +57,11 @@ export function LibrarySidebar() {
       <SidebarHeader className="px-5 pb-5 pt-6 group-data-[collapsible=icon]:px-2">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#147d64] text-white group-data-[collapsible=icon]:size-8">
-            <BookOpenCheck className="size-5 group-data-[collapsible=icon]:size-4" aria-hidden="true" />
+            <BookOpen className="size-5 group-data-[collapsible=icon]:size-4" aria-hidden="true" />
           </div>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <p className="truncate text-sm font-semibold text-[#1b2c27]">Thư viện số</p>
-            <p className="mt-0.5 text-xs text-[#5f6b64]">QUẢN TRỊ HỆ THỐNG</p>
+            <p className="truncate text-sm font-semibold text-[#1b2c27]">Quản lý thư viện</p>
+            <p className="mt-0.5 text-xs text-[#5f6b64]">NHÓM 8 · QUẢN TRỊ</p>
           </div>
         </div>
       </SidebarHeader>

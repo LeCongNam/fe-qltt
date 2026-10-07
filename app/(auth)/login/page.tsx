@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { BookOpenCheck } from "lucide-react"
+import { BookOpen } from "lucide-react"
 import { z } from "zod"
 
 import { FullPageSpinner } from "@/components/auth/auth-guard"
@@ -59,10 +59,10 @@ export default function LoginPage() {
       <div className="w-full max-w-sm rounded-lg border border-[#e7e9e4] bg-white p-6 shadow-sm sm:p-8">
         <div className="mb-6 flex items-center gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#147d64] text-white">
-            <BookOpenCheck className="size-5" aria-hidden="true" />
+            <BookOpen className="size-5" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-base font-semibold text-[#1b2c27]">Thư viện số</h1>
+            <h1 className="text-base font-semibold text-[#1b2c27]">Quản lý thư viện</h1>
             <p className="text-xs text-[#5f6b64]">Đăng nhập để tiếp tục</p>
           </div>
         </div>
