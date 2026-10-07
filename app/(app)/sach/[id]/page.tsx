@@ -74,7 +74,7 @@ export default function SachDetailPage() {
     const notFound = axios.isAxiosError(query.error) && query.error.response?.status === 404
     return (
       <div className="mx-auto w-full max-w-4xl space-y-3 text-sm">
-        <p className="text-[#a35143]">{notFound ? "Không tìm thấy sách." : getApiErrorMessage(query.error, "Không tải được sách.")}</p>
+        <p role="alert" className="text-[#a35143]">{notFound ? "Không tìm thấy sách." : getApiErrorMessage(query.error, "Không tải được sách.")}</p>
         <Link href="/sach" className="text-[#147d64] hover:underline">
           ← Quay lại danh sách
         </Link>

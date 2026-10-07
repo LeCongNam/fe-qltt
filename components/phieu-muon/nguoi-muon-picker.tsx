@@ -48,6 +48,7 @@ export function NguoiMuonPicker({ value, onChange }: { value: NguoiMuon | null; 
     return (
       <Field>
         <FieldLabel>Người mượn</FieldLabel>
+        <p role="status" className="sr-only">Đã chọn người mượn {value.hoTen}, {value.maNguoiDung}</p>
         <div className="rounded-lg border border-[#dfe5df] bg-white p-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
@@ -104,9 +105,12 @@ export function NguoiMuonPicker({ value, onChange }: { value: NguoiMuon | null; 
       {searching && results.isError && (
         <p role="alert" className="text-xs text-[#a35143]">{getApiErrorMessage(results.error)}</p>
       )}
+      <p role="status" className="sr-only">
+        {searching && fresh && !results.isPending && !results.isError ? (rows.length === 0 ? `Không tìm thấy người dùng nào khớp ${q}` : `${rows.length} người phù hợp`) : ""}
+      </p>
       {searching && !results.isPending && !results.isError && (
         rows.length === 0 ? (
-          <p className="text-xs text-[#5f6b64]" role="status">Không tìm thấy người dùng nào khớp “{q}”.</p>
+          <p className="text-xs text-[#5f6b64]">Không tìm thấy người dùng nào khớp “{q}”.</p>
         ) : (
           <ul aria-label="Kết quả tìm người mượn" className="max-w-sm divide-y divide-[#eef0ec] overflow-hidden rounded-lg border border-[#dfe5df] bg-white">
             {rows.map((r) => {

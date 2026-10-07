@@ -128,9 +128,9 @@ export function DashboardOverview() {
           </div>
           <div className="mt-5">
             {lichSu.isPending ? (
-              <Skeleton className="h-[230px] w-full" />
+              <Skeleton className="h-[230px] w-full" role="status" aria-label="Đang tải biểu đồ" />
             ) : lichSu.isError ? (
-              <p className="py-16 text-center text-sm text-[#a35143]">Không tải được dữ liệu lưu thông.</p>
+              <p role="alert" className="py-16 text-center text-sm text-[#a35143]">Không tải được dữ liệu lưu thông.</p>
             ) : (
               <ChartContainer config={chartConfig} className="h-[230px] w-full" aria-label="Biểu đồ lượt mượn và trả theo ngày">
                 {chartKind === "bar" ? (
@@ -232,7 +232,7 @@ export function DashboardOverview() {
             {lichSu.isError && (
               <TableRow>
                 <TableCell colSpan={5} className="py-8 text-center text-sm text-[#a35143]">
-                  Không tải được lượt mượn gần đây.
+                  <span role="alert">Không tải được lượt mượn gần đây.</span>
                 </TableCell>
               </TableRow>
             )}

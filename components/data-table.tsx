@@ -75,9 +75,21 @@ export function DataTable<T>({
     </button>
   )
 
+  // Một vùng thông báo chung cho cả hai chế độ (bảng/thẻ) để trình đọc màn hình biết trạng thái tải, lỗi, số dòng.
+  const liveText = query.isPending
+    ? "Đang tải dữ liệu"
+    : query.isError
+      ? getApiErrorMessage(query.error, errorText)
+      : rows.length === 0
+        ? emptyText
+        : `${rows.length} dòng`
+
   return (
     <>
-      <div className="hidden rounded-lg border border-[#e4e8e2] bg-white md:block">
+      <p role={query.isError ? "alert" : "status"} className="sr-only">
+        {liveText}
+      </p>
+      <div aria-busy={query.isPending} className="hidden rounded-lg border border-[#e4e8e2] bg-white md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -128,7 +140,7 @@ export function DataTable<T>({
         </Table>
       </div>
 
-      <div className="md:hidden">
+      <div aria-busy={query.isPending} className="md:hidden">
         {query.isPending && (
           <div className="grid gap-2" aria-hidden="true">
             {Array.from({ length: Math.min(skeletonRows, 4) }, (_, i) => (
@@ -137,7 +149,7 @@ export function DataTable<T>({
           </div>
         )}
         {query.isError && (
-          <p role="alert" className="rounded-lg border border-[#e4e8e2] bg-white px-4 py-8 text-center text-sm text-[#a35143]">
+          <p className="rounded-lg border border-[#e4e8e2] bg-white px-4 py-8 text-center text-sm text-[#a35143]">
             {getApiErrorMessage(query.error, errorText)} {retry}
           </p>
         )}

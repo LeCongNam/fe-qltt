@@ -318,8 +318,8 @@ export function SachForm({
           control={form.control}
           render={({ field }) => (
             <div className="grid max-h-56 grid-cols-1 gap-x-5 gap-y-2 overflow-y-auto rounded-md border border-[#dfe5df] bg-white p-3 sm:grid-cols-2">
-              {tacGias.isPending && <p className="text-sm text-[#5f6b64]">Đang tải...</p>}
-              {tacGias.isError && <p className="text-sm text-[#a35143]">Không tải được danh sách tác giả.</p>}
+              {tacGias.isPending && <p role="status" className="text-sm text-[#5f6b64]">Đang tải...</p>}
+              {tacGias.isError && <p role="alert" className="text-sm text-[#a35143]">Không tải được danh sách tác giả.</p>}
               {(tacGias.data ?? []).map((t) => {
                 const checked = field.value.includes(t.maTacGia)
                 return (

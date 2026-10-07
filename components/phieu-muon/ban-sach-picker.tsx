@@ -21,6 +21,7 @@ const tinhTrangOf = (v: string) => TINH_TRANG_BAN_SACH.find((t) => t.value === v
 /** Chọn các bản sách cho phiếu: nhập mã rồi Enter (hợp máy quét mã vạch) hoặc gõ tên sách để chọn từ gợi ý. */
 export function BanSachPicker({ value, onChange }: { value: string[]; onChange: (maBans: string[]) => void }) {
   const [text, setText] = useState("")
+  const [note, setNote] = useState("")
   const index = useBanSachIndex()
   const map = index.data
 
@@ -52,6 +53,7 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
       return
     }
     onChange([...value, ma])
+    setNote(`Đã thêm ${ma}${info ? `, ${info.tenSach}` : ""}. Phiếu có ${value.length + 1} cuốn`)
     setText("")
   }
 
@@ -71,7 +73,10 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
         <Input
           id="pm-ban-sach"
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => {
+            setText(e.target.value)
+            setNote("")
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
@@ -97,6 +102,10 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
           "Quét/nhập mã bản rồi nhấn Enter, hoặc gõ tên sách để chọn từ gợi ý (chỉ hiện bản có thể mượn)."
         )}
       </FieldDescription>
+
+      <p role="status" className="sr-only">
+        {note || (map && q ? (goiY.length > 0 ? `${goiY.length} gợi ý bản sách` : "Không có gợi ý") : "")}
+      </p>
 
       {goiY.length > 0 && (
         <ul aria-label="Gợi ý bản sách" className="max-w-sm divide-y divide-[#eef0ec] overflow-hidden rounded-lg border border-[#dfe5df] bg-white">
@@ -136,7 +145,10 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
                 </span>
                 <span className="flex shrink-0 items-center gap-2">
                   {tt && info?.ban.tinhTrang !== "SAN_SANG" && <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${tt.tone}`}>{tt.label}</span>}
-                  <button type="button" aria-label={`Bỏ ${ma}`} className="rounded-full p-1 text-[#5f6b64] hover:bg-[#eef0ec]" onClick={() => onChange(value.filter((x) => x !== ma))}>
+                  <button type="button" aria-label={`Bỏ ${ma}`} className="rounded-full p-1 text-[#5f6b64] hover:bg-[#eef0ec]" onClick={() => {
+                      onChange(value.filter((x) => x !== ma))
+                      setNote(`Đã bỏ ${ma}. Phiếu có ${value.length - 1} cuốn`)
+                    }}>
                     <X className="size-4" aria-hidden="true" />
                   </button>
                 </span>

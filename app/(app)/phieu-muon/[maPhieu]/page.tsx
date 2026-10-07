@@ -86,7 +86,7 @@ export default function PhieuMuonDetailPage() {
     const status = axios.isAxiosError(query.error) ? query.error.response?.status : undefined
     return (
       <div className="mx-auto w-full max-w-5xl space-y-3 text-sm">
-        <p className="text-[#a35143]">
+        <p role="alert" className="text-[#a35143]">
           {status === 404
             ? "Không tìm thấy phiếu mượn."
             : status === 403

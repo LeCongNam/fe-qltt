@@ -100,7 +100,7 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
           {list.isError && (
             <TableRow>
               <TableCell colSpan={4} className="py-8 text-center text-sm text-[#a35143]">
-                {getApiErrorMessage(list.error, "Không tải được bản sách.")}{" "}
+                <span role="alert">{getApiErrorMessage(list.error, "Không tải được bản sách.")}</span>{" "}
                 <button type="button" className="underline" onClick={() => list.refetch()}>
                   Thử lại
                 </button>

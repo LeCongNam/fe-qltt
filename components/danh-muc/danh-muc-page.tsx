@@ -187,7 +187,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
             {list.isError && (
               <TableRow>
                 <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#a35143]">
-                  {getApiErrorMessage(list.error, `Không tải được danh sách ${singular}.`)}{" "}
+                  <span role="alert">{getApiErrorMessage(list.error, `Không tải được danh sách ${singular}.`)}</span>{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
                   </button>

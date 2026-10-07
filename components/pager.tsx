@@ -30,7 +30,7 @@ export function Pager({
           <Button variant="outline" size="icon-sm" aria-label="Trang trước" disabled={page <= 1} onClick={() => onPage(page - 1)}>
             <ChevronLeft aria-hidden="true" />
           </Button>
-          <span>
+          <span aria-live="polite" aria-atomic="true">
             Trang {page} / {pageCount}
           </span>
           <Button variant="outline" size="icon-sm" aria-label="Trang sau" disabled={page >= pageCount} onClick={() => onPage(page + 1)}>

@@ -24,7 +24,7 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 | U3 | Quy tắc sắp xếp và sort theo cột | P2 | Đã hoàn thành (sort theo cột chỉ cho bảng có đủ dữ liệu ở FE) |
 | U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Đã hoàn thành |
 | U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Đã hoàn thành |
-| U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Chưa thực hiện |
+| U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Đã hoàn thành |
 | U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Đã hoàn thành |
 | C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
 | C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
@@ -112,8 +112,16 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 - **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt (ADMIN): gõ `sv00` ra 6 người; `SV007` + Enter hiện thẻ "Tạm khóa" kèm cảnh báo, nút Lập phiếu bị khóa; `SV001` + Enter chọn được; gõ `lap trinh` (không dấu) gợi ý BS007, BS020 "Lập trình Python"; chọn BS020 thêm vào danh sách kèm kệ A2-03 và tác giả; `bs999` + Enter báo "Không tìm thấy bản sách"; 375px không tràn ngang. **Chưa bấm "Lập phiếu" thật** (ghi dữ liệu) và chưa thử bản đang mượn.
 
 ### U6 — Thông báo động cho trình đọc màn hình (P3)
-- **Trạng thái:** Chưa thực hiện
-- Mới có 3 chỗ dùng `aria-live`/`role`. Kiểm tra toast, kết quả tìm kiếm, trạng thái tải/lỗi bảng.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- **Khảo sát:** toast của Base UI đã có sẵn `role="region" aria-live="polite"` ở viewport nên thông báo thường vốn đọc được; thiếu nằm ở chỗ khác.
+- **Toast** (`components/ui/toast.tsx`): `toast.add` bọc lại để toast `type: "error"` mặc định `priority: "high"` (`alertdialog`, đọc ngay thay vì xếp hàng); nhãn nút đóng đổi "Close toast" → "Đóng thông báo".
+- **`DataTable`:** thêm một vùng `sr-only` (`role="status"`, đổi sang `role="alert"` khi lỗi) dùng chung cho bảng và thẻ: "Đang tải dữ liệu" / thông báo lỗi / emptyText / "N dòng"; `aria-busy` khi đang tải. Bỏ `role="alert"` ở đoạn lỗi riêng của chế độ thẻ để không đọc trùng.
+- **`Pager`:** "Trang x / y" có `aria-live="polite"`, nên đổi trang được đọc (số dòng giữa các trang giống nhau thì vùng của `DataTable` không đổi chữ).
+- **`ReportTable`:** vùng `role="status"` đọc "Đang sắp xếp theo <cột>, tăng dần/giảm dần" hoặc "Thứ tự mặc định" khi đổi sắp xếp.
+- **Thêm `role="alert"`/`status`:** lỗi tải biểu đồ và bảng ở `dashboard-overview` (skeleton biểu đồ có `role="status"`, nhãn "Đang tải biểu đồ"), lỗi ở `sach/[id]`, `nguoi-dung/[id]`, `phieu-muon/[maPhieu]`, `demo` (danh sách, chi tiết, bảng, chạy; kết quả demo thất bại là `alert`, thành công là `status`), `sach-form` (tải tác giả), `ban-sach-panel` và `danh-muc-page` (đặt `role="alert"` trên `span` bên trong ô, không đặt trên `td` để khỏi phá ngữ nghĩa bảng), `AuthGuard` spinner (`role="status"`).
+- **Lập phiếu mượn (U5):** `NguoiMuonPicker` đọc "N người phù hợp"/"không tìm thấy" và "Đã chọn người mượn …"; `BanSachPicker` đọc số gợi ý, "Đã thêm BSxxx, <tên sách>. Phiếu có N cuốn" và "Đã bỏ …".
+- **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt: `/sach` có vùng `role="status"` "15 dòng" và `aria-busy="false"`; `/phieu-muon/moi` thêm `bs999` hiện toast cảnh báo, nút đóng "Đóng thông báo", vùng status "Không có gợi ý".
+- **Chưa kiểm:** chưa nghe bằng trình đọc màn hình thật (VoiceOver/NVDA), chưa tạo lỗi thật để xem toast lỗi `priority: "high"` có đọc ngay, và chưa soát các dialog xác nhận khác ngoài những chỗ trên.
 
 ### U7 — Kiểm tra bố cục sau đổi font (P1)
 - **Trạng thái:** Đã hoàn thành (2026-10-07), commit `bcbe6ff`.

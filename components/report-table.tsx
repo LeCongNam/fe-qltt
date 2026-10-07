@@ -130,8 +130,13 @@ export function ReportTable<T>({
     URL.revokeObjectURL(url)
   }
 
+  const sortNote = sort && sortCol ? `Đang sắp xếp theo ${sortCol.header}, ${sort.dir === "asc" ? "tăng dần" : "giảm dần"}` : "Thứ tự mặc định"
+
   return (
     <div>
+      <p role="status" className="sr-only">
+        {sortNote}
+      </p>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {toolbar}

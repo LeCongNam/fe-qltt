@@ -86,7 +86,7 @@ export default function NguoiDungDetailPage() {
     const notFound = axios.isAxiosError(query.error) && query.error.response?.status === 404
     return (
       <div className="mx-auto w-full max-w-4xl space-y-3 text-sm">
-        <p className="text-[#a35143]">
+        <p role="alert" className="text-[#a35143]">
           {notFound ? "Không tìm thấy người dùng." : getApiErrorMessage(query.error, "Không tải được người dùng.")}
         </p>
         <Link href="/nguoi-dung" className="text-[#147d64] hover:underline">

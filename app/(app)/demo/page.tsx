@@ -61,7 +61,7 @@ export default function DemoPage() {
       </div>
 
       {list.isError ? (
-        <p className="text-sm text-[#a35143]">{getApiErrorMessage(list.error, "Không tải được danh sách demo.")}</p>
+        <p role="alert" className="text-sm text-[#a35143]">{getApiErrorMessage(list.error, "Không tải được danh sách demo.")}</p>
       ) : !list.data ? (
         <Skeleton className="h-64 w-full" />
       ) : (

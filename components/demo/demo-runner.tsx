@@ -112,7 +112,7 @@ function KetQuaPanel({ ketQua, truoc }: { ketQua: DemoKetQua; truoc: DemoBang[] 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
       <div
-        role="status"
+        role={ketQua.thanhCong ? "status" : "alert"}
         className={`flex items-start gap-2 rounded-md border px-3 py-2.5 text-sm ${
           ketQua.thanhCong ? "border-[#bfe0d2] bg-[#eef8f3] text-[#0f6a52]" : "border-[#efc9c2] bg-[#fcf1ef] text-[#a2483a]"
         }`}
@@ -159,7 +159,7 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
   const chay = useDemoChay(muc.id)
 
   if (chiTietQuery.isError) {
-    return <p className="text-sm text-[#a35143]">{getApiErrorMessage(chiTietQuery.error, "Không tải được mục demo.")}</p>
+    return <p role="alert" className="text-sm text-[#a35143]">{getApiErrorMessage(chiTietQuery.error, "Không tải được mục demo.")}</p>
   }
   if (!chiTiet) {
     return (
@@ -197,7 +197,7 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
         <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
           {chiTiet.thamSo.length > 0 && <ThamSoForm chiTiet={chiTiet} values={form} onChange={setValues} />}
           {bangQuery.isError ? (
-            <p className="text-sm text-[#a35143]">{getApiErrorMessage(bangQuery.error, "Không tải được bảng liên quan.")}</p>
+            <p role="alert" className="text-sm text-[#a35143]">{getApiErrorMessage(bangQuery.error, "Không tải được bảng liên quan.")}</p>
           ) : !bangQuery.data ? (
             <DemoTableSkeleton count={chiTiet.bang.length} />
           ) : (
@@ -231,7 +231,7 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
               </label>
             )}
           </div>
-          {chay.isError && <p className="text-sm text-[#a35143]">{getApiErrorMessage(chay.error, "Không thực thi được.")}</p>}
+          {chay.isError && <p role="alert" className="text-sm text-[#a35143]">{getApiErrorMessage(chay.error, "Không thực thi được.")}</p>}
         </div>
       </Step>
 
