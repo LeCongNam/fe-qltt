@@ -48,9 +48,9 @@ export const navigationGroups: NavGroup[] = [
         icon: LibraryBig,
         children: [
           { label: "Sách", href: "/sach", ready: false },
-          { label: "Tác giả", href: "/tac-gia", ready: false },
-          { label: "Thể loại", href: "/the-loai", ready: false },
-          { label: "Nhà xuất bản", href: "/nha-xuat-ban", ready: false },
+          { label: "Tác giả", href: "/tac-gia" },
+          { label: "Thể loại", href: "/the-loai" },
+          { label: "Nhà xuất bản", href: "/nha-xuat-ban" },
         ],
       },
     ],
