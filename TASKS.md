@@ -22,7 +22,7 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 | U1 | Bỏ/làm thật ô tìm kiếm và chuông ở header | P1 | Một phần: tìm kiếm xong, chuông giữ nguyên |
 | U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Đã hoàn thành (còn vài bảng nhỏ chưa áp dụng) |
 | U3 | Quy tắc sắp xếp và sort theo cột | P2 | Đã hoàn thành (sort theo cột chỉ cho bảng có đủ dữ liệu ở FE) |
-| U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Chưa thực hiện |
+| U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Đã hoàn thành |
 | U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Chưa thực hiện |
 | U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Chưa thực hiện |
 | U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Đã hoàn thành |
@@ -96,8 +96,11 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 - **Phía BE:** phân tích thứ tự mặc định nên đổi ở từng endpoint nằm ở mục **B1** bên dưới.
 
 ### U4 — Biểu đồ "Lưu thông 14 ngày" (P2)
-- **Trạng thái:** Chưa thực hiện
-- `components/dashboard/dashboard-overview.tsx` và `components/bao-cao/bao-cao-panels.tsx`: dữ liệu thưa (0–1 lượt/ngày) bị nội suy cong thành các gò, dễ hiểu nhầm là có xu hướng. Đổi sang biểu đồ cột hoặc đường gấp khúc, thêm nhãn trục rõ hơn.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- `components/dashboard/dashboard-overview.tsx`: đổi `AreaChart` (nội suy `monotone`) sang `BarChart` cột nhóm (mượn/trả mỗi ngày một cặp cột, `maxBarSize` 14, bo góc trên), bỏ gradient. Trục Y tối thiểu 0–2 để dữ liệu thưa (0–1) không bị kéo giãn, nhãn trục X/Y đổi `#87918b` → `#66736c` (đúng T03), tooltip dạng chấm, chú giải dùng ô vuông bo nhẹ thay chấm tròn.
+- **Thêm (theo yêu cầu người dùng):** nút chuyển loại biểu đồ "Cột" / "Vùng" ở góc phải tiêu đề thẻ (`Tabs` + `ChartColumn`/`ChartArea`), mặc định **Cột**; "Vùng" là `AreaChart` cũ (nội suy `monotone`). Trạng thái chọn chỉ nằm trong state, không nhớ giữa các lần tải trang. Đã bấm thử trên trình duyệt: Cột ⇄ Vùng đổi đúng.
+- `bao-cao-panels.tsx` vốn đã là biểu đồ cột (Top sách, Thống kê phạt), không cần sửa.
+- Kiểm chứng: `tsc` + `eslint` sạch; desktop 1024px hiện cột đúng ngày; mobile 375px không tràn ngang (`scrollWidth` = `clientWidth`), biểu đồ cao 230px. Ở mobile nhãn trục X được thưa bớt (`equidistantPreserveStart`), xem ngày chính xác qua tooltip.
 
 ### U5 — Lập phiếu mượn (P2)
 - **Trạng thái:** Chưa thực hiện

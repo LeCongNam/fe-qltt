@@ -1,13 +1,15 @@
 "use client"
 
-import { AlertCircle, ArrowUpRight, BookMarked, Check, Clock3, LibraryBig, ListFilter, ShieldCheck, WalletCards } from "lucide-react"
+import { AlertCircle, ArrowUpRight, BookMarked, Check, ChartArea, ChartColumn, Clock3, LibraryBig, ListFilter, ShieldCheck, WalletCards } from "lucide-react"
 import Link from "next/link"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { useState } from "react"
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import { MetricCard } from "@/components/dashboard/metric-card"
 import { isOverdue, todayIso } from "@/components/luu-thong/luu-thong-meta"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   type DanhMucSachDong,
@@ -26,6 +28,13 @@ const chartConfig = {
 } satisfies ChartConfig
 
 const DAYS = 14
+const CHART_MARGIN = { top: 8, right: 8, left: -20, bottom: 0 }
+
+type ChartKind = "bar" | "area"
+const CHART_KINDS = [
+  { value: "bar", label: "Cột", Icon: ChartColumn },
+  { value: "area", label: "Vùng", Icon: ChartArea },
+] as const
 const RECENT = 6
 const pad = (n: number) => String(n).padStart(2, "0")
 
@@ -60,6 +69,8 @@ export function DashboardOverview() {
   const danhMuc = useBaoCao<DanhMucSachDong>("danh-muc-sach")
   const tienPhat = useBaoCao<ThongKeTienPhatDong>("thong-ke-tien-phat")
   const lichSu = useBaoCao<LichSuMuonDong>("lich-su-muon")
+
+  const [chartKind, setChartKind] = useState<ChartKind>("bar")
 
   const today = todayIso()
   const num = (n: number | undefined) => (n === undefined ? "—" : new Intl.NumberFormat("vi-VN").format(n))
@@ -99,9 +110,21 @@ export function DashboardOverview() {
 
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(290px,0.8fr)]">
         <div className="rounded-lg border border-[#e7e9e4] bg-white p-4 sm:p-5">
-          <div>
-            <h2 className="text-sm font-semibold text-[#293a32]">Lưu thông {DAYS} ngày qua</h2>
-            <p className="mt-1 text-xs text-[#66736c]">So sánh lượt mượn và lượt trả theo ngày</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold text-[#293a32]">Lưu thông {DAYS} ngày qua</h2>
+              <p className="mt-1 text-xs text-[#66736c]">So sánh lượt mượn và lượt trả theo ngày</p>
+            </div>
+            <Tabs value={chartKind} onValueChange={(v) => v && setChartKind(v as ChartKind)} className="shrink-0">
+              <TabsList aria-label="Loại biểu đồ">
+                {CHART_KINDS.map(({ value, label, Icon }) => (
+                  <TabsTrigger key={value} value={value} className="gap-1.5 px-2.5 text-xs data-active:text-[#147d64]">
+                    <Icon className="size-3.5" aria-hidden="true" />
+                    {label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
           </div>
           <div className="mt-5">
             {lichSu.isPending ? (
@@ -110,30 +133,41 @@ export function DashboardOverview() {
               <p className="py-16 text-center text-sm text-[#a35143]">Không tải được dữ liệu lưu thông.</p>
             ) : (
               <ChartContainer config={chartConfig} className="h-[230px] w-full" aria-label="Biểu đồ lượt mượn và trả theo ngày">
-                <AreaChart accessibilityLayer data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="fillBorrowed" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-borrowed)" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="var(--color-borrowed)" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="fillReturned" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-returned)" stopOpacity={0.16} />
-                      <stop offset="95%" stopColor="var(--color-returned)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid vertical={false} stroke="#edf0eb" />
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tickMargin={10} interval="preserveStartEnd" minTickGap={16} tick={{ fill: "#87918b", fontSize: 11 }} />
-                  <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: "#87918b", fontSize: 11 }} />
-                  <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-                  <Area type="monotone" dataKey="borrowed" stroke="var(--color-borrowed)" strokeWidth={2.5} fill="url(#fillBorrowed)" />
-                  <Area type="monotone" dataKey="returned" stroke="var(--color-returned)" strokeWidth={2} fill="url(#fillReturned)" />
-                </AreaChart>
+                {chartKind === "bar" ? (
+                  <BarChart accessibilityLayer data={chartData} barGap={2} margin={CHART_MARGIN}>
+                    <CartesianGrid vertical={false} stroke="#edf0eb" />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tickMargin={10} interval="equidistantPreserveStart" minTickGap={12} tick={{ fill: "#66736c", fontSize: 11 }} />
+                    <YAxis allowDecimals={false} domain={[0, (max: number) => Math.max(max, 2)]} axisLine={false} tickLine={false} tick={{ fill: "#66736c", fontSize: 11 }} />
+                    <ChartTooltip cursor={{ fill: "#f1f4ef" }} content={<ChartTooltipContent indicator="dot" />} />
+                    <Bar dataKey="borrowed" fill="var(--color-borrowed)" radius={[3, 3, 0, 0]} maxBarSize={14} />
+                    <Bar dataKey="returned" fill="var(--color-returned)" radius={[3, 3, 0, 0]} maxBarSize={14} />
+                  </BarChart>
+                ) : (
+                  <AreaChart accessibilityLayer data={chartData} margin={CHART_MARGIN}>
+                    <defs>
+                      <linearGradient id="fillBorrowed" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--color-borrowed)" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="var(--color-borrowed)" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="fillReturned" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--color-returned)" stopOpacity={0.16} />
+                        <stop offset="95%" stopColor="var(--color-returned)" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="#edf0eb" />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tickMargin={10} interval="equidistantPreserveStart" minTickGap={12} tick={{ fill: "#66736c", fontSize: 11 }} />
+                    <YAxis allowDecimals={false} domain={[0, (max: number) => Math.max(max, 2)]} axisLine={false} tickLine={false} tick={{ fill: "#66736c", fontSize: 11 }} />
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+                    <Area type="monotone" dataKey="borrowed" stroke="var(--color-borrowed)" strokeWidth={2.5} fill="url(#fillBorrowed)" />
+                    <Area type="monotone" dataKey="returned" stroke="var(--color-returned)" strokeWidth={2} fill="url(#fillReturned)" />
+                  </AreaChart>
+                )}
               </ChartContainer>
             )}
           </div>
           <div className="mt-3 flex items-center justify-center gap-5 text-xs text-[#5f6b64]">
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#147d64]" />Lượt mượn</span>
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#e99a68]" />Lượt trả</span>
+            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-[2px] bg-[#147d64]" />Lượt mượn</span>
+            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-[2px] bg-[#e99a68]" />Lượt trả</span>
           </div>
         </div>
 
