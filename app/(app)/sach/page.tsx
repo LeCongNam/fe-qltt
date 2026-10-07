@@ -3,9 +3,10 @@
 import { useState } from "react"
 import Link from "next/link"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 
 import { DataTable, type DataColumn } from "@/components/data-table"
+import { Pager } from "@/components/pager"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/hooks/use-auth"
@@ -16,7 +17,6 @@ type SachRow = Schemas["TraCuuSachDto"]
 const PAGE_SIZE = 20
 
 const COLUMNS: DataColumn<SachRow>[] = [
-  { header: "Mã", className: "w-24", cell: (s) => <span className="font-medium">{s.ma_sach}</span> },
   {
     header: "Tên sách",
     title: true,
@@ -27,6 +27,7 @@ const COLUMNS: DataColumn<SachRow>[] = [
       </Link>
     ),
   },
+  { header: "Mã", className: "w-24", cell: (s) => <span className="font-medium">{s.ma_sach}</span> },
   { header: "Tác giả", className: "whitespace-normal text-[#5f6b64]", cell: (s) => s.ds_tac_gia ?? "—" },
   { header: "Thể loại", className: "whitespace-normal", cell: (s) => s.ten_the_loai },
   { header: "NXB", className: "whitespace-normal text-[#5f6b64]", cell: (s) => s.ten_nxb },
@@ -136,22 +137,7 @@ export default function SachPage() {
         skeletonRows={6}
       />
 
-      <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
-        <span>{total} đầu sách</span>
-        {pageCount > 1 && (
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon-sm" aria-label="Trang trước" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-              <ChevronLeft aria-hidden="true" />
-            </Button>
-            <span>
-              Trang {page} / {pageCount}
-            </span>
-            <Button variant="outline" size="icon-sm" aria-label="Trang sau" disabled={page >= pageCount} onClick={() => setPage(page + 1)}>
-              <ChevronRight aria-hidden="true" />
-            </Button>
-          </div>
-        )}
-      </div>
+      <Pager page={page} pageCount={pageCount} total={total} unit="đầu sách" order="tên sách A–Z" onPage={setPage} />
     </section>
   )
 }

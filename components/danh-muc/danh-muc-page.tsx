@@ -4,9 +4,10 @@ import { useMemo, useState, type ReactNode } from "react"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ChevronLeft, ChevronRight, Loader2, Pencil, Plus, Trash2 } from "lucide-react"
+import { Loader2, Pencil, Plus, Trash2 } from "lucide-react"
 import { z } from "zod"
 
+import { Pager } from "@/components/pager"
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -238,20 +239,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
         </Table>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
-        <span>{total} bản ghi</span>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon-sm" aria-label="Trang trước" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-            <ChevronLeft aria-hidden="true" />
-          </Button>
-          <span>
-            Trang {page} / {pageCount}
-          </span>
-          <Button variant="outline" size="icon-sm" aria-label="Trang sau" disabled={page >= pageCount} onClick={() => setPage(page + 1)}>
-            <ChevronRight aria-hidden="true" />
-          </Button>
-        </div>
-      </div>
+      <Pager page={page} pageCount={pageCount} total={total} unit="bản ghi" order="tên A–Z" onPage={setPage} />
 
       {/* key để form khởi tạo lại giá trị mỗi lần mở */}
       <DanhMucFormDialog

@@ -8,18 +8,22 @@ export function Pager({
   pageCount,
   total,
   unit,
+  order,
   onPage,
 }: {
   page: number
   pageCount: number
   total: number
   unit: string
+  /** Quy tắc sắp xếp của danh sách (BE quyết định), ví dụ "mới nhất trước". */
+  order?: string
   onPage: (page: number) => void
 }) {
   return (
     <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
       <span>
         {total} {unit}
+        {order && <span> · Xếp theo {order}</span>}
       </span>
       {pageCount > 1 && (
         <div className="flex items-center gap-2">

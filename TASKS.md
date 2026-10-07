@@ -1,7 +1,7 @@
 # TASKS — Cải thiện UI/UX và cấu trúc code FE (qltv_nhom8)
 
 Nguồn: phân tích FE ngày 2026-10-07 (đọc code, chạy tsc/eslint, xem giao diện thật bằng ADMIN trên desktop và mobile).
-Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem_muxwwjwr_c4ef046b635b` (bản tổng hợp mới nhất; thay các bản cũ).
+Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memory: `mem_muxxlkqc_9e79ed7ac087` (2026-10-07; thay bản cũ `mem_muxwwjwr_c4ef046b635b`, bản cũ không còn trong kho).
 
 ## Cách dùng file này (cho session mới)
 
@@ -21,7 +21,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 | T03 | Độ tương phản chữ + cỡ chữ tối thiểu | — | Đã hoàn thành |
 | U1 | Bỏ/làm thật ô tìm kiếm và chuông ở header | P1 | Một phần: tìm kiếm xong, chuông giữ nguyên |
 | U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Đã hoàn thành (còn vài bảng nhỏ chưa áp dụng) |
-| U3 | Quy tắc sắp xếp và sort theo cột | P2 | Chưa thực hiện |
+| U3 | Quy tắc sắp xếp và sort theo cột | P2 | Đã hoàn thành (sort theo cột chỉ cho bảng có đủ dữ liệu ở FE) |
 | U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Chưa thực hiện |
 | U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Chưa thực hiện |
 | U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Chưa thực hiện |
@@ -39,6 +39,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 | C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Chưa thực hiện |
 | C12 | Báo cáo chưa link được sang người dùng | P3 | Chưa thực hiện |
 | Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Đã hoàn thành (còn dialog Gia hạn) |
+| B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | Đã phân tích, chờ BE |
 
 ---
 
@@ -86,8 +87,13 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 - Chưa áp dụng (bảng ít cột, chưa gặp lỗi): `components/sach/ban-sach-panel.tsx` (4 cột), `components/danh-muc/danh-muc-page.tsx`, bảng chi tiết trong `phieu-muon/[maPhieu]`, `dashboard-overview.tsx` (đã ẩn cột bằng `hidden md:table-cell`), `demo-table.tsx` (bảng dữ liệu thô, giữ cuộn ngang). Chưa thử bấm thật các nút trong thẻ (Thu tiền/Hủy ở `/phat`, Gia hạn ở `/me`), chưa xem `/me` ở mobile.
 
 ### U3 — Quy tắc sắp xếp (P2)
-- **Trạng thái:** Chưa thực hiện
-- Danh sách sách và báo cáo đang xếp theo tên trong khi cột đầu là mã (S007, S003, S014…), chưa có sort theo cột. Cần quy tắc mặc định rõ (ví dụ theo mã) và sort theo cột nếu BE hỗ trợ (kiểm tra `docs/swagger-cho-fe.md` trước).
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- **Kiểm tra BE:** không endpoint nào có tham số sắp xếp (`openapi.json` chỉ có `page`, `limit`, lọc), thứ tự là `ORDER BY` cố định trong BE. `/sach` xếp theo `ten_sach`, danh mục theo tên, `/docgia` theo mã, `/phieu-muon`, `/phat`, `/dat-truoc` theo `id` giảm dần (mới nhất trước); `/bao-cao/nguoi-dung-vi-pham` **không có** `ORDER BY`.
+- **Bảng phân trang phía BE** (`/sach`, `/nguoi-dung`, `/phieu-muon`, `/dat-truoc`, `/phat`, danh mục): **không** làm sort theo cột, vì chỉ sắp xếp được trong 1 trang thì gây hiểu nhầm. Thay vào đó nêu rõ quy tắc ở chân bảng qua `Pager` (`order`): "Xếp theo tên sách A–Z", "mã người dùng", "mới nhất trước", "tên A–Z". Ở `/sach` đã đưa cột "Tên sách" lên đầu (trước đó cột đầu là Mã trong khi dữ liệu xếp theo tên nên nhìn như lộn xộn). Chân bảng `/sach`, `/nguoi-dung`, danh mục đổi sang dùng `Pager` chung.
+- **Bảng có đủ dữ liệu ở FE** (`components/report-table.tsx`: `/bao-cao` và `/me`): sort theo cột phía FE. Bấm tiêu đề cột: tăng dần → giảm dần → về thứ tự mặc định của BE. `Column` có thêm `sortBy` (khóa sắp xếp khi khác `value`, bắt buộc cho cột ngày vì `value` là chuỗi dd/MM/yyyy; dùng ISO) và `sortable: false`; cột `actions` không sắp xếp. So sánh dùng `Intl.Collator("vi", { numeric: true })` (S2 < S10, tiếng Việt đúng dấu), ô trống luôn xếp cuối ở cả hai chiều. `defaultOrder` khai báo thứ tự BE đang trả để hiện mũi tên mờ trên cột tương ứng (và `aria-sort`): Danh mục sách = Tên sách ↑, Đang mượn = Hạn trả ↑, Quá hạn = Quá hạn ↓, Top sách = Lượt mượn ↓, Thống kê phạt = Tháng ↓, Lịch sử mượn = Ngày mượn ↓; `/me`: Đang mượn = Hạn trả ↑, Tiền phạt = Ngày tạo ↓, Lịch sử = Ngày mượn ↓. Báo cáo "Người dùng vi phạm" và "Đặt trước" không khai báo vì BE không nêu rõ thứ tự. Xuất CSV theo thứ tự đang hiển thị. Cột "Hạng" của Top sách giữ hạng gốc khi sắp xếp lại.
+- **Mobile:** tiêu đề cột nằm trong bảng bị ẩn nên có ô chọn "Sắp xếp theo" (Thứ tự mặc định + các cột) kèm nút đổi chiều, ngay trong thanh công cụ của `ReportTable` (chỉ hiện dưới `md`). `DataTable` có thêm `DataColumn.sort` để vẽ tiêu đề dạng nút.
+- **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt: Danh mục sách mặc định Tên sách ↑ (`aria-sort`), bấm Mã sách → S001…S015, giảm dần → S015…S001, bấm lần ba về thứ tự mặc định đúng như cũ; Lịch sử mượn sort theo Ngày trả đúng thứ tự thời gian cả hai chiều, các ô "—" luôn ở cuối; mobile: chọn "Mã sách" ra S001, S002… và có nút đổi chiều.
+- **Phía BE:** phân tích thứ tự mặc định nên đổi ở từng endpoint nằm ở mục **B1** bên dưới.
 
 ### U4 — Biểu đồ "Lưu thông 14 ngày" (P2)
 - **Trạng thái:** Chưa thực hiện
@@ -182,6 +188,40 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 - **Mobile 375px:** `/me` (không tràn ngang, thẻ tổng hợp xếp dọc), dialog "Trả sách nhanh" hiển thị tốt. Còn thấy: dải tab của `/me` bị cắt ở "Lịch s…" không có gợi ý cuộn (đã ghi ở U7).
 - **Chưa kiểm:** dialog "Gia hạn" (cần đăng nhập SV có sách đang mượn), thao tác "Thu tiền" thật ở `/phat` (ghi dữ liệu).
 - **Phát hiện phụ:** lỗi 403 của BE là tiếng Việt không dấu ("Khong du quyen thuc hien thao tac nay"), FE hiện nguyên văn nên sẽ lệch với phần UI còn lại (việc của BE, hoặc FE ánh xạ 403 sang câu có dấu). `DataTable` render cả bảng lẫn thẻ nên `find`/test E2E sẽ thấy nút trùng (một bản `display:none`, trình đọc màn hình không đọc).
+
+## Đề xuất cho BE
+
+### B1 — Sort mặc định phía BE (P2)
+- **Trạng thái:** Đã phân tích (2026-10-07), chờ người phụ trách BE. FE chưa phải sửa gì cho tới khi BE đổi; sau đó chỉ cần cập nhật dòng quy tắc ở chân bảng (`<Pager order="…" />`).
+- **Nguồn:** đọc `BE/src/*/*.service.ts`, `bao-cao.controller.ts`, `ban-doc.controller.ts`, `sql/07_reports.sql`, index và dữ liệu thật trong DB `qltv_nhom8`.
+- **Phát hiện:**
+  1. `/phieu-muon`, `/dat-truoc`, `/phat` đang `ORDER BY id DESC` nhưng `id` không phản ánh ngày nghiệp vụ khi dữ liệu nhập bù hoặc seed. Thực tế: `/phieu-muon` đặt PM000015 (mượn 13/08) lên đầu còn PM000007 (04/10, mới nhất) đứng thứ 9; `/dat-truoc` đặt lượt id 10 (06/07, cũ nhất) lên đầu trong khi lượt mới nhất là 06/10.
+  2. `/phat`: hai phiếu `CHUA_THANH_TOAN` (id 3, 6), là việc cần thao tác "Thu tiền", lại là phiếu cũ nên với `id desc` chúng nằm cuối và sẽ rơi sang trang sau khi dữ liệu lớn.
+  3. `/me/dat-truoc` đã xếp `trang_thai IN ('CHO_XU_LY','SAN_SANG_NHAN') DESC, ngay_dat DESC` (đang chờ lên trước) nhưng `/dat-truoc` cho staff thì không; hai chỗ nên giống nhau.
+  4. Thiếu khóa phụ nên phân trang có thể lệch: `/sach` xếp `ten_sach` (không unique), tác giả có thể trùng tên.
+  5. `/bao-cao/top-sach-muon-nhieu`: view có `ORDER BY so_luot_muon DESC, ma_sach` nhưng controller (`bao-cao.controller.ts`) xếp lại chỉ `so_luot_muon DESC LIMIT n`, mất khóa phụ. Hiện 3 sách cùng 2 lượt và 12 sách cùng 1 lượt, nên "Top n" lấy sách nào trong nhóm hòa là ngẫu nhiên.
+  6. `vw_nguoi_dung_vi_pham` không có `ORDER BY` (thứ tự do engine quyết định).
+- **Đề xuất thứ tự mặc định:**
+
+| Endpoint | Hiện tại | Đề xuất |
+|---|---|---|
+| `GET /phieu-muon` | `id desc` | `ngay_muon desc, id desc` |
+| `GET /dat-truoc` | `id desc` | đang chờ (`CHO_XU_LY`, `SAN_SANG_NHAN`) trước, rồi `ngay_dat desc, id desc` (giống `/me/dat-truoc`) |
+| `GET /phat` | `id desc` | `CHUA_THANH_TOAN` trước, rồi `ngay_tao desc, id desc` (tối thiểu: `ngay_tao desc, id desc`) |
+| `GET /sach` | `ten_sach` | giữ `ten_sach`, thêm `id` làm khóa phụ |
+| `GET /docgia` | `ma_nguoi_dung` | giữ nguyên (mã unique, có index) |
+| `GET /the-loai`, `/nha-xuat-ban`, `/tac-gia` | tên | giữ tên, thêm `id` làm khóa phụ |
+| `GET /sach/{id}/ban-sach` | `ma_ban_sach` | giữ nguyên |
+| `GET /bao-cao/nguoi-dung-vi-pham` | không có | `con_no desc, tien_phat_tam_tinh desc, ma_nguoi_dung` |
+| `GET /bao-cao/top-sach-muon-nhieu` | `so_luot_muon desc` | `so_luot_muon desc, ma_sach` |
+| `GET /bao-cao/muon-qua-han` | `so_ngay_qua_han desc` | thêm `, ma_phieu` |
+| `GET /bao-cao/sach-dang-muon` | `han_tra` | thêm `, ma_phieu, ma_ban_sach` |
+| Báo cáo còn lại (lịch sử mượn, thống kê phạt, đặt trước) | hợp lý | giữ nguyên |
+
+- **Nhỏ:** khi `GET /sach` có `tuKhoa`, nên xếp theo độ liên quan (FULLTEXT) rồi mới đến tên (hiện từ khóa vô nghĩa vẫn ra đủ 7 sách theo A–Z); danh sách lồng `ctPhieuMuons` trong phiếu mượn chưa có `orderBy`, thêm `id asc`.
+- **Index khi dữ liệu lớn (hiện 10–15 dòng nên chưa cần):** `phieu_muon(ngay_muon, id)`, `phieu_phat(trang_thai, ngay_tao)`, `dat_truoc(ngay_dat)`; `idx_dt_hang_doi(sach_id, trang_thai, ngay_dat)` không dùng được cho sort này vì `ngay_dat` đứng sau.
+- **Tham số sắp xếp (nếu muốn FE sort theo cột ở danh sách phân trang):** thêm `sapXep=<field>:<asc|desc>` với whitelist field cố định cho từng endpoint (các view dùng raw SQL nên không nối chuỗi từ client). Gợi ý: `/sach` (`ten_sach`, `ma_sach`, `nam_xuat_ban`, `so_ban_san_sang`), `/docgia` (`maNguoiDung`, `hoTen`), `/phieu-muon` (`ngayMuon`, `maPhieu`), `/phat` (`ngayTao`, `soTien`), `/dat-truoc` (`ngayDat`, `hanGiu`); không truyền thì dùng mặc định ở bảng trên. Khi có tham số này FE bật sort theo cột cho 5 trang phân trang (hiện chỉ có ở `/bao-cao` và `/me`).
+- **Việc FE sau khi BE đổi:** đổi `order` của `Pager` ở `phieu-muon` ("ngày mượn, mới nhất trước"), `dat-truoc` ("đang chờ trước, rồi mới nhất"), `phat` ("chưa thu trước, rồi mới nhất"); khai báo `defaultOrder` cho báo cáo "Người dùng vi phạm" (Còn nợ ↓).
 
 ---
 

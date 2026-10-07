@@ -214,7 +214,7 @@ export default function PhatPage() {
         emptyText={filtering ? "Không có phiếu phạt khớp bộ lọc." : "Chưa có phiếu phạt nào."}
       />
 
-      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu phạt" onPage={setPage} />
+      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu phạt" order="mới nhất trước" onPage={setPage} />
 
       <AlertDialog open={thanhToan !== null} onOpenChange={(open) => !open && !pay.isPending && setThanhToan(null)}>
         <AlertDialogContent>

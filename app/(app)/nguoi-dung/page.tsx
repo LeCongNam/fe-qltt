@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 
 import {
   LOAI_NGUOI_DUNG,
@@ -11,6 +11,7 @@ import {
   labelOf,
 } from "@/components/nguoi-dung/nguoi-dung-meta"
 import { DataTable, type DataColumn } from "@/components/data-table"
+import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import type { NguoiDung } from "@/components/nguoi-dung/nguoi-dung-form"
 import { Button } from "@/components/ui/button"
@@ -181,20 +182,7 @@ export default function NguoiDungPage() {
         skeletonRows={6}
       />
 
-      <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
-        <span>{total} người dùng</span>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon-sm" aria-label="Trang trước" disabled={page <= 1} onClick={() => setPage(page - 1)}>
-            <ChevronLeft aria-hidden="true" />
-          </Button>
-          <span>
-            Trang {page} / {pageCount}
-          </span>
-          <Button variant="outline" size="icon-sm" aria-label="Trang sau" disabled={page >= pageCount} onClick={() => setPage(page + 1)}>
-            <ChevronRight aria-hidden="true" />
-          </Button>
-        </div>
-      </div>
+      <Pager page={page} pageCount={pageCount} total={total} unit="người dùng" order="mã người dùng" onPage={setPage} />
     </section>
   )
 }

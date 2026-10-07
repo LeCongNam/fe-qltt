@@ -184,7 +184,7 @@ export default function PhieuMuonPage() {
         skeletonRows={6}
       />
 
-      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu mượn" onPage={setPage} />
+      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu mượn" order="mới nhất trước" onPage={setPage} />
 
       <TraSachDialog key={traOpen ? "open" : "closed"} open={traOpen} onClose={() => setTraOpen(false)} />
     </section>

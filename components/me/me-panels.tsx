@@ -38,8 +38,8 @@ export function SachDangMuonPanel() {
   const columns: Column<SachDangMuonCuaToi>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
     { header: "Sách", title: true, value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
-    { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), className: "w-28" },
-    { header: "Hạn trả", value: (r) => formatDate(r.han_tra), className: "w-28" },
+    { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), sortBy: (r) => r.ngay_muon, className: "w-28" },
+    { header: "Hạn trả", value: (r) => formatDate(r.han_tra), sortBy: (r) => r.han_tra, className: "w-28" },
     { header: "Quá hạn", value: (r) => r.so_ngay_qua_han, cell: (r) => quaHan(r.so_ngay_qua_han), align: "right", className: "w-24" },
     {
       header: "Thao tác",
@@ -62,6 +62,7 @@ export function SachDangMuonPanel() {
         columns={columns}
         rowKey={(r) => `${r.ma_phieu}-${r.ma_ban_sach}`}
         unit="sách đang mượn"
+        defaultOrder={{ header: "Hạn trả", dir: "asc" }}
         emptyText="Bạn không có sách nào đang mượn."
       />
       <GiaHanDialog key={`gh-${giaHan}`} maBanSach={giaHan} onClose={() => setGiaHan(null)} />
@@ -92,7 +93,7 @@ export function DatTruocPanel() {
 
   const columns: Column<DatTruocCuaToi>[] = [
     { header: "Sách", title: true, value: (r) => `${r.ten_sach} (${r.ma_sach})`, className: "whitespace-normal" },
-    { header: "Ngày đặt", value: (r) => formatDate(r.ngay_dat), className: "w-28" },
+    { header: "Ngày đặt", value: (r) => formatDate(r.ngay_dat), sortBy: (r) => r.ngay_dat, className: "w-28" },
     {
       header: "Trạng thái",
       value: (r) => TRANG_THAI_DAT_TRUOC.find((t) => t.value === r.trang_thai)?.label ?? r.trang_thai,
@@ -100,7 +101,7 @@ export function DatTruocPanel() {
       className: "w-36",
     },
     { header: "Bản được giữ", value: (r) => r.ma_ban_sach, className: "w-28" },
-    { header: "Giữ đến", value: (r) => formatDate(r.han_giu), className: "w-28" },
+    { header: "Giữ đến", value: (r) => formatDate(r.han_giu), sortBy: (r) => r.han_giu, className: "w-28" },
     { header: "Thứ tự chờ", value: (r) => r.thu_tu_cho, align: "right", className: "w-24" },
     {
       header: "Thao tác",
@@ -162,14 +163,14 @@ export function TienPhatPanel() {
     { header: "Loại phạt", value: (r) => LOAI_PHAT.find((l) => l.value === r.loai_phat)?.label ?? r.loai_phat, className: "w-32" },
     { header: "Số tiền", value: (r) => r.so_tien, cell: (r) => formatVnd(r.so_tien), align: "right", className: "w-32" },
     { header: "Lý do", value: (r) => r.ly_do, className: "whitespace-normal" },
-    { header: "Ngày tạo", value: (r) => formatDate(r.ngay_tao), className: "w-28" },
+    { header: "Ngày tạo", value: (r) => formatDate(r.ngay_tao), sortBy: (r) => r.ngay_tao, className: "w-28" },
     {
       header: "Trạng thái",
       value: (r) => TRANG_THAI_PHAT.find((t) => t.value === r.trang_thai)?.label ?? r.trang_thai,
       cell: (r) => <StatusPill list={TRANG_THAI_PHAT} value={r.trang_thai} />,
       className: "w-40",
     },
-    { header: "Ngày thanh toán", value: (r) => formatDate(r.ngay_thanh_toan), className: "w-32" },
+    { header: "Ngày thanh toán", value: (r) => formatDate(r.ngay_thanh_toan), sortBy: (r) => r.ngay_thanh_toan, className: "w-32" },
   ]
   return (
     <ReportTable
@@ -177,6 +178,7 @@ export function TienPhatPanel() {
       columns={columns}
       rowKey={(r) => r.ma_phieu_phat}
       unit="phiếu phạt"
+      defaultOrder={{ header: "Ngày tạo", dir: "desc" }}
       emptyText="Bạn chưa có phiếu phạt nào."
     />
   )
@@ -187,9 +189,9 @@ export function LichSuMuonPanel() {
   const columns: Column<LichSuMuonCuaToi>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
     { header: "Sách", title: true, value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
-    { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), className: "w-28" },
-    { header: "Hạn trả", value: (r) => formatDate(r.han_tra), className: "w-28" },
-    { header: "Ngày trả", value: (r) => formatDate(r.ngay_tra), className: "w-28" },
+    { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), sortBy: (r) => r.ngay_muon, className: "w-28" },
+    { header: "Hạn trả", value: (r) => formatDate(r.han_tra), sortBy: (r) => r.han_tra, className: "w-28" },
+    { header: "Ngày trả", value: (r) => formatDate(r.ngay_tra), sortBy: (r) => r.ngay_tra, className: "w-28" },
     { header: "Gia hạn", value: (r) => r.so_lan_gia_han, align: "right", className: "w-20" },
     {
       header: "Tình trạng",
@@ -210,6 +212,7 @@ export function LichSuMuonPanel() {
       columns={columns}
       rowKey={(r) => `${r.ma_phieu}-${r.ma_ban_sach}`}
       unit="lượt mượn"
+      defaultOrder={{ header: "Ngày mượn", dir: "desc" }}
       emptyText="Bạn chưa mượn sách nào."
     />
   )

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import type { UseQueryResult } from "@tanstack/react-query"
+import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -17,11 +18,30 @@ export type DataColumn<T> = {
   title?: boolean
   /** Cột thao tác: nằm cuối thẻ, không có nhãn. Thẻ không có nội dung thì ẩn. */
   actions?: boolean
+  /** Có thì tiêu đề cột là nút sắp xếp. `dir` null = cột chưa là khóa sắp xếp; `isDefault` = chiều này là thứ tự có sẵn của dữ liệu. */
+  sort?: { dir: "asc" | "desc" | null; isDefault?: boolean; onToggle: () => void }
 }
 
 type QueryState = Pick<UseQueryResult<unknown>, "isPending" | "isError" | "isSuccess" | "error" | "refetch">
 
 const align = (c: { align?: "right" }) => (c.align === "right" ? "text-right" : "")
+
+function HeadContent<T>({ column: c }: { column: DataColumn<T> }) {
+  if (!c.sort) return c.header
+  const { dir, isDefault, onToggle } = c.sort
+  const Icon = dir === "asc" ? ArrowUp : dir === "desc" ? ArrowDown : ArrowUpDown
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      title={isDefault ? "Thứ tự mặc định, bấm để đổi chiều" : "Sắp xếp theo cột này"}
+      className="inline-flex items-center gap-1 rounded-sm whitespace-nowrap hover:text-[#147d64] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#147d64]"
+    >
+      {c.header}
+      <Icon aria-hidden="true" className={`size-3.5 ${dir === null ? "text-[#8b9690]" : isDefault ? "text-[#66736c]" : "text-[#147d64]"}`} />
+    </button>
+  )
+}
 
 /**
  * Bảng dữ liệu dùng chung. Từ `md` trở lên là bảng; dưới `md` mỗi dòng thành một thẻ
@@ -62,8 +82,12 @@ export function DataTable<T>({
           <TableHeader>
             <TableRow>
               {columns.map((c) => (
-                <TableHead key={c.header} className={`${align(c)} ${c.className ?? ""}`}>
-                  {c.header}
+                <TableHead
+                  key={c.header}
+                  aria-sort={c.sort?.dir ? (c.sort.dir === "asc" ? "ascending" : "descending") : undefined}
+                  className={`${align(c)} ${c.className ?? ""}`}
+                >
+                  <HeadContent column={c} />
                 </TableHead>
               ))}
             </TableRow>
