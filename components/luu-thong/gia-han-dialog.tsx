@@ -28,6 +28,7 @@ export function GiaHanDialog({ maBanSach, onClose }: { maBanSach: string | null;
         description: `Hạn trả mới ${formatDate(data.hanTra)} (lần ${data.soLanGiaHan}).`,
       })
       queryClient.invalidateQueries({ queryKey: ["/phieu-muon"] })
+      queryClient.invalidateQueries({ queryKey: ["/me"] })
       onClose()
     },
     onError: (error) => {

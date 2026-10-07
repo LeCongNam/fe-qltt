@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Search } from "lucide-react"
 
-import { type Column, ReportTable } from "@/components/bao-cao/report-table"
+import { type Column, ReportTable } from "@/components/report-table"
 import { LOAI_PHAT, TINH_TRANG_TRA, TRANG_THAI_DAT_TRUOC } from "@/components/luu-thong/luu-thong-meta"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"

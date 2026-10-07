@@ -69,7 +69,7 @@ export const navigationGroups: NavGroup[] = [
   },
   {
     label: "CÁ NHÂN",
-    items: [{ label: "Của tôi", icon: UserRound, href: "/me", ready: false }],
+    items: [{ label: "Của tôi", icon: UserRound, href: "/me" }],
   },
   {
     label: "BÁO CÁO",

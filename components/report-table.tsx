@@ -45,7 +45,8 @@ export function ReportTable<T>({
   columns: Column<T>[]
   rowKey: (row: T, index: number) => string
   unit: string
-  filename: string
+  /** Có tên file thì hiện nút xuất CSV. */
+  filename?: string
   toolbar?: ReactNode
   emptyText?: string
 }) {
@@ -56,6 +57,7 @@ export function ReportTable<T>({
   const visible = rows.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE)
 
   function exportCsv() {
+    if (!filename) return
     const url = URL.createObjectURL(new Blob([toCsv(columns, rows)], { type: "text/csv;charset=utf-8" }))
     const a = document.createElement("a")
     a.href = url
@@ -68,10 +70,12 @@ export function ReportTable<T>({
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">{toolbar}</div>
-        <Button type="button" variant="outline" size="sm" disabled={rows.length === 0} onClick={exportCsv}>
-          <Download aria-hidden="true" />
-          Xuất CSV
-        </Button>
+        {filename && (
+          <Button type="button" variant="outline" size="sm" disabled={rows.length === 0} onClick={exportCsv}>
+            <Download aria-hidden="true" />
+            Xuất CSV
+          </Button>
+        )}
       </div>
       <div className="rounded-lg border border-[#e4e8e2] bg-white">
         <Table>
