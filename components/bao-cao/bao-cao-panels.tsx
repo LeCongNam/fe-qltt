@@ -179,6 +179,7 @@ export function NguoiDungViPhamPanel() {
       rowKey={(r) => r.ma_nguoi_dung}
       unit="người dùng"
       filename="nguoi-dung-vi-pham"
+      defaultOrder={{ header: "Còn nợ", dir: "desc" }}
       emptyText="Chưa có người dùng vi phạm."
     />
   )

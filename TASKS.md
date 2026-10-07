@@ -1,7 +1,7 @@
 # TASKS — Cải thiện UI/UX và cấu trúc code FE (qltv_nhom8)
 
 Nguồn: phân tích FE ngày 2026-10-07 (đọc code, chạy tsc/eslint, xem giao diện thật bằng ADMIN trên desktop và mobile).
-Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (project `qltv_nhom8-fe`): `mem_muxyw9zn_1438417243a3` (trạng thái sau C4, 2026-10-07) và `mem_muxywa4r_5bb5a013aa87` (quy trình, quy tắc git). Bản cũ `mem_muxxlkqc_9e79ed7ac087` không còn trong kho.
+Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_nhom8-fe`): `mem_muy5lkpx_33dc1e95a26a` (trạng thái sau commit `4c6082c`, 2026-10-07, kèm quy tắc git). Các mã `mem_…` cũ không còn trong kho.
 
 ## Cách dùng file này (cho session mới)
 
@@ -39,7 +39,7 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 | C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Đã hoàn thành |
 | C12 | Báo cáo chưa link được sang người dùng | P3 | Đã hoàn thành |
 | Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Đã hoàn thành (còn dialog Gia hạn) |
-| B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | Đã phân tích, chờ BE |
+| B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | BE đã sửa, FE đã cập nhật (còn `sapXep`) |
 | B2 | Spec sai body `POST /dat-truoc` (trùng tên class `DatTruocDto`) | P3 | Chờ BE |
 
 ---
@@ -248,7 +248,7 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 ## Đề xuất cho BE
 
 ### B1 — Sort mặc định phía BE (P2)
-- **Trạng thái:** Đã phân tích (2026-10-07), chờ người phụ trách BE. FE chưa phải sửa gì cho tới khi BE đổi; sau đó chỉ cần cập nhật dòng quy tắc ở chân bảng (`<Pager order="…" />`).
+- **Trạng thái:** BE đã sửa thứ tự mặc định (2026-10-07); FE đã cập nhật dòng quy tắc ở chân bảng của `phieu-muon`, `dat-truoc`, `phat` và `defaultOrder` "Còn nợ ↓" cho báo cáo người dùng vi phạm. Còn lại: tham số `sapXep` và sort theo độ liên quan khi có `tuKhoa` (chưa có ở BE).
 - **Nguồn:** đọc `BE/src/*/*.service.ts`, `bao-cao.controller.ts`, `ban-doc.controller.ts`, `sql/07_reports.sql`, index và dữ liệu thật trong DB `qltv_nhom8`.
 - **Phát hiện:**
   1. `/phieu-muon`, `/dat-truoc`, `/phat` đang `ORDER BY id DESC` nhưng `id` không phản ánh ngày nghiệp vụ khi dữ liệu nhập bù hoặc seed. Thực tế: `/phieu-muon` đặt PM000015 (mượn 13/08) lên đầu còn PM000007 (04/10, mới nhất) đứng thứ 9; `/dat-truoc` đặt lượt id 10 (06/07, cũ nhất) lên đầu trong khi lượt mới nhất là 06/10.

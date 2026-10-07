@@ -187,7 +187,7 @@ export default function DatTruocPage() {
         emptyText={filtering ? "Không có lượt đặt trước khớp bộ lọc." : "Chưa có lượt đặt trước nào."}
       />
 
-      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="lượt đặt" order="mới nhất trước" onPage={setPage} />
+      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="lượt đặt" order="đang chờ trước, rồi mới nhất" onPage={setPage} />
 
       <DatTruocDialog key={datOpen ? "open" : "closed"} open={datOpen} isStaff={isStaff} onClose={() => setDatOpen(false)} />
 
