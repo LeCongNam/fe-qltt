@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useId, useState, type ReactNode } from "react"
+import { useId, useState, type ReactNode } from "react"
 import { CheckCircle2, Loader2, Play, XCircle } from "lucide-react"
 
 import { DemoTable, DemoTableSkeleton } from "@/components/demo/demo-table"
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useDebounced } from "@/hooks/use-debounced"
 import { getApiErrorMessage } from "@/lib/api"
 import {
   useDemoBang,
@@ -27,15 +28,6 @@ function xemTruocLenh(lenh: string, thamSo: DemoChiTiet["thamSo"], values: Recor
     if (!p || v === "") return "NULL"
     return p.kieu === "number" && Number.isFinite(Number(v)) ? v : `'${v.replace(/'/g, "''")}'`
   })
-}
-
-function useDebounced<T>(value: T, ms: number) {
-  const [debounced, setDebounced] = useState(value)
-  useEffect(() => {
-    const t = setTimeout(() => setDebounced(value), ms)
-    return () => clearTimeout(t)
-  }, [value, ms])
-  return debounced
 }
 
 function Step({ n, title, children }: { n: number; title: string; children: ReactNode }) {

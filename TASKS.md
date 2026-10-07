@@ -19,7 +19,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 | T01 | Sửa lỗi lint `hooks/use-mobile.ts` | — | Đã hoàn thành |
 | T02 | Sửa font (đang render Times thay vì Geist) | — | Đã hoàn thành |
 | T03 | Độ tương phản chữ + cỡ chữ tối thiểu | — | Đã hoàn thành |
-| U1 | Bỏ/làm thật ô tìm kiếm và chuông ở header | P1 | Chưa thực hiện |
+| U1 | Bỏ/làm thật ô tìm kiếm và chuông ở header | P1 | Một phần: tìm kiếm xong, chuông giữ nguyên |
 | U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Chưa thực hiện |
 | U3 | Quy tắc sắp xếp và sort theo cột | P2 | Chưa thực hiện |
 | U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Chưa thực hiện |
@@ -71,9 +71,12 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 ## Chưa thực hiện — UI/UX
 
 ### U1 — Ô tìm kiếm và chuông giả ở header (P1)
-- **Trạng thái:** Chưa thực hiện
-- `components/dashboard/library-dashboard.tsx`: ô "Tìm kiếm..." không có chức năng (trang Sách có ô tìm riêng), nút chuông có chấm đỏ giả báo có thông báo.
-- Việc cần làm: bỏ cả hai (khuyến nghị), hoặc làm thật (ô tìm toàn cục, thông báo thật). Nếu bỏ, kiểm tra header vẫn cân đối ở desktop và mobile.
+- **Trạng thái:** Một phần (2026-10-07), chưa commit. Tìm kiếm đã làm thật; chuông **giữ nguyên theo ý người dùng** (chấm đỏ vẫn là giả, sẽ làm sau).
+- `components/dashboard/global-search.tsx`: ô tìm kiếm mở hộp tìm nhanh (nút ở header, `Ctrl/⌘ + K`; dưới `md` là nút kính lúp). Chỉ FE, dùng endpoint có sẵn: `GET /sach?tuKhoa` (ai cũng tìm được), `GET /docgia?tuKhoa&limit=6` (chỉ staff), `GET /phieu-muon/{ma}` khi gõ đúng dạng `PM…` (staff). Mũi tên chọn, Enter mở, mỗi nhóm hiện tối đa 6 kết quả kèm link sang trang danh sách.
+- **Chỉ tìm khi bấm Enter, không tìm theo từng phím:** `sp_tra_cuu_sach` ghi mỗi lượt tra cứu sách vào `nhat_ky_hanh_vi` (`TRA_CUU`), tìm khi đang gõ sẽ ghi cả từ khóa dở dang. Khi đang sửa từ khóa, kết quả cũ bị làm mờ và hiện gợi ý "Nhấn Enter để tìm".
+- `hooks/use-debounced.ts` tách từ `demo-runner.tsx` (còn dùng ở đó).
+- Lưu ý BE: tìm sách khá rộng (LIKE + FULLTEXT), từ khóa vô nghĩa như `javaminh` vẫn ra 7 sách; không phải việc của FE.
+- Chuông (`library-dashboard.tsx`): nếu làm thật thì xem phương án trong lịch sử trao đổi: suy ra từ `/me/*` và `/bao-cao/*` (chỉ FE) hoặc bảng `thong_bao` ở CSDL (cần BE).
 
 ### U2 — Bảng nhiều cột trên mobile (P1)
 - **Trạng thái:** Chưa thực hiện

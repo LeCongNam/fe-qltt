@@ -1,8 +1,9 @@
 "use client"
 
-import { Bell, ChevronDown, LogOut, Search } from "lucide-react"
+import { Bell, ChevronDown, LogOut } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation"
 
+import { GlobalSearch } from "@/components/dashboard/global-search"
 import { LibrarySidebar } from "@/components/dashboard/library-sidebar"
 import {
   DropdownMenu,
@@ -11,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
   SidebarInset,
   SidebarProvider,
@@ -48,14 +48,7 @@ export function LibraryDashboard({ children }: { children: React.ReactNode }) {
             <span className="truncate text-sm font-semibold text-[#293a32]">{activeItem}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <label className="relative hidden w-56 md:block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
-              <Input
-                aria-label="Tìm kiếm"
-                placeholder="Tìm kiếm..."
-                className="h-9 rounded-md border-[#e7e9e4] bg-[#fafbf9] pl-9 text-xs shadow-none placeholder:text-[#66736c]"
-              />
-            </label>
+            <GlobalSearch />
             <button type="button" aria-label="Thông báo" className="relative flex size-9 items-center justify-center rounded-md text-[#5f6b64] transition-colors hover:bg-[#f2f4f1]">
               <Bell className="size-[18px]" aria-hidden="true" />
               <span className="absolute right-2 top-2 size-1.5 rounded-full bg-[#d16b53]" />
