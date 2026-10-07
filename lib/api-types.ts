@@ -1178,6 +1178,11 @@ export interface components {
             namSinh?: number;
         };
         TraCuuSachDto: {
+            /**
+             * @description sach.id, dùng cho /sach/{id}
+             * @example 1
+             */
+            id: string;
             /** @example S001 */
             ma_sach: string;
             isbn: string | null;
