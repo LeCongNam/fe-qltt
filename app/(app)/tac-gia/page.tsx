@@ -20,7 +20,7 @@ const config: DanhMucConfig<TacGia, Schemas["CreateTacGiaDto"]> = {
   ],
   columns: [
     { header: "Mã", cell: (r) => r.maTacGia, className: "w-28 font-medium" },
-    { header: "Tên tác giả", cell: (r) => r.tenTacGia },
+    { header: "Tên tác giả", title: true, cell: (r) => r.tenTacGia },
     { header: "Quốc tịch", cell: (r) => r.quocTich ?? "—", className: "text-muted-foreground" },
     { header: "Năm sinh", cell: (r) => r.namSinh ?? "—", className: "w-28 text-muted-foreground" },
   ],

@@ -20,7 +20,7 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 | T02 | Sửa font (đang render Times thay vì Geist) | — | Đã hoàn thành |
 | T03 | Độ tương phản chữ + cỡ chữ tối thiểu | — | Đã hoàn thành |
 | U1 | Bỏ/làm thật ô tìm kiếm và chuông ở header | P1 | Một phần: tìm kiếm xong, chuông giữ nguyên |
-| U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Đã hoàn thành (còn vài bảng nhỏ chưa áp dụng) |
+| U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Đã hoàn thành (trừ `dashboard-overview` và `demo-table`, giữ có chủ ý) |
 | U3 | Quy tắc sắp xếp và sort theo cột | P2 | Đã hoàn thành (sort theo cột chỉ cho bảng có đủ dữ liệu ở FE) |
 | U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Đã hoàn thành |
 | U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Đã hoàn thành |
@@ -28,7 +28,7 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 | U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Đã hoàn thành |
 | C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
 | C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
-| C3 | Đưa màu hex cứng vào theme token | P2 | Đã hoàn thành (còn 19 màu lẻ) |
+| C3 | Đưa màu hex cứng vào theme token | P2 | Đã hoàn thành |
 | C4 | Tách component dùng chung (lặp code) | P2 | Đã hoàn thành (trừ `Avatar`) |
 | C5 | Tầng API có kiểu: `openapi-fetch`, key factory, `.gitattributes` | P2 | Đã hoàn thành (chưa dọn `api-types.ts`) |
 | C6 | Tách các trang quá lớn | P3 | Đã hoàn thành |
@@ -85,7 +85,10 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 - `components/data-table.tsx`: `DataTable<T>` dùng chung, nhận `query`, `rows`, `columns: DataColumn<T>[]`, `rowKey`, `errorText`, `emptyText`. Từ `md` là bảng như cũ (cùng class); dưới `md` mỗi dòng thành thẻ: cột `title` (mặc định cột đầu) làm tiêu đề, các cột còn lại là cặp nhãn/giá trị, cột `actions` nằm cuối thẻ (ẩn nếu rỗng). Gồm trạng thái tải/lỗi/rỗng cho cả hai chế độ. Hai chế độ render bằng CSS (`hidden md:block` / `md:hidden`), không dùng `useIsMobile` nên không nháy khi hydrate.
 - Đã áp dụng: `/sach`, `/nguoi-dung`, `/phieu-muon`, `/dat-truoc` (cột "Người đặt" chỉ staff), `/phat`, và `components/report-table.tsx` (nên `/bao-cao` và `/me` cũng có thẻ). `Column` của `ReportTable` có thêm `title`/`actions`; đã đánh dấu `title` ở cột "Sách"/"Tên sách" và `actions` ở hai cột "Thao tác" của `/me`.
 - Kiểm chứng: `tsc` + `eslint` sạch; ở 375px `/sach`, `/phat`, `/phieu-muon`, `/dat-truoc`, `/nguoi-dung`, `/bao-cao` không tràn ngang (`scrollWidth` = `clientWidth`), bảng ẩn, thẻ hiện; `/dat-truoc` có nút Hủy trong thẻ; ở desktop vẫn là bảng, danh sách thẻ ẩn.
-- Chưa áp dụng (bảng ít cột, chưa gặp lỗi): `components/sach/ban-sach-panel.tsx` (4 cột), `components/danh-muc/danh-muc-page.tsx`, bảng chi tiết trong `phieu-muon/[maPhieu]`, `dashboard-overview.tsx` (đã ẩn cột bằng `hidden md:table-cell`), `demo-table.tsx` (bảng dữ liệu thô, giữ cuộn ngang). Chưa thử bấm thật các nút trong thẻ (Thu tiền/Hủy ở `/phat`, Gia hạn ở `/me`), chưa xem `/me` ở mobile.
+- **Đồng bộ đợt 2 (2026-10-07, chưa commit):** áp dụng `DataTable` cho các bảng còn lại: `components/danh-muc/danh-muc-page.tsx` (thể loại, tác giả, NXB; `DanhMucColumn` nay là `DataColumn`, cột tên đánh dấu `title`, cột "Thao tác" là `actions`), `components/sach/ban-sach-panel.tsx` (ô Tình trạng là `Select` trong cột) và bảng "Sách trong phiếu" ở `phieu-muon/[maPhieu]` (tên sách làm tiêu đề thẻ, nút Gia hạn/Trả ở cuối thẻ). `DataTable` có thêm: `query` **tùy chọn** (dữ liệu đã có sẵn thì bỏ, coi như đã tải xong) và `embedded` (bảng nằm trong khung có viền riêng, bỏ viền kép ở desktop, thẻ mobile có đệm).
+- Giữ nguyên có chủ ý: `dashboard-overview.tsx` (bảng nhỏ kiểu riêng, đã ẩn cột `Tên sách` dưới `md`, 4 cột còn lại vừa 375px) và `demo-table.tsx` (bảng dữ liệu thô, cần cuộn ngang).
+- Kiểm chứng đợt 2: `tsc` + `eslint` sạch. THU_THU: desktop `/the-loai` như cũ; 375px `/the-loai` ra thẻ (tên làm tiêu đề, Mã/Mô tả, nút Sửa), `/sach/7` thẻ bản sách có ô Tình trạng, `/phieu-muon/PM000015` (có phạt) và `PM000007` (đang mượn, có nút Gia hạn/Trả) đều không tràn ngang. Chưa bấm thật nút Gia hạn/Trả/Đổi tình trạng/Xóa trong thẻ, chưa xem ADMIN (nút Xóa) và `/tac-gia`, `/nha-xuat-ban` ở mobile.
+- Lưu ý: `DataTable` render cả bảng lẫn thẻ nên ô `Select` ở `ban-sach-panel` có hai bản trong DOM (một bản `display:none`).
 
 ### U3 — Quy tắc sắp xếp (P2)
 - **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
@@ -151,7 +154,7 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 - **Thay thế bằng script** (`bg|text|border*|ring|divide|outline|fill|stroke|from|via|to…-[#hex]` → token, giữ nguyên hậu tố độ trong suốt): 544 chỗ ở 44 file. Các hex gần nhau được gộp (ví dụ 5 màu viền `#e4e8e2/#e7e9e4/…` → `border`, 4 nền nhạt → `surface`, 3 chữ đậm → `ink`; chênh lệch ≤ vài đơn vị RGB và chỉ gộp về màu đậm hơn hoặc bằng khi là chữ).
 - **Button:** biến thể `default` giờ là `bg-primary text-primary-foreground hover:bg-primary-hover` nên bỏ lớp `bg-… text-white hover:bg-…` lặp ở 19 nút. Vòng focus (`ring`) của mọi input/nút chuyển từ xám sang xanh lá.
 - **Biểu đồ:** màu cột/đường dùng `var(--chart-1)` (xanh) và `var(--chart-2)` (cam `#e99a68`), lưới `var(--line)`, nhãn trục `var(--faint)`; tiện thể sửa nhãn trục `#87918b` (dưới 4,5:1) ở `/bao-cao` lên `#66736c`.
-- **Còn 19 hex lẻ** trong class (pill màu đơn lẻ ở `*-meta.ts`/trang: `#f3e8d8`, `#f1e6e6`, `#e8eefb`/`#3a5fb0` cho "Đang giữ", `#8c3b3b`, `#845c35`, `#efc9c2`, `#d16b53`, `#bfe0d2`, `#b2bab5`, `#668f7c`, `#35755f`, `#0e634f`); chỉ dùng 1–2 lần nên chưa đặt token.
+- **Hex lẻ cuối cùng (2026-10-07, chưa commit):** đã hết hex trong class (chỉ còn selector recharts của shadcn trong `components/ui/chart.tsx`, không phải màu). Token mới ở `globals.css`: `hold`/`hold-soft` (`#3a5fb0`/`#e8eefb`, "Đang giữ" và "Chờ xử lý"), `lost`/`lost-soft` (`#8c3b3b`/`#f1e6e6`, "Mất"), `sand`/`sand-soft` (`#845c35`/`#f3e8d8`, avatar), `primary-border` (`#bfe0d2`) và `destructive-border` (`#efc9c2`) cho hộp kết quả demo. Tương phản chữ/nền mới: hold 5,24:1, lost 6,14:1, sand 4,87:1. Các chỗ gộp vào token có sẵn (có đổi nhẹ màu): dấu `/` breadcrumb `#b2bab5` → `text-icon`; chấm đỏ chuông `#d16b53` → `bg-destructive`; chữ pill "Đã trả" `#35755f` → `text-primary-strong` (đậm hơn); icon khiên `#668f7c` → `text-primary/60`; hover link `#0e634f` → `text-primary-hover`.
 - **Kiểm chứng:** `tsc` + `eslint` sạch; xem trên trình duyệt `/`, `/phat`, `/bao-cao`, dialog đặt trước: bố cục và màu giữ như cũ, vòng focus ô nhập đổi sang xanh. Chưa xem lại toàn bộ trang (login, `/me`, `/demo`, mobile) và chưa đo lại tương phản bằng công cụ sau khi gộp màu.
 
 ### C4 — Component dùng chung (P2)

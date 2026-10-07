@@ -1,12 +1,13 @@
 "use client"
 
-import { useMemo, useState, type ReactNode } from "react"
+import { useMemo, useState } from "react"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react"
 import { z } from "zod"
 
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,15 +20,6 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { danhMucKeys, danhMucQueries, type DanhMucApi, type DanhMucKind } from "@/features/danh-muc/queries"
@@ -48,11 +40,7 @@ export type DanhMucField<K extends string = string> = {
   fullWidth?: boolean
 }
 
-export type DanhMucColumn<T> = {
-  header: string
-  cell: (row: T) => ReactNode
-  className?: string
-}
+export type DanhMucColumn<T> = DataColumn<T>
 
 export type DanhMucConfig<T extends { id: string }, TCreate> = {
   /** Danh mục nào (khóa truy vấn) và hàm gọi BE tương ứng. */
@@ -136,10 +124,40 @@ export function DanhMucPage<T extends { id: string }, TCreate>({ config }: { con
   const rows = list.data?.data ?? []
   const total = list.data?.total ?? 0
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
-  const colCount = config.columns.length + (isStaff ? 1 : 0)
+  const columns: DataColumn<T>[] = [
+    ...config.columns,
+    ...(isStaff
+      ? [
+          {
+            header: "Thao tác",
+            actions: true,
+            align: "right" as const,
+            className: "w-24",
+            cell: (row: T) => (
+              <div className="flex justify-end gap-1">
+                <Button variant="ghost" size="icon-sm" aria-label={`Sửa ${config.labelOf(row)}`} onClick={() => setEditing(row)}>
+                  <Pencil aria-hidden="true" />
+                </Button>
+                {isAdmin && (
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-destructive"
+                    aria-label={`Xóa ${config.labelOf(row)}`}
+                    onClick={() => setDeleting(row)}
+                  >
+                    <Trash2 aria-hidden="true" />
+                  </Button>
+                )}
+              </div>
+            ),
+          },
+        ]
+      : []),
+  ]
 
   return (
-    <section className="mx-auto w-full max-w-5xl">
+    <section className="mx-auto w-full max-w-6xl">
       <PageHeader
         eyebrow="Danh mục"
         title={config.title}
@@ -154,81 +172,14 @@ export function DanhMucPage<T extends { id: string }, TCreate>({ config }: { con
         }
       />
 
-      <div className="rounded-lg border border-border bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {config.columns.map((c) => (
-                <TableHead key={c.header} className={c.className}>
-                  {c.header}
-                </TableHead>
-              ))}
-              {isStaff && <TableHead className="w-24 text-right">Thao tác</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list.isPending &&
-              Array.from({ length: 5 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={colCount}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {list.isError && (
-              <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-destructive">
-                  <span role="alert">{getApiErrorMessage(list.error, `Không tải được danh sách ${singular}.`)}</span>{" "}
-                  <button type="button" className="underline" onClick={() => list.refetch()}>
-                    Thử lại
-                  </button>
-                </TableCell>
-              </TableRow>
-            )}
-            {list.isSuccess && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-muted-foreground">
-                  Chưa có {singular} nào.
-                </TableCell>
-              </TableRow>
-            )}
-            {rows.map((row) => (
-              <TableRow key={row.id}>
-                {config.columns.map((c) => (
-                  <TableCell key={c.header} className={c.className}>
-                    {c.cell(row)}
-                  </TableCell>
-                ))}
-                {isStaff && (
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        aria-label={`Sửa ${config.labelOf(row)}`}
-                        onClick={() => setEditing(row)}
-                      >
-                        <Pencil aria-hidden="true" />
-                      </Button>
-                      {isAdmin && (
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          className="text-destructive"
-                          aria-label={`Xóa ${config.labelOf(row)}`}
-                          onClick={() => setDeleting(row)}
-                        >
-                          <Trash2 aria-hidden="true" />
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        query={list}
+        rows={rows}
+        rowKey={(row) => row.id}
+        errorText={`Không tải được danh sách ${singular}.`}
+        emptyText={`Chưa có ${singular} nào.`}
+        columns={columns}
+      />
 
       <Pager page={page} pageCount={pageCount} total={total} unit="bản ghi" order="tên A–Z" onPage={setPage} />
 

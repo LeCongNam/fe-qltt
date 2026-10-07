@@ -114,7 +114,7 @@ function KetQuaPanel({ ketQua, truoc }: { ketQua: DemoKetQua; truoc: DemoBang[] 
       <div
         role={ketQua.thanhCong ? "status" : "alert"}
         className={`flex items-start gap-2 rounded-md border px-3 py-2.5 text-sm ${
-          ketQua.thanhCong ? "border-[#bfe0d2] bg-primary-soft text-primary-strong" : "border-[#efc9c2] bg-destructive-soft text-destructive"
+          ketQua.thanhCong ? "border-primary-border bg-primary-soft text-primary-strong" : "border-destructive-border bg-destructive-soft text-destructive"
         }`}
       >
         {ketQua.thanhCong ? <CheckCircle2 className="mt-0.5 size-4 shrink-0" aria-hidden="true" /> : <XCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />}

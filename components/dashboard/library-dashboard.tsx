@@ -40,19 +40,19 @@ export function LibraryDashboard({ children }: { children: React.ReactNode }) {
           <div className="flex min-w-0 items-center gap-3">
             <SidebarTrigger className="-ml-2 text-ink" />
             <span className="hidden shrink-0 whitespace-nowrap text-sm text-faint sm:inline">Thư viện</span>
-            <span aria-hidden="true" className="hidden text-sm text-[#b2bab5] sm:inline">/</span>
+            <span aria-hidden="true" className="hidden text-sm text-icon sm:inline">/</span>
             <span className="truncate text-sm font-semibold text-heading">{activeItem}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <GlobalSearch />
             <button type="button" aria-label="Thông báo" className="relative flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted">
               <Bell className="size-[18px]" aria-hidden="true" />
-              <span className="absolute right-2 top-2 size-1.5 rounded-full bg-[#d16b53]" />
+              <span className="absolute right-2 top-2 size-1.5 rounded-full bg-destructive" />
             </button>
             <span className="hidden h-7 w-px bg-border sm:block" />
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 rounded-md p-1 text-left outline-none hover:bg-canvas focus-visible:ring-2 focus-visible:ring-primary/40">
-                <span className="flex size-8 items-center justify-center rounded-full bg-[#f3e8d8] text-xs font-semibold text-[#845c35]">{user ? initials(user.hoTen) : ""}</span>
+                <span className="flex size-8 items-center justify-center rounded-full bg-sand-soft text-xs font-semibold text-sand">{user ? initials(user.hoTen) : ""}</span>
                 <span className="hidden max-w-40 truncate text-xs font-medium text-ink lg:block">{user?.hoTen}</span>
                 <ChevronDown className="hidden size-3.5 text-icon lg:block" aria-hidden="true" />
               </DropdownMenuTrigger>

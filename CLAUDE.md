@@ -36,7 +36,7 @@ There is no test runner configured. Both `package-lock.json` and an untracked `y
 - **Long pick lists**: ô chọn có thể vượt 100 dòng (thể loại, NXB, sách) dùng `Combobox` (`components/ui/combobox.tsx`, lọc không dấu) với dữ liệu từ `danhMucQueries.options` / `sachQueries.options()`, gom mọi trang bằng `fetchAllPages` (`lib/paging.ts`). Danh sách ngắn, cố định vẫn dùng `Select`.
 - **Shared page pieces**: `PageHeader`, `SearchForm`, `ConfirmDialog`, `InfoItem` (in `components/`), `Pager`, `DataTable`; `PAGE_SIZE` in `lib/constants.ts`. Reuse them instead of copying markup into a new page.
 - **UI primitives**: `components/ui/*` are shadcn-generated (see `components.json`; aliases `@/components`, `@/lib/utils`, `@/hooks`). Add more with `npx shadcn add <component>`. Domain components live in `components/dashboard/`. Path alias `@/*` maps to the repo root.
-- **Styling**: màu lấy từ token trong `app/globals.css` (`bg-primary`, `text-muted-foreground`, `border-border`, `bg-canvas`, `text-faint`, `bg-primary-soft`…; xem danh sách ở đầu `:root`), không gõ hex trong component. Nút xanh chính là `<Button>` mặc định. Cần màu mới thì thêm token (kiểm tương phản ≥ 4,5:1 cho chữ) rồi mới dùng; khối `.dark` chưa được cập nhật.
+- **Styling**: màu lấy từ token trong `app/globals.css` (`bg-primary`, `text-muted-foreground`, `border-border`, `bg-canvas`, `text-faint`, `bg-primary-soft`…; xem danh sách ở đầu `:root`), không gõ hex trong component. Nút xanh chính là `<Button>` mặc định. Cần màu mới thì thêm token (hiện đã hết hex trong class) (kiểm tương phản ≥ 4,5:1 cho chữ) rồi mới dùng; khối `.dark` chưa được cập nhật.
 
 ## Git safety — hard rules
 

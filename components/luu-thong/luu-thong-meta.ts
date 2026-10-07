@@ -14,7 +14,7 @@ export const TRANG_THAI_PHIEU_MUON: { value: TrangThaiPhieuMuon; label: string; 
 export const TINH_TRANG_TRA: { value: TinhTrangTra; label: string; tone: string }[] = [
   { value: "BINH_THUONG", label: "Bình thường", tone: "bg-primary-soft text-primary-strong" },
   { value: "HU_HONG", label: "Hư hỏng", tone: "bg-destructive-soft text-destructive" },
-  { value: "MAT", label: "Mất", tone: "bg-[#f1e6e6] text-[#8c3b3b]" },
+  { value: "MAT", label: "Mất", tone: "bg-lost-soft text-lost" },
 ]
 
 export const LOAI_PHAT: { value: Schemas["LoaiPhat"]; label: string }[] = [
@@ -30,7 +30,7 @@ export const TRANG_THAI_PHAT: { value: TrangThaiPhat; label: string; tone: strin
 ]
 
 export const TRANG_THAI_DAT_TRUOC: { value: TrangThaiDatTruoc; label: string; tone: string }[] = [
-  { value: "CHO_XU_LY", label: "Chờ xử lý", tone: "bg-[#e8eefb] text-[#3a5fb0]" },
+  { value: "CHO_XU_LY", label: "Chờ xử lý", tone: "bg-hold-soft text-hold" },
   { value: "SAN_SANG_NHAN", label: "Sẵn sàng nhận", tone: "bg-primary-soft text-primary-strong" },
   { value: "DA_NHAN", label: "Đã nhận", tone: "bg-neutral-soft text-muted-foreground" },
   { value: "HUY", label: "Đã hủy", tone: "bg-neutral-soft text-muted-foreground" },

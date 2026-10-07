@@ -6,6 +6,7 @@ import { useParams } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { CalendarPlus, RotateCcw, XCircle } from "lucide-react"
 
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { GiaHanDialog } from "@/components/luu-thong/gia-han-dialog"
 import {
   LOAI_PHAT,
@@ -18,7 +19,6 @@ import { TraSachDialog } from "@/components/luu-thong/tra-sach-dialog"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { phieuMuonApi } from "@/features/phieu-muon/api"
@@ -84,6 +84,79 @@ export default function PhieuMuonDetailPage() {
   const p = query.data
   const dangMuon = p.trangThai === "DANG_MUON"
 
+  const columns: DataColumn<(typeof p.ctPhieuMuons)[number]>[] = [
+    { header: "Mã bản", className: "w-24 font-medium", cell: (c) => c.banSach.maBanSach },
+    { header: "Tên sách", title: true, className: "whitespace-normal", cell: (c) => c.banSach.sach.tenSach },
+    {
+      header: "Hạn trả",
+      className: "w-28",
+      cell: (c) => {
+        const quaHan = isOverdue(c.hanTra, c.ngayTra)
+        return (
+          <span className={quaHan ? "font-medium text-destructive" : "text-muted-foreground"}>
+            {formatDate(c.hanTra)}
+            {quaHan && <span className="ml-1 text-xs">(quá hạn)</span>}
+          </span>
+        )
+      },
+    },
+    {
+      header: "Ngày trả",
+      className: "w-28 text-muted-foreground",
+      cell: (c) =>
+        c.ngayTra ? (
+          <>
+            {formatDate(c.ngayTra)}
+            {c.tinhTrangTra && c.tinhTrangTra !== "BINH_THUONG" && (
+              <div className="mt-1">
+                <StatusPill list={TINH_TRANG_TRA} value={c.tinhTrangTra} />
+              </div>
+            )}
+          </>
+        ) : (
+          "Đang mượn"
+        ),
+    },
+    { header: "Gia hạn", align: "right", className: "w-24", cell: (c) => c.soLanGiaHan },
+    {
+      header: "Phạt",
+      className: "whitespace-normal",
+      cell: (c) =>
+        c.phieuPhats.length === 0
+          ? "—"
+          : c.phieuPhats.map((f) => (
+              <div key={f.id} className="flex flex-wrap items-center justify-end gap-x-1.5 gap-y-0.5 text-xs md:justify-start">
+                <span className="whitespace-nowrap">
+                  {LOAI_PHAT.find((l) => l.value === f.loaiPhat)?.label} {formatVnd(f.soTien)}
+                </span>
+                <StatusPill list={TRANG_THAI_PHAT} value={f.trangThai} />
+              </div>
+            )),
+    },
+    {
+      header: "Thao tác",
+      actions: true,
+      align: "right",
+      className: "w-48",
+      cell: (c) =>
+        c.ngayTra === null &&
+        dangMuon && (
+          <div className="flex justify-end gap-1">
+            <Button size="sm" variant="outline" onClick={() => setGiaHan(c.banSach.maBanSach)}>
+              <CalendarPlus aria-hidden="true" />
+              Gia hạn
+            </Button>
+            {isStaff && (
+              <Button size="sm" onClick={() => setTra(c.banSach.maBanSach)}>
+                <RotateCcw aria-hidden="true" />
+                Trả
+              </Button>
+            )}
+          </div>
+        ),
+    },
+  ]
+
   return (
     <section className="mx-auto w-full max-w-5xl space-y-6">
       <PageHeader
@@ -115,85 +188,14 @@ export default function PhieuMuonDetailPage() {
         <div className="border-b border-border px-4 py-3">
           <h3 className="text-sm font-semibold text-foreground">Sách trong phiếu</h3>
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-24">Mã bản</TableHead>
-              <TableHead>Tên sách</TableHead>
-              <TableHead className="w-28">Hạn trả</TableHead>
-              <TableHead className="w-28">Ngày trả</TableHead>
-              <TableHead className="w-24 text-right">Gia hạn</TableHead>
-              <TableHead>Phạt</TableHead>
-              <TableHead className="w-48 text-right">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {p.ctPhieuMuons.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">
-                  Phiếu chưa có sách.
-                </TableCell>
-              </TableRow>
-            )}
-            {p.ctPhieuMuons.map((c) => {
-              const dangMo = c.ngayTra === null && dangMuon
-              const quaHan = isOverdue(c.hanTra, c.ngayTra)
-              return (
-                <TableRow key={c.id}>
-                  <TableCell className="font-medium">{c.banSach.maBanSach}</TableCell>
-                  <TableCell className="whitespace-normal">{c.banSach.sach.tenSach}</TableCell>
-                  <TableCell className={quaHan ? "font-medium text-destructive" : "text-muted-foreground"}>
-                    {formatDate(c.hanTra)}
-                    {quaHan && <span className="ml-1 text-xs">(quá hạn)</span>}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {c.ngayTra ? (
-                      <>
-                        {formatDate(c.ngayTra)}
-                        {c.tinhTrangTra && c.tinhTrangTra !== "BINH_THUONG" && (
-                          <div className="mt-1">
-                            <StatusPill list={TINH_TRANG_TRA} value={c.tinhTrangTra} />
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      "Đang mượn"
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">{c.soLanGiaHan}</TableCell>
-                  <TableCell className="whitespace-normal">
-                    {c.phieuPhats.length === 0
-                      ? "—"
-                      : c.phieuPhats.map((f) => (
-                          <div key={f.id} className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
-                            <span className="whitespace-nowrap">
-                              {LOAI_PHAT.find((l) => l.value === f.loaiPhat)?.label} {formatVnd(f.soTien)}
-                            </span>
-                            <StatusPill list={TRANG_THAI_PHAT} value={f.trangThai} />
-                          </div>
-                        ))}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {dangMo && (
-                      <div className="flex justify-end gap-1">
-                        <Button size="sm" variant="outline" onClick={() => setGiaHan(c.banSach.maBanSach)}>
-                          <CalendarPlus aria-hidden="true" />
-                          Gia hạn
-                        </Button>
-                        {isStaff && (
-                          <Button size="sm" onClick={() => setTra(c.banSach.maBanSach)}>
-                            <RotateCcw aria-hidden="true" />
-                            Trả
-                          </Button>
-                        )}
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+        <DataTable
+          embedded
+          rows={p.ctPhieuMuons}
+          rowKey={(c) => c.id}
+          errorText="Không tải được chi tiết phiếu."
+          emptyText="Phiếu chưa có sách."
+          columns={columns}
+        />
       </div>
 
       <TraSachDialog key={`tra-${tra}`} open={tra !== null} maBanSach={tra ?? undefined} onClose={() => setTra(null)} />

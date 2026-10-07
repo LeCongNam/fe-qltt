@@ -21,7 +21,7 @@ const config: DanhMucConfig<NhaXuatBan, Schemas["CreateNhaXuatBanDto"]> = {
   ],
   columns: [
     { header: "Mã", cell: (r) => r.maNxb, className: "w-28 font-medium" },
-    { header: "Tên nhà xuất bản", cell: (r) => r.tenNxb },
+    { header: "Tên nhà xuất bản", title: true, cell: (r) => r.tenNxb },
     { header: "Email", cell: (r) => r.email ?? "—", className: "text-muted-foreground" },
     { header: "Điện thoại", cell: (r) => r.sdt ?? "—", className: "text-muted-foreground" },
     { header: "Địa chỉ", cell: (r) => r.diaChi ?? "—", className: "text-muted-foreground" },

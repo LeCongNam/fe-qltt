@@ -19,7 +19,7 @@ const config: DanhMucConfig<TheLoai, Schemas["CreateTheLoaiDto"]> = {
   ],
   columns: [
     { header: "Mã", cell: (r) => r.maTheLoai, className: "w-32 font-medium" },
-    { header: "Tên thể loại", cell: (r) => r.tenTheLoai },
+    { header: "Tên thể loại", title: true, cell: (r) => r.tenTheLoai },
     { header: "Mô tả", cell: (r) => r.moTa ?? "—", className: "text-muted-foreground" },
   ],
   labelOf: (r) => r.tenTheLoai,

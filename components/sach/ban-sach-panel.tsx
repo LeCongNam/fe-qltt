@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Plus } from "lucide-react"
 import { z } from "zod"
 
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { TINH_TRANG_BAN_SACH, type TinhTrangBanSach } from "@/components/sach/sach-meta"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,8 +20,6 @@ import {
 } from "@/components/ui/dialog"
 import { FieldGroup } from "@/components/ui/field"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { sachApi } from "@/features/sach/api"
 import { sachKeys, sachQueries } from "@/features/sach/queries"
@@ -66,6 +65,35 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
 
   const rows = list.data ?? []
 
+  const columns: DataColumn<(typeof rows)[number]>[] = [
+    { header: "Mã bản", title: true, className: "w-32 font-medium", cell: (b) => b.maBanSach },
+    { header: "Vị trí kệ", cell: (b) => b.viTriKe },
+    { header: "Ngày nhập", className: "text-muted-foreground", cell: (b) => formatDate(b.ngayNhap) },
+    {
+      header: "Tình trạng",
+      className: "w-52",
+      cell: (b) => (
+        <Select
+          value={b.tinhTrang}
+          disabled={pendingMa === b.maBanSach}
+          onValueChange={(v) => v && v !== b.tinhTrang && doiTinhTrang.mutate({ ma: b.maBanSach, tinhTrang: v })}
+          items={TINH_TRANG_BAN_SACH.map((t) => ({ value: t.value, label: t.label }))}
+        >
+          <SelectTrigger size="sm" aria-label={`Tình trạng ${b.maBanSach}`} className="w-44 border-input bg-white">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {TINH_TRANG_BAN_SACH.map((t) => (
+              <SelectItem key={t.value} value={t.value}>
+                {t.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ),
+    },
+  ]
+
   return (
     <div className="rounded-lg border border-border bg-white">
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
@@ -78,68 +106,16 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
           Nhập bản sách
         </Button>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-32">Mã bản</TableHead>
-            <TableHead>Vị trí kệ</TableHead>
-            <TableHead>Ngày nhập</TableHead>
-            <TableHead className="w-52">Tình trạng</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {list.isPending && (
-            <TableRow>
-              <TableCell colSpan={4}>
-                <Skeleton className="h-5 w-full" />
-              </TableCell>
-            </TableRow>
-          )}
-          {list.isError && (
-            <TableRow>
-              <TableCell colSpan={4} className="py-8 text-center text-sm text-destructive">
-                <span role="alert">{getApiErrorMessage(list.error, "Không tải được bản sách.")}</span>{" "}
-                <button type="button" className="underline" onClick={() => list.refetch()}>
-                  Thử lại
-                </button>
-              </TableCell>
-            </TableRow>
-          )}
-          {list.isSuccess && rows.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
-                Chưa có bản sách nào.
-              </TableCell>
-            </TableRow>
-          )}
-          {rows.map((b) => (
-            <TableRow key={b.id}>
-              <TableCell className="font-medium">{b.maBanSach}</TableCell>
-              <TableCell>{b.viTriKe}</TableCell>
-              <TableCell className="text-muted-foreground">{formatDate(b.ngayNhap)}</TableCell>
-              <TableCell>
-                <Select
-                  value={b.tinhTrang}
-                  disabled={pendingMa === b.maBanSach}
-                  onValueChange={(v) => v && v !== b.tinhTrang && doiTinhTrang.mutate({ ma: b.maBanSach, tinhTrang: v })}
-                  items={TINH_TRANG_BAN_SACH.map((t) => ({ value: t.value, label: t.label }))}
-                >
-                  <SelectTrigger size="sm" aria-label={`Tình trạng ${b.maBanSach}`} className="w-44 border-input bg-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TINH_TRANG_BAN_SACH.map((t) => (
-                      <SelectItem key={t.value} value={t.value}>
-                        {t.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <DataTable
+        embedded
+        query={list}
+        rows={rows}
+        rowKey={(b) => b.id}
+        errorText="Không tải được bản sách."
+        emptyText="Chưa có bản sách nào."
+        skeletonRows={1}
+        columns={columns}
+      />
 
       <NhapBanSachDialog key={nhapOpen ? "open" : "closed"} sachId={sachId} open={nhapOpen} onClose={() => setNhapOpen(false)} />
     </div>

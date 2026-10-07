@@ -46,6 +46,8 @@ function HeadContent<T>({ column: c }: { column: DataColumn<T> }) {
 /**
  * Bảng dữ liệu dùng chung. Từ `md` trở lên là bảng; dưới `md` mỗi dòng thành một thẻ
  * (tiêu đề + các cặp nhãn/giá trị) để không phải cuộn ngang. Gồm đủ trạng thái tải/lỗi/rỗng.
+ * Không truyền `query` khi dữ liệu đã có sẵn (coi như đã tải xong). `embedded`: bảng nằm trong một khung có sẵn
+ * viền (thẻ có tiêu đề riêng), nên bảng bỏ viền và thẻ mobile có đệm.
  */
 export function DataTable<T>({
   query,
@@ -55,41 +57,46 @@ export function DataTable<T>({
   errorText,
   emptyText,
   skeletonRows = 5,
+  embedded = false,
 }: {
-  query: QueryState
+  query?: QueryState
   rows: T[]
   columns: DataColumn<T>[]
   rowKey: (row: T, index: number) => string | number
   errorText: string
   emptyText: string
   skeletonRows?: number
+  embedded?: boolean
 }) {
+  const isPending = query?.isPending ?? false
+  const isError = query?.isError ?? false
+  const isSuccess = query?.isSuccess ?? true
   const titleCol = columns.find((c) => c.title) ?? columns.find((c) => !c.actions)
   const fieldCols = columns.filter((c) => c !== titleCol && !c.actions)
   const actionCols = columns.filter((c) => c !== titleCol && c.actions)
-  const showRows = query.isSuccess && rows.length > 0
+  const showRows = isSuccess && rows.length > 0
 
-  const retry = (
+  const retry = query && (
     <button type="button" className="underline" onClick={() => query.refetch()}>
       Thử lại
     </button>
   )
 
   // Một vùng thông báo chung cho cả hai chế độ (bảng/thẻ) để trình đọc màn hình biết trạng thái tải, lỗi, số dòng.
-  const liveText = query.isPending
+  const liveText = isPending
     ? "Đang tải dữ liệu"
-    : query.isError
-      ? getApiErrorMessage(query.error, errorText)
+    : isError
+      ? getApiErrorMessage(query?.error, errorText)
       : rows.length === 0
         ? emptyText
         : `${rows.length} dòng`
 
   return (
     <>
-      <p role={query.isError ? "alert" : "status"} className="sr-only">
+      <p role={isError ? "alert" : "status"} className="sr-only">
         {liveText}
       </p>
-      <div aria-busy={query.isPending} className="hidden rounded-lg border border-border bg-white md:block">
+      <div aria-busy={isPending} className={`hidden md:block ${embedded ? "" : "rounded-lg border border-border bg-white"}`}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -105,7 +112,7 @@ export function DataTable<T>({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {query.isPending &&
+            {isPending &&
               Array.from({ length: skeletonRows }, (_, i) => (
                 <TableRow key={i}>
                   <TableCell colSpan={columns.length}>
@@ -113,14 +120,14 @@ export function DataTable<T>({
                   </TableCell>
                 </TableRow>
               ))}
-            {query.isError && (
+            {isError && (
               <TableRow>
                 <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-destructive">
-                  {getApiErrorMessage(query.error, errorText)} {retry}
+                  {getApiErrorMessage(query?.error, errorText)} {retry}
                 </TableCell>
               </TableRow>
             )}
-            {query.isSuccess && rows.length === 0 && (
+            {isSuccess && rows.length === 0 && (
               <TableRow>
                 <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-muted-foreground">
                   {emptyText}
@@ -140,20 +147,20 @@ export function DataTable<T>({
         </Table>
       </div>
 
-      <div aria-busy={query.isPending} className="md:hidden">
-        {query.isPending && (
+      <div aria-busy={isPending} className={embedded ? "p-3 md:hidden" : "md:hidden"}>
+        {isPending && (
           <div className="grid gap-2" aria-hidden="true">
             {Array.from({ length: Math.min(skeletonRows, 4) }, (_, i) => (
               <Skeleton key={i} className="h-24 w-full rounded-lg" />
             ))}
           </div>
         )}
-        {query.isError && (
+        {isError && (
           <p className="rounded-lg border border-border bg-white px-4 py-8 text-center text-sm text-destructive">
-            {getApiErrorMessage(query.error, errorText)} {retry}
+            {getApiErrorMessage(query?.error, errorText)} {retry}
           </p>
         )}
-        {query.isSuccess && rows.length === 0 && (
+        {isSuccess && rows.length === 0 && (
           <p className="rounded-lg border border-border bg-white px-4 py-8 text-center text-sm text-muted-foreground">{emptyText}</p>
         )}
         {showRows && (

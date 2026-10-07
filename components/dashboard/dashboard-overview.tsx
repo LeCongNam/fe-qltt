@@ -48,7 +48,7 @@ function buildChartData(history: LichSuMuonDong[]) {
 }
 
 function loanStatus(r: LichSuMuonDong, today: string) {
-  if (r.ngay_tra) return { label: "Đã trả", tone: "bg-primary-soft text-[#35755f]", Icon: Check }
+  if (r.ngay_tra) return { label: "Đã trả", tone: "bg-primary-soft text-primary-strong", Icon: Check }
   if (isOverdue(r.han_tra, r.ngay_tra)) return { label: "Quá hạn", tone: "bg-destructive-soft text-destructive", Icon: AlertCircle }
   if (r.han_tra.slice(0, 10) === today) return { label: "Đến hạn", tone: "bg-clay-soft text-clay", Icon: Clock3 }
   return { label: "Đang mượn", tone: "bg-warning-soft text-warning", Icon: Clock3 }
@@ -185,7 +185,7 @@ export function DashboardOverview() {
               <span className="text-sm font-semibold tabular-nums text-info">{num(choXuLy)}</span>
             </Link>
           </div>
-          <Link href="/bao-cao" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-[#0e634f]">
+          <Link href="/bao-cao" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-primary-hover">
             Xem báo cáo <ArrowUpRight className="size-3.5" aria-hidden="true" />
           </Link>
         </div>
@@ -263,7 +263,7 @@ export function DashboardOverview() {
       </section>
       <div className="flex items-center justify-between border-t border-border pt-4 text-xs text-faint">
         <span>Thư viện số · Bảng điều khiển</span>
-        <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-[#668f7c]" /> Số liệu đọc trực tiếp từ cơ sở dữ liệu</span>
+        <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-primary/60" /> Số liệu đọc trực tiếp từ cơ sở dữ liệu</span>
       </div>
     </>
   )
