@@ -3,26 +3,18 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { CalendarPlus, Loader2, Plus, XCircle } from "lucide-react"
+import { CalendarPlus, Plus, XCircle } from "lucide-react"
 
 import { GiaHanDialog } from "@/components/luu-thong/gia-han-dialog"
 import { LOAI_PHAT, TINH_TRANG_TRA, TRANG_THAI_DAT_TRUOC, TRANG_THAI_PHAT } from "@/components/luu-thong/luu-thong-meta"
 import { type Column, ReportTable } from "@/components/report-table"
 import { StatusPill } from "@/components/status-pill"
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
 import { apiClient, getApiErrorMessage } from "@/lib/api"
 import { formatDate, formatVnd } from "@/lib/format"
 import { type DatTruocCuaToi, type LichSuMuonCuaToi, type SachDangMuonCuaToi, type TienPhatCuaToi, useMe } from "@/lib/me"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 const phieuLink = (maPhieu: string) => (
   <Link href={`/phieu-muon/${maPhieu}`} className="font-medium text-primary hover:underline">
@@ -137,21 +129,21 @@ export function DatTruocPanel() {
           </Link>
         }
       />
-      <AlertDialog open={huyRow !== null} onOpenChange={(open) => !open && !huy.isPending && setHuyRow(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Hủy đặt trước?</AlertDialogTitle>
-            <AlertDialogDescription>{huyRow ? `${huyRow.ten_sach} — bản đang giữ (nếu có) sẽ được trả lại cho người kế tiếp.` : ""}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={huy.isPending}>Giữ lại</AlertDialogCancel>
-            <Button variant="destructive" disabled={huy.isPending} onClick={() => huyRow && huy.mutate(huyRow)}>
-              {huy.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Hủy đặt trước
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={huyRow !== null}
+        onClose={() => setHuyRow(null)}
+        title="Hủy đặt trước?"
+        description={
+          <>
+            {huyRow ? `${huyRow.ten_sach} — bản đang giữ (nếu có) sẽ được trả lại cho người kế tiếp.` : ""}
+          </>
+        }
+        confirmLabel="Hủy đặt trước"
+        cancelLabel="Giữ lại"
+        destructive
+        pending={huy.isPending}
+        onConfirm={() => huyRow && huy.mutate(huyRow)}
+      />
     </>
   )
 }

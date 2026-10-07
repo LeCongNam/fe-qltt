@@ -3,18 +3,18 @@
 import { useState } from "react"
 import Link from "next/link"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Plus, Search } from "lucide-react"
+import { Plus } from "lucide-react"
 
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, type Paged, type Schemas } from "@/lib/api"
+import { PAGE_SIZE } from "@/lib/constants"
+import { PageHeader } from "@/components/page-header"
+import { SearchForm } from "@/components/search-form"
 
 type SachRow = Schemas["TraCuuSachDto"]
-
-const PAGE_SIZE = 20
 
 const COLUMNS: DataColumn<SachRow>[] = [
   {
@@ -72,46 +72,39 @@ export default function SachPage() {
   // Có từ khóa thì BE trả toàn bộ kết quả, không phân trang.
   const pageCount = tuKhoa ? 1 : Math.max(1, Math.ceil(total / PAGE_SIZE))
 
-  function search(e: React.FormEvent) {
-    e.preventDefault()
+  function search() {
     setPage(1)
     setTuKhoa(input.trim())
   }
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Danh mục</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Sách</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">Tra cứu đầu sách, tác giả và số bản có thể mượn.</p>
-        </div>
-        {isStaff && (
-          <Link
-            href="/sach/moi"
-            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-            Thêm sách
-          </Link>
-        )}
-      </div>
+      <PageHeader
+        eyebrow="Danh mục"
+        title="Sách"
+        description="Tra cứu đầu sách, tác giả và số bản có thể mượn."
+        action={
+          isStaff && (
+            <Link
+              href="/sach/moi"
+              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              Thêm sách
+            </Link>
+          )
+        }
+      />
 
-      <form onSubmit={search} className="mb-4 flex gap-2" role="search">
-        <label className="relative w-full max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
-          <Input
-            aria-label="Tìm theo tên hoặc mô tả sách"
-            placeholder="Tìm theo tên hoặc mô tả sách..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            maxLength={255}
-            className="h-9 rounded-md border-input bg-white pl-9 text-sm"
-          />
-        </label>
-        <Button type="submit" variant="outline">
-          Tìm
-        </Button>
+      <SearchForm
+        value={input}
+        onChange={setInput}
+        onSubmit={search}
+        label="Tìm theo tên hoặc mô tả sách"
+        placeholder="Tìm theo tên hoặc mô tả sách..."
+        maxLength={255}
+        className="mb-4"
+      >
         {tuKhoa && (
           <Button
             type="button"
@@ -125,7 +118,7 @@ export default function SachPage() {
             Xóa tìm kiếm
           </Button>
         )}
-      </form>
+      </SearchForm>
 
       <DataTable
         query={list}

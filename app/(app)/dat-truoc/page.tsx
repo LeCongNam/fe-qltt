@@ -2,21 +2,12 @@
 
 import { useState } from "react"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Loader2, Plus, Search, XCircle } from "lucide-react"
+import { Loader2, Plus, XCircle } from "lucide-react"
 
 import { TRANG_THAI_DAT_TRUOC } from "@/components/luu-thong/luu-thong-meta"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
@@ -26,10 +17,13 @@ import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
+import { PAGE_SIZE } from "@/lib/constants"
+import { PageHeader } from "@/components/page-header"
+import { SearchForm } from "@/components/search-form"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 type DatTruoc = Schemas["DatTruocDto"]
 
-const PAGE_SIZE = 20
 const ALL = "ALL"
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_DAT_TRUOC]
 const HUY_DUOC = ["CHO_XU_LY", "SAN_SANG_NHAN"]
@@ -126,46 +120,34 @@ export default function DatTruocPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Lưu thông</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Đặt trước</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            {isStaff ? "Lượt đặt trước của mọi bạn đọc." : "Lượt đặt trước của bạn. Sách còn bản sẵn sàng thì không cần đặt."}
-          </p>
-        </div>
-        <Button onClick={() => setDatOpen(true)}>
-          <Plus aria-hidden="true" />
-          {isStaff ? "Đặt trước hộ" : "Đặt trước sách"}
-        </Button>
-      </div>
+      <PageHeader
+        eyebrow="Lưu thông"
+        title="Đặt trước"
+        description={isStaff ? "Lượt đặt trước của mọi bạn đọc." : "Lượt đặt trước của bạn. Sách còn bản sẵn sàng thì không cần đặt."}
+        action={
+          <Button onClick={() => setDatOpen(true)}>
+            <Plus aria-hidden="true" />
+            {isStaff ? "Đặt trước hộ" : "Đặt trước sách"}
+          </Button>
+        }
+      />
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
         {isStaff && (
-          <form
-            role="search"
-            className="flex flex-1 gap-2"
-            onSubmit={(e) => {
-              e.preventDefault()
+          <SearchForm
+            value={input}
+            onChange={setInput}
+            onSubmit={() => {
               setPage(1)
               setMaNguoiDung(input.trim())
             }}
-          >
-            <label className="relative w-full max-w-sm">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
-              <Input
-                aria-label="Lọc theo mã người đặt"
-                placeholder="Mã người đặt, ví dụ SV001"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                maxLength={20}
-                className="h-9 rounded-md border-input bg-white pl-9 text-sm"
-              />
-            </label>
-            <Button type="submit" variant="outline">
-              Lọc
-            </Button>
-          </form>
+            label="Lọc theo mã người đặt"
+            placeholder="Mã người đặt, ví dụ SV001"
+            maxLength={20}
+            submitLabel="Lọc"
+            className="flex flex-1 gap-2"
+            fieldClassName="max-w-sm"
+          />
         )}
         <div className="flex gap-2">
           <Select
@@ -218,24 +200,22 @@ export default function DatTruocPage() {
 
       <DatTruocDialog key={datOpen ? "open" : "closed"} open={datOpen} isStaff={isStaff} onClose={() => setDatOpen(false)} />
 
-      <AlertDialog open={huyRow !== null} onOpenChange={(open) => !open && !huy.isPending && setHuyRow(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Hủy đặt trước?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {huyRow ? `“${huyRow.sach.tenSach}”${isStaff ? ` của ${huyRow.nguoiDung.hoTen}` : ""} sẽ bị hủy.` : ""}
-              {huyRow?.trangThai === "SAN_SANG_NHAN" ? " Bản sách đang giữ sẽ được chuyển cho người kế tiếp hoặc trả về kệ." : ""}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={huy.isPending}>Không</AlertDialogCancel>
-            <Button variant="destructive" disabled={huy.isPending} onClick={() => huyRow && huy.mutate(huyRow)}>
-              {huy.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Hủy đặt trước
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={huyRow !== null}
+        onClose={() => setHuyRow(null)}
+        title="Hủy đặt trước?"
+        description={
+          <>
+            {huyRow ? `“${huyRow.sach.tenSach}”${isStaff ? ` của ${huyRow.nguoiDung.hoTen}` : ""} sẽ bị hủy.` : ""}
+                          {huyRow?.trangThai === "SAN_SANG_NHAN" ? " Bản sách đang giữ sẽ được chuyển cho người kế tiếp hoặc trả về kệ." : ""}
+          </>
+        }
+        confirmLabel="Hủy đặt trước"
+        cancelLabel="Không"
+        destructive
+        pending={huy.isPending}
+        onConfirm={() => huyRow && huy.mutate(huyRow)}
+      />
     </section>
   )
 }

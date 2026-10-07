@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { ArrowLeft, CalendarPlus, Loader2, RotateCcw, XCircle } from "lucide-react"
+import { CalendarPlus, RotateCcw, XCircle } from "lucide-react"
 
 import { GiaHanDialog } from "@/components/luu-thong/gia-han-dialog"
 import {
@@ -17,15 +17,6 @@ import {
 } from "@/components/luu-thong/luu-thong-meta"
 import { TraSachDialog } from "@/components/luu-thong/tra-sach-dialog"
 import { StatusPill } from "@/components/status-pill"
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -33,17 +24,11 @@ import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
 import { formatDate, formatVnd } from "@/lib/format"
+import { InfoItem } from "@/components/info-item"
+import { PageHeader } from "@/components/page-header"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 type Phieu = Schemas["PhieuMuonChiTietDto"]
-
-function Info({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="mt-1 text-sm text-foreground">{children || "—"}</dd>
-    </div>
-  )
-}
 
 export default function PhieuMuonDetailPage() {
   const { maPhieu } = useParams<{ maPhieu: string }>()
@@ -105,34 +90,29 @@ export default function PhieuMuonDetailPage() {
 
   return (
     <section className="mx-auto w-full max-w-5xl space-y-6">
-      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          {isStaff && (
-            <Link href="/phieu-muon" className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary">
-              <ArrowLeft className="size-3.5" aria-hidden="true" />
-              Mượn - trả
-            </Link>
-          )}
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Phiếu mượn {p.maPhieu}</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            {p.nguoiDung.hoTen} ({p.nguoiDung.maNguoiDung})
-          </p>
-        </div>
-        {isStaff && dangMuon && (
-          <Button variant="destructive" onClick={() => setConfirmHuy(true)}>
-            <XCircle aria-hidden="true" />
-            Hủy phiếu
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        back={isStaff ? { href: "/phieu-muon", label: "Mượn - trả" } : undefined}
+        title={`Phiếu mượn ${p.maPhieu}`}
+        description={`${p.nguoiDung.hoTen} (${p.nguoiDung.maNguoiDung})`}
+        className="mb-0"
+        action={
+          isStaff &&
+          dangMuon && (
+            <Button variant="destructive" onClick={() => setConfirmHuy(true)}>
+              <XCircle aria-hidden="true" />
+              Hủy phiếu
+            </Button>
+          )
+        }
+      />
 
       <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-border bg-white p-5 sm:grid-cols-4">
-        <Info label="Trạng thái">
+        <InfoItem label="Trạng thái">
           <StatusPill list={TRANG_THAI_PHIEU_MUON} value={p.trangThai} />
-        </Info>
-        <Info label="Ngày mượn">{formatDate(p.ngayMuon)}</Info>
-        <Info label="Người mượn">{p.nguoiDung.hoTen}</Info>
-        <Info label="Cán bộ lập phiếu">{p.nhanVien.hoTen}</Info>
+        </InfoItem>
+        <InfoItem label="Ngày mượn">{formatDate(p.ngayMuon)}</InfoItem>
+        <InfoItem label="Người mượn">{p.nguoiDung.hoTen}</InfoItem>
+        <InfoItem label="Cán bộ lập phiếu">{p.nhanVien.hoTen}</InfoItem>
       </dl>
 
       <div className="rounded-lg border border-border bg-white">
@@ -223,23 +203,21 @@ export default function PhieuMuonDetailPage() {
       <TraSachDialog key={`tra-${tra}`} open={tra !== null} maBanSach={tra ?? undefined} onClose={() => setTra(null)} />
       <GiaHanDialog key={`gh-${giaHan}`} maBanSach={giaHan} onClose={() => setGiaHan(null)} />
 
-      <AlertDialog open={confirmHuy} onOpenChange={(open) => !open && !huy.isPending && setConfirmHuy(false)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Hủy phiếu {p.maPhieu}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Chỉ hủy được phiếu chưa có sách; phiếu đã có sách hãy dùng “Trả”. Hệ thống sẽ từ chối nếu không hợp lệ.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={huy.isPending}>Không</AlertDialogCancel>
-            <Button variant="destructive" disabled={huy.isPending} onClick={() => huy.mutate()}>
-              {huy.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Hủy phiếu
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={confirmHuy}
+        onClose={() => setConfirmHuy(false)}
+        title={
+          <>
+            Hủy phiếu {p.maPhieu}?
+          </>
+        }
+        description="Chỉ hủy được phiếu chưa có sách; phiếu đã có sách hãy dùng “Trả”. Hệ thống sẽ từ chối nếu không hợp lệ."
+        confirmLabel="Hủy phiếu"
+        cancelLabel="Không"
+        destructive
+        pending={huy.isPending}
+        onConfirm={() => huy.mutate()}
+      />
     </section>
   )
 }

@@ -13,6 +13,7 @@ import {
   TopSachPanel,
 } from "@/components/bao-cao/bao-cao-panels"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { PageHeader } from "@/components/page-header"
 
 const REPORTS = [
   { value: "danh-muc-sach", label: "Danh mục sách", desc: "Mọi đầu sách và số bản đang sẵn sàng cho mượn (không tính bản mất/ngừng phục vụ).", Panel: DanhMucSachPanel },
@@ -30,11 +31,11 @@ export default function BaoCaoPage() {
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
-      <div className="mb-6 border-b border-border pb-5">
-        <p className="text-xs font-medium text-muted-foreground">Báo cáo</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Báo cáo thư viện</h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">Số liệu đọc trực tiếp từ các view của cơ sở dữ liệu; có thể xuất từng báo cáo ra CSV.</p>
-      </div>
+      <PageHeader
+        eyebrow="Báo cáo"
+        title="Báo cáo thư viện"
+        description="Số liệu đọc trực tiếp từ các view của cơ sở dữ liệu; có thể xuất từng báo cáo ra CSV."
+      />
 
       <Tabs value={tab} onValueChange={(v) => v && setTab(String(v))} className="min-w-0">
         <div className="overflow-x-auto">

@@ -3,21 +3,12 @@
 import { useState } from "react"
 import Link from "next/link"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Ban, Banknote, Loader2, Search } from "lucide-react"
+import { Ban, Banknote, Loader2 } from "lucide-react"
 
 import { LOAI_PHAT, TRANG_THAI_PHAT } from "@/components/luu-thong/luu-thong-meta"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
@@ -27,10 +18,13 @@ import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
 import { formatDate, formatVnd } from "@/lib/format"
+import { PAGE_SIZE } from "@/lib/constants"
+import { PageHeader } from "@/components/page-header"
+import { SearchForm } from "@/components/search-form"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 type Phat = Schemas["PhieuPhatChiTietDto"]
 
-const PAGE_SIZE = 20
 const ALL = "ALL"
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_PHAT]
 
@@ -136,37 +130,27 @@ export default function PhatPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 border-b border-border pb-5">
-        <p className="text-xs font-medium text-muted-foreground">Lưu thông</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Tiền phạt</h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">Phiếu phạt do hệ thống tự lập khi trả sách quá hạn, hư hỏng hoặc mất.</p>
-      </div>
+      <PageHeader
+        eyebrow="Lưu thông"
+        title="Tiền phạt"
+        description="Phiếu phạt do hệ thống tự lập khi trả sách quá hạn, hư hỏng hoặc mất."
+      />
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
-        <form
-          role="search"
-          className="flex flex-1 gap-2"
-          onSubmit={(e) => {
-            e.preventDefault()
+        <SearchForm
+          value={input}
+          onChange={setInput}
+          onSubmit={() => {
             setPage(1)
             setMaNguoiDung(input.trim())
           }}
-        >
-          <label className="relative w-full max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
-            <Input
-              aria-label="Lọc theo mã người bị phạt"
-              placeholder="Mã người bị phạt, ví dụ SV001"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              maxLength={20}
-              className="h-9 rounded-md border-input bg-white pl-9 text-sm"
-            />
-          </label>
-          <Button type="submit" variant="outline">
-            Lọc
-          </Button>
-        </form>
+          label="Lọc theo mã người bị phạt"
+          placeholder="Mã người bị phạt, ví dụ SV001"
+          maxLength={20}
+          submitLabel="Lọc"
+          className="flex flex-1 gap-2"
+          fieldClassName="max-w-sm"
+        />
         <div className="flex gap-2">
           <Select
             value={trangThai}
@@ -216,25 +200,22 @@ export default function PhatPage() {
 
       <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu phạt" order="mới nhất trước" onPage={setPage} />
 
-      <AlertDialog open={thanhToan !== null} onOpenChange={(open) => !open && !pay.isPending && setThanhToan(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xác nhận đã thu tiền phạt?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {thanhToan
-                ? `${thanhToan.ctPhieuMuon.phieuMuon.nguoiDung.hoTen} nộp ${formatVnd(thanhToan.soTien)} (${LOAI_PHAT.find((l) => l.value === thanhToan.loaiPhat)?.label}).`
-                : ""}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={pay.isPending}>Chưa</AlertDialogCancel>
-            <Button disabled={pay.isPending} onClick={() => thanhToan && pay.mutate(thanhToan)}>
-              {pay.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Đã thu
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={thanhToan !== null}
+        onClose={() => setThanhToan(null)}
+        title="Xác nhận đã thu tiền phạt?"
+        description={
+          <>
+            {thanhToan
+                            ? `${thanhToan.ctPhieuMuon.phieuMuon.nguoiDung.hoTen} nộp ${formatVnd(thanhToan.soTien)} (${LOAI_PHAT.find((l) => l.value === thanhToan.loaiPhat)?.label}).`
+                            : ""}
+          </>
+        }
+        confirmLabel="Đã thu"
+        cancelLabel="Chưa"
+        pending={pay.isPending}
+        onConfirm={() => thanhToan && pay.mutate(thanhToan)}
+      />
 
       <HuyPhatDialog key={huyRow?.id ?? "closed"} row={huyRow} onClose={() => setHuyRow(null)} />
     </section>

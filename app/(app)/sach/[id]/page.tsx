@@ -5,34 +5,19 @@ import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { ArrowLeft, Loader2, Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2 } from "lucide-react"
 
 import { BanSachPanel } from "@/components/sach/ban-sach-panel"
 import { SachForm, type SachChiTiet } from "@/components/sach/sach-form"
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage } from "@/lib/api"
 import { formatVnd } from "@/lib/format"
-
-function Info({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="mt-1 text-sm text-foreground">{children || "—"}</dd>
-    </div>
-  )
-}
+import { InfoItem } from "@/components/info-item"
+import { PageHeader } from "@/components/page-header"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 export default function SachDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -86,67 +71,63 @@ export default function SachDetailPage() {
 
   return (
     <section className="mx-auto w-full max-w-4xl space-y-6">
-      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <Link href="/sach" className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary">
-            <ArrowLeft className="size-3.5" aria-hidden="true" />
-            Sách
-          </Link>
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">{s.tenSach}</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">Mã sách {s.maSach}</p>
-        </div>
-        {isStaff && !editing && (
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setEditing(true)}>
-              <Pencil aria-hidden="true" />
-              Sửa
-            </Button>
-            <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
-              <Trash2 aria-hidden="true" />
-              Xóa
-            </Button>
-          </div>
-        )}
-      </div>
+      <PageHeader
+        back={{ href: "/sach", label: "Sách" }}
+        title={s.tenSach}
+        description={`Mã sách ${s.maSach}`}
+        className="mb-0"
+        action={
+          isStaff &&
+          !editing && (
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setEditing(true)}>
+                <Pencil aria-hidden="true" />
+                Sửa
+              </Button>
+              <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
+                <Trash2 aria-hidden="true" />
+                Xóa
+              </Button>
+            </div>
+          )
+        }
+      />
 
       {editing ? (
         <SachForm sach={s} onSaved={() => setEditing(false)} onCancel={() => setEditing(false)} />
       ) : (
         <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-border bg-white p-5 sm:grid-cols-2">
-          <Info label="ISBN">{s.isbn}</Info>
-          <Info label="Thể loại">{s.theLoai.tenTheLoai}</Info>
-          <Info label="Nhà xuất bản">{s.nhaXuatBan.tenNxb}</Info>
-          <Info label="Năm xuất bản">{s.namXuatBan}</Info>
-          <Info label="Ngôn ngữ">{s.ngonNgu}</Info>
-          <Info label="Giá bìa">{formatVnd(s.giaBia)}</Info>
+          <InfoItem label="ISBN">{s.isbn}</InfoItem>
+          <InfoItem label="Thể loại">{s.theLoai.tenTheLoai}</InfoItem>
+          <InfoItem label="Nhà xuất bản">{s.nhaXuatBan.tenNxb}</InfoItem>
+          <InfoItem label="Năm xuất bản">{s.namXuatBan}</InfoItem>
+          <InfoItem label="Ngôn ngữ">{s.ngonNgu}</InfoItem>
+          <InfoItem label="Giá bìa">{formatVnd(s.giaBia)}</InfoItem>
           <div className="sm:col-span-2">
-            <Info label="Tác giả">{s.sachTacGias.map((x) => x.tacGia.tenTacGia).join(", ")}</Info>
+            <InfoItem label="Tác giả">{s.sachTacGias.map((x) => x.tacGia.tenTacGia).join(", ")}</InfoItem>
           </div>
           <div className="sm:col-span-2">
-            <Info label="Mô tả">{s.moTa}</Info>
+            <InfoItem label="Mô tả">{s.moTa}</InfoItem>
           </div>
         </dl>
       )}
 
       {isStaff && !editing && <BanSachPanel sachId={s.id} />}
 
-      <AlertDialog open={confirmDelete} onOpenChange={(open) => !open && !remove.isPending && setConfirmDelete(false)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xóa sách?</AlertDialogTitle>
-            <AlertDialogDescription>
-              “{s.tenSach}” sẽ bị xóa vĩnh viễn. Sách đã có bản sách hoặc phiếu mượn tham chiếu sẽ bị hệ thống từ chối.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={remove.isPending}>Hủy</AlertDialogCancel>
-            <Button variant="destructive" disabled={remove.isPending} onClick={() => remove.mutate()}>
-              {remove.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Xóa
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        title="Xóa sách?"
+        description={
+          <>
+            “{s.tenSach}” sẽ bị xóa vĩnh viễn. Sách đã có bản sách hoặc phiếu mượn tham chiếu sẽ bị hệ thống từ chối.
+          </>
+        }
+        confirmLabel="Xóa"
+        destructive
+        pending={remove.isPending}
+        onConfirm={() => remove.mutate()}
+      />
     </section>
   )
 }

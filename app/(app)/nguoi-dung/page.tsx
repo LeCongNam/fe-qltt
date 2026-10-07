@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Plus, Search } from "lucide-react"
+import { Plus } from "lucide-react"
 
 import {
   LOAI_NGUOI_DUNG,
@@ -15,12 +15,13 @@ import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import type { NguoiDung } from "@/components/nguoi-dung/nguoi-dung-form"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, type Paged } from "@/lib/api"
+import { PAGE_SIZE } from "@/lib/constants"
+import { PageHeader } from "@/components/page-header"
+import { SearchForm } from "@/components/search-form"
 
-const PAGE_SIZE = 20
 const ALL = "ALL"
 
 const COLUMNS: DataColumn<NguoiDung>[] = [
@@ -75,8 +76,7 @@ export default function NguoiDungPage() {
   const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const filtering = tuKhoa !== "" || loai !== ALL || trangThai !== ALL
 
-  function search(e: React.FormEvent) {
-    e.preventDefault()
+  function search() {
     setPage(1)
     setTuKhoa(input.trim())
   }
@@ -91,38 +91,31 @@ export default function NguoiDungPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Người dùng</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Người dùng &amp; tài khoản</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">Quản lý hồ sơ bạn đọc, cán bộ và tài khoản đăng nhập.</p>
-        </div>
-        <Link
-          href="/add-doc-gia"
-          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
-        >
-          <Plus className="size-4" aria-hidden="true" />
-          Thêm người dùng
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="Người dùng"
+        title="Người dùng &amp; tài khoản"
+        description="Quản lý hồ sơ bạn đọc, cán bộ và tài khoản đăng nhập."
+        action={
+          <Link
+            href="/add-doc-gia"
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+          >
+            <Plus className="size-4" aria-hidden="true" />
+            Thêm người dùng
+          </Link>
+        }
+      />
 
       <div className="mb-4 flex flex-col gap-2 lg:flex-row">
-        <form onSubmit={search} className="flex flex-1 gap-2" role="search">
-          <label className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
-            <Input
-              aria-label="Tìm theo mã, họ tên hoặc email"
-              placeholder="Tìm theo mã, họ tên hoặc email..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              maxLength={160}
-              className="h-9 rounded-md border-input bg-white pl-9 text-sm"
-            />
-          </label>
-          <Button type="submit" variant="outline">
-            Tìm
-          </Button>
-        </form>
+        <SearchForm
+          value={input}
+          onChange={setInput}
+          onSubmit={search}
+          label="Tìm theo mã, họ tên hoặc email"
+          placeholder="Tìm theo mã, họ tên hoặc email..."
+          maxLength={160}
+          className="flex flex-1 gap-2"
+        />
         <div className="flex gap-2">
           <Select
             value={loai}

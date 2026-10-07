@@ -11,6 +11,7 @@ import { BanSachPicker } from "@/components/phieu-muon/ban-sach-picker"
 import { type NguoiMuon, NguoiMuonPicker } from "@/components/phieu-muon/nguoi-muon-picker"
 import { toast } from "@/components/ui/toast"
 import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { PageHeader } from "@/components/page-header"
 
 export default function LapPhieuMuonPage() {
   const router = useRouter()
@@ -43,13 +44,11 @@ export default function LapPhieuMuonPage() {
 
   return (
     <section className="mx-auto w-full max-w-3xl">
-      <div className="mb-7 border-b border-border pb-5">
-        <p className="text-xs font-medium text-muted-foreground">Mượn - trả</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Lập phiếu mượn</h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          Hệ thống kiểm tra điều kiện mượn (số sách tối đa, nợ phạt, quá hạn...) khi lập phiếu; một cuốn bị từ chối thì cả phiếu không được tạo.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Mượn - trả"
+        title="Lập phiếu mượn"
+        description="Hệ thống kiểm tra điều kiện mượn (số sách tối đa, nợ phạt, quá hạn...) khi lập phiếu; một cuốn bị từ chối thì cả phiếu không được tạo."
+      />
 
       <form
         className="space-y-6"

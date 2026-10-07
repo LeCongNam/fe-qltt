@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
-import { ArrowLeft, KeyRound, Loader2, LockKeyhole, LockKeyholeOpen, Pencil } from "lucide-react"
+import { KeyRound, Loader2, LockKeyhole, LockKeyholeOpen, Pencil } from "lucide-react"
 import { z } from "zod"
 
 import { NguoiDungForm } from "@/components/nguoi-dung/nguoi-dung-form"
@@ -22,15 +22,6 @@ import {
   type VaiTroTaiKhoan,
 } from "@/components/nguoi-dung/nguoi-dung-meta"
 import { StatusPill } from "@/components/status-pill"
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -48,18 +39,12 @@ import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
+import { InfoItem } from "@/components/info-item"
+import { PageHeader } from "@/components/page-header"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 type ChiTiet = Schemas["NguoiDungChiTietDto"]
 type TaiKhoan = Schemas["TaiKhoanCongKhaiDto"]
-
-function Info({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="mt-1 text-sm text-foreground">{children || "—"}</dd>
-    </div>
-  )
-}
 
 export default function NguoiDungDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -100,33 +85,31 @@ export default function NguoiDungDetailPage() {
 
   return (
     <section className="mx-auto w-full max-w-4xl space-y-6">
-      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <Link href="/nguoi-dung" className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary">
-            <ArrowLeft className="size-3.5" aria-hidden="true" />
-            Người dùng
-          </Link>
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">{u.hoTen}</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">Mã người dùng {u.maNguoiDung}</p>
-        </div>
-        {!editing && (
-          <Button variant="outline" onClick={() => setEditing(true)}>
-            <Pencil aria-hidden="true" />
-            Sửa thông tin
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        back={{ href: "/nguoi-dung", label: "Người dùng" }}
+        title={u.hoTen}
+        description={`Mã người dùng ${u.maNguoiDung}`}
+        className="mb-0"
+        action={
+          !editing && (
+            <Button variant="outline" onClick={() => setEditing(true)}>
+              <Pencil aria-hidden="true" />
+              Sửa thông tin
+            </Button>
+          )
+        }
+      />
 
       {editing ? (
         <NguoiDungForm nguoiDung={u} onSaved={() => setEditing(false)} onCancel={() => setEditing(false)} />
       ) : (
         <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-border bg-white p-5 sm:grid-cols-2">
-          <Info label="Loại người dùng">{labelOf(LOAI_NGUOI_DUNG, u.loaiNguoiDung)}</Info>
-          <Info label="Ngày tạo">{formatDate(u.createdAt)}</Info>
-          <Info label="Email">{u.email}</Info>
-          <Info label="Số điện thoại">{u.sdt}</Info>
+          <InfoItem label="Loại người dùng">{labelOf(LOAI_NGUOI_DUNG, u.loaiNguoiDung)}</InfoItem>
+          <InfoItem label="Ngày tạo">{formatDate(u.createdAt)}</InfoItem>
+          <InfoItem label="Email">{u.email}</InfoItem>
+          <InfoItem label="Số điện thoại">{u.sdt}</InfoItem>
           <div className="sm:col-span-2">
-            <Info label="Khoa / đơn vị">{u.khoaDonVi}</Info>
+            <InfoItem label="Khoa / đơn vị">{u.khoaDonVi}</InfoItem>
           </div>
         </dl>
       )}
@@ -198,31 +181,29 @@ function TrangThaiCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin:
         </div>
       </div>
 
-      <AlertDialog open={target !== null} onOpenChange={(open) => !open && !doi.isPending && setTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Đổi trạng thái sang “{target ? labelOf(TRANG_THAI_NGUOI_DUNG, target) : ""}”?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {target !== null && target !== "HOAT_DONG"
-                ? "Người dùng sẽ không thể mượn hoặc đặt sách và tài khoản đăng nhập (nếu có) sẽ bị khóa tự động. "
-                : ""}
-              {target === "HOAT_DONG" && u.taiKhoan?.trangThai === "KHOA"
-                ? "Tài khoản đăng nhập vẫn đang khóa; quản trị cần mở lại riêng ở mục Tài khoản. "
-                : ""}
-              Thao tác này được ghi nhật ký.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={doi.isPending}>Hủy</AlertDialogCancel>
-            <Button disabled={doi.isPending} onClick={() => target && doi.mutate(target)}>
-              {doi.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Xác nhận
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={target !== null}
+        onClose={() => setTarget(null)}
+        title={
+          <>
+            Đổi trạng thái sang “{target ? labelOf(TRANG_THAI_NGUOI_DUNG, target) : ""}”?
+          </>
+        }
+        description={
+          <>
+            {target !== null && target !== "HOAT_DONG"
+                            ? "Người dùng sẽ không thể mượn hoặc đặt sách và tài khoản đăng nhập (nếu có) sẽ bị khóa tự động. "
+                            : ""}
+                          {target === "HOAT_DONG" && u.taiKhoan?.trangThai === "KHOA"
+                            ? "Tài khoản đăng nhập vẫn đang khóa; quản trị cần mở lại riêng ở mục Tài khoản. "
+                            : ""}
+                          Thao tác này được ghi nhật ký.
+          </>
+        }
+        confirmLabel="Xác nhận"
+        pending={doi.isPending}
+        onConfirm={() => target && doi.mutate(target)}
+      />
     </div>
   )
 }
@@ -285,11 +266,11 @@ function TaiKhoanCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin: 
       {tk ? (
         <>
           <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3">
-            <Info label="Tên đăng nhập">{tk.tenDangNhap}</Info>
-            <Info label="Vai trò">{labelOf(VAI_TRO, tk.vaiTro)}</Info>
-            <Info label="Trạng thái">
+            <InfoItem label="Tên đăng nhập">{tk.tenDangNhap}</InfoItem>
+            <InfoItem label="Vai trò">{labelOf(VAI_TRO, tk.vaiTro)}</InfoItem>
+            <InfoItem label="Trạng thái">
               <StatusPill list={TRANG_THAI_TAI_KHOAN} value={tk.trangThai} />
-            </Info>
+            </InfoItem>
           </dl>
           {moBiChan && (
             <p className="mt-3 text-xs text-warning">

@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/hooks/use-auth"
 import { formatVnd } from "@/lib/format"
 import { type DatTruocCuaToi, type SachDangMuonCuaToi, type TienPhatCuaToi, useMe } from "@/lib/me"
+import { PageHeader } from "@/components/page-header"
 
 const SECTIONS = [
   { value: "dang-muon", label: "Đang mượn", desc: "Sách bạn đang giữ. Gia hạn được khi chưa quá hạn, chưa hết lượt và không có người đặt trước.", Panel: SachDangMuonPanel },
@@ -31,13 +32,11 @@ export default function MePage() {
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
-      <div className="mb-6 border-b border-border pb-5">
-        <p className="text-xs font-medium text-muted-foreground">Cá nhân</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Của tôi</h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {user ? `${user.hoTen} — ` : ""}sách đang mượn, đặt trước, tiền phạt và lịch sử của riêng bạn.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Cá nhân"
+        title="Của tôi"
+        description={<>{user ? `${user.hoTen} — ` : ""}sách đang mượn, đặt trước, tiền phạt và lịch sử của riêng bạn.</>}
+      />
 
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <MetricCard

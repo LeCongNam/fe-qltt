@@ -19,11 +19,7 @@ import {
 } from "@/components/ui/sidebar"
 import { logout, useAuth } from "@/hooks/use-auth"
 import { findNavLabel } from "@/lib/navigation"
-
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/)
-  return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) ?? "").toUpperCase()
-}
+import { initials } from "@/lib/format"
 
 export function LibraryDashboard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()

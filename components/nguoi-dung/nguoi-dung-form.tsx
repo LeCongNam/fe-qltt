@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
 import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { TextField } from "@/components/form/text-field"
 
 const schema = z.object({
   maNguoiDung: z.string().trim().min(1, "Vui lòng nhập mã người dùng.").max(20, "Mã người dùng tối đa 20 ký tự."),
@@ -91,31 +92,24 @@ export function NguoiDungForm({
         <FieldLegend variant="label" className="text-ink">Thông tin người dùng</FieldLegend>
         <FieldDescription>Các trường có dấu * là bắt buộc.</FieldDescription>
         <FieldGroup className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
-          <Controller
+          <TextField
+            control={form.control}
             name="maNguoiDung"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="nd-maNguoiDung">
-                  Mã người dùng <span aria-hidden="true" className="text-destructive">*</span>
-                </FieldLabel>
-                <Input {...field} id="nd-maNguoiDung" aria-invalid={fieldState.invalid} maxLength={20} placeholder="Ví dụ: SV2026001" className={inputClass} />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            )}
+            label="Mã người dùng"
+            required
+            id="nd-maNguoiDung"
+            maxLength={20}
+            placeholder="Ví dụ: SV2026001"
           />
-          <Controller
-            name="hoTen"
+          <TextField
             control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="nd-hoTen">
-                  Họ và tên <span aria-hidden="true" className="text-destructive">*</span>
-                </FieldLabel>
-                <Input {...field} id="nd-hoTen" aria-invalid={fieldState.invalid} maxLength={160} autoComplete="name" placeholder="Nhập họ và tên" className={inputClass} />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            )}
+            name="hoTen"
+            label="Họ và tên"
+            required
+            id="nd-hoTen"
+            maxLength={160}
+            autoComplete="name"
+            placeholder="Nhập họ và tên"
           />
           <Controller
             name="loaiNguoiDung"
@@ -156,27 +150,23 @@ export function NguoiDungForm({
               </Field>
             )}
           />
-          <Controller
+          <TextField
+            control={form.control}
             name="sdt"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="nd-sdt">Số điện thoại</FieldLabel>
-                <Input {...field} id="nd-sdt" type="tel" aria-invalid={fieldState.invalid} maxLength={20} autoComplete="tel" placeholder="Nhập số điện thoại" className={inputClass} />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            )}
+            label="Số điện thoại"
+            id="nd-sdt"
+            type="tel"
+            maxLength={20}
+            autoComplete="tel"
+            placeholder="Nhập số điện thoại"
           />
-          <Controller
-            name="khoaDonVi"
+          <TextField
             control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="nd-khoaDonVi">Khoa / đơn vị</FieldLabel>
-                <Input {...field} id="nd-khoaDonVi" aria-invalid={fieldState.invalid} maxLength={160} placeholder="Ví dụ: Khoa Công nghệ thông tin" className={inputClass} />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            )}
+            name="khoaDonVi"
+            label="Khoa / đơn vị"
+            id="nd-khoaDonVi"
+            maxLength={160}
+            placeholder="Ví dụ: Khoa Công nghệ thông tin"
           />
         </FieldGroup>
       </FieldSet>

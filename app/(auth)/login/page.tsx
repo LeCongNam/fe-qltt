@@ -2,19 +2,19 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { BookOpen } from "lucide-react"
 import { z } from "zod"
 
 import { FullPageSpinner } from "@/components/auth/auth-guard"
 import { Button } from "@/components/ui/button"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import { FieldGroup } from "@/components/ui/field"
 import { toast } from "@/components/ui/toast"
 import { login, useAuth } from "@/hooks/use-auth"
 import { getApiErrorMessage } from "@/lib/api"
 import type { VaiTro } from "@/lib/auth-store"
+import { TextField } from "@/components/form/text-field"
 
 const loginSchema = z.object({
   tenDangNhap: z.string().trim().min(1, "Vui lòng nhập tên đăng nhập.").max(80, "Tối đa 80 ký tự."),
@@ -69,27 +69,21 @@ export default function LoginPage() {
 
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <FieldGroup className="gap-4">
-            <Controller
+            <TextField
+              control={form.control}
               name="tenDangNhap"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Tên đăng nhập</FieldLabel>
-                  <Input {...field} id={field.name} aria-invalid={fieldState.invalid} autoComplete="username" autoFocus maxLength={80} className="h-10 rounded-md border-input bg-white text-sm" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
+              label="Tên đăng nhập"
+              autoComplete="username"
+              autoFocus
+              maxLength={80}
             />
-            <Controller
-              name="matKhau"
+            <TextField
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor={field.name}>Mật khẩu</FieldLabel>
-                  <Input {...field} id={field.name} type="password" aria-invalid={fieldState.invalid} autoComplete="current-password" maxLength={72} className="h-10 rounded-md border-input bg-white text-sm" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
+              name="matKhau"
+              label="Mật khẩu"
+              type="password"
+              autoComplete="current-password"
+              maxLength={72}
             />
             <Button type="submit" disabled={form.formState.isSubmitting} className="h-10 w-full">
               {form.formState.isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}

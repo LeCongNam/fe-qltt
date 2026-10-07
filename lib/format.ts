@@ -10,3 +10,9 @@ export function formatVnd(value: string | number | null | undefined) {
   if (value === null || value === undefined || value === "") return "—"
   return `${new Intl.NumberFormat("vi-VN").format(Number(value))} ₫`
 }
+
+/** Chữ cái đầu của họ và tên (hoặc 2 ký tự đầu nếu chỉ có một từ), viết hoa; dùng cho avatar. */
+export function initials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) ?? "").toUpperCase()
+}

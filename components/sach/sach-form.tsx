@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
 import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { TextField } from "@/components/form/text-field"
 
 export type SachChiTiet = Schemas["SachChiTietDto"]
 
@@ -159,29 +160,19 @@ export function SachForm({
       <FieldSet className="border-b border-border pb-7">
         <FieldDescription>Các trường có dấu * là bắt buộc.</FieldDescription>
         <FieldGroup className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
-          <Controller
+          <TextField
+            control={form.control}
             name="maSach"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>
-                  Mã sách <span aria-hidden="true" className="text-destructive">*</span>
-                </FieldLabel>
-                <Input {...field} id={field.name} aria-invalid={fieldState.invalid} maxLength={20} placeholder="Ví dụ: S016" className={inputClass} />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            )}
+            label="Mã sách"
+            required
+            maxLength={20}
+            placeholder="Ví dụ: S016"
           />
-          <Controller
-            name="isbn"
+          <TextField
             control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>ISBN</FieldLabel>
-                <Input {...field} id={field.name} aria-invalid={fieldState.invalid} maxLength={20} className={inputClass} />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            )}
+            name="isbn"
+            label="ISBN"
+            maxLength={20}
           />
           <Controller
             name="tenSach"
@@ -286,16 +277,12 @@ export function SachForm({
               </Field>
             )}
           />
-          <Controller
-            name="giaBia"
+          <TextField
             control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Giá bìa (VND)</FieldLabel>
-                <Input {...field} id={field.name} inputMode="decimal" aria-invalid={fieldState.invalid} placeholder="Ví dụ: 85000" className={inputClass} />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            )}
+            name="giaBia"
+            label="Giá bìa (VND)"
+            inputMode="decimal"
+            placeholder="Ví dụ: 85000"
           />
           <Controller
             name="moTa"

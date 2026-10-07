@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getApiErrorMessage } from "@/lib/api"
 import { useDemoList, type DemoLoai, type DemoMuc } from "@/lib/demo"
+import { PageHeader } from "@/components/page-header"
 
 const LOAI: { value: DemoLoai; label: string; desc: string }[] = [
   { value: "PROCEDURE", label: "Stored Procedure", desc: "Procedure nghiệp vụ: gọi bằng CALL, DB tự kiểm tra và ghi nhiều bảng trong một transaction." },
@@ -52,13 +53,11 @@ export default function DemoPage() {
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
-      <div className="mb-6 border-b border-border pb-5">
-        <p className="text-xs font-medium text-muted-foreground">Demo</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Demo xử lý thông tin</h2>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          Mỗi mục đi qua 5 bước: bài toán, câu SQL, bảng liên quan, thực thi, xem lại bảng/output. Mọi dữ liệu đều đọc trực tiếp từ cơ sở dữ liệu.
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Demo"
+        title="Demo xử lý thông tin"
+        description="Mỗi mục đi qua 5 bước: bài toán, câu SQL, bảng liên quan, thực thi, xem lại bảng/output. Mọi dữ liệu đều đọc trực tiếp từ cơ sở dữ liệu."
+      />
 
       {list.isError ? (
         <p role="alert" className="text-sm text-destructive">{getApiErrorMessage(list.error, "Không tải được danh sách demo.")}</p>

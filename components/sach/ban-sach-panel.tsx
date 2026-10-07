@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Controller, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2, Plus } from "lucide-react"
 import { z } from "zod"
@@ -17,14 +17,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+import { FieldGroup } from "@/components/ui/field"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
+import { TextField } from "@/components/form/text-field"
 
 type BanSach = Schemas["BanSachDto"]
 
@@ -189,29 +189,22 @@ function NhapBanSachDialog({ sachId, open, onClose }: { sachId: string; open: bo
         </DialogHeader>
         <form onSubmit={form.handleSubmit((v) => nhap.mutate(v))} noValidate className="grid gap-4">
           <FieldGroup className="grid gap-3">
-            <Controller
+            <TextField
+              control={form.control}
               name="soBan"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="bs-soBan">Số bản nhập</FieldLabel>
-                  <Input {...field} id="bs-soBan" inputMode="numeric" maxLength={3} aria-invalid={fieldState.invalid} className="h-10 rounded-md border-input bg-white text-sm" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
+              label="Số bản nhập"
+              id="bs-soBan"
+              inputMode="numeric"
+              maxLength={3}
             />
-            <Controller
-              name="viTriKe"
+            <TextField
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="bs-viTriKe">
-                    Vị trí kệ <span aria-hidden="true" className="text-destructive">*</span>
-                  </FieldLabel>
-                  <Input {...field} id="bs-viTriKe" maxLength={50} aria-invalid={fieldState.invalid} placeholder="Ví dụ: A1-03" className="h-10 rounded-md border-input bg-white text-sm" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
+              name="viTriKe"
+              label="Vị trí kệ"
+              required
+              id="bs-viTriKe"
+              maxLength={50}
+              placeholder="Ví dụ: A1-03"
             />
           </FieldGroup>
           <DialogFooter>

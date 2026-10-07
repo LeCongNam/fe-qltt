@@ -8,15 +8,6 @@ import { Loader2, Pencil, Plus, Trash2 } from "lucide-react"
 import { z } from "zod"
 
 import { Pager } from "@/components/pager"
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -40,8 +31,9 @@ import {
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Paged } from "@/lib/api"
-
-const PAGE_SIZE = 20
+import { PAGE_SIZE } from "@/lib/constants"
+import { PageHeader } from "@/components/page-header"
+import { ConfirmDialog } from "@/components/confirm-dialog"
 
 export type DanhMucField = {
   name: string
@@ -149,19 +141,19 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
 
   return (
     <section className="mx-auto w-full max-w-5xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Danh mục</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">{config.title}</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">{config.description}</p>
-        </div>
-        {isStaff && (
-          <Button onClick={() => setEditing("new")}>
-            <Plus aria-hidden="true" />
-            Thêm {singular}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        eyebrow="Danh mục"
+        title={config.title}
+        description={config.description}
+        action={
+          isStaff && (
+            <Button onClick={() => setEditing("new")}>
+              <Plus aria-hidden="true" />
+              Thêm {singular}
+            </Button>
+          )
+        }
+      />
 
       <div className="rounded-lg border border-border bg-white">
         <Table>
@@ -250,27 +242,24 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
         onSaved={() => queryClient.invalidateQueries({ queryKey: [endpoint] })}
       />
 
-      <AlertDialog open={deleting !== null} onOpenChange={(open) => !open && !remove.isPending && setDeleting(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Xóa {singular}?</AlertDialogTitle>
-            <AlertDialogDescription>
-              {deleting ? `“${config.labelOf(deleting)}” sẽ bị xóa vĩnh viễn.` : ""} Nếu còn sách tham chiếu, hệ thống sẽ từ chối.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={remove.isPending}>Hủy</AlertDialogCancel>
-            <Button
-              variant="destructive"
-              disabled={remove.isPending}
-              onClick={() => deleting && remove.mutate(deleting)}
-            >
-              {remove.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Xóa
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ConfirmDialog
+        open={deleting !== null}
+        onClose={() => setDeleting(null)}
+        title={
+          <>
+            Xóa {singular}?
+          </>
+        }
+        description={
+          <>
+            {deleting ? `“${config.labelOf(deleting)}” sẽ bị xóa vĩnh viễn.` : ""} Nếu còn sách tham chiếu, hệ thống sẽ từ chối.
+          </>
+        }
+        confirmLabel="Xóa"
+        destructive
+        pending={remove.isPending}
+        onConfirm={() => deleting && remove.mutate(deleting)}
+      />
     </section>
   )
 }

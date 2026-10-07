@@ -23,13 +23,9 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/hooks/use-auth"
 import { canSee, isActivePath, navigationGroups } from "@/lib/navigation"
+import { initials } from "@/lib/format"
 
 const ROLE_LABEL = { ADMIN: "Quản trị viên", THU_THU: "Thủ thư", BAN_DOC: "Bạn đọc" } as const
-
-function initials(name: string) {
-  const parts = name.trim().split(/\s+/)
-  return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) ?? "").toUpperCase()
-}
 
 export function LibrarySidebar() {
   const { isMobile, setOpenMobile } = useSidebar()

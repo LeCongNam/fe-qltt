@@ -29,7 +29,7 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 | C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
 | C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
 | C3 | Đưa màu hex cứng vào theme token | P2 | Đã hoàn thành (còn 19 màu lẻ) |
-| C4 | Tách component dùng chung (lặp code) | P2 | Chưa thực hiện |
+| C4 | Tách component dùng chung (lặp code) | P2 | Đã hoàn thành (trừ `Avatar`) |
 | C5 | Tầng API có kiểu: `openapi-fetch`, key factory, `.gitattributes` | P2 | Chưa thực hiện |
 | C6 | Tách các trang quá lớn | P3 | Chưa thực hiện |
 | C7 | Select giới hạn 100 dòng: combobox tìm phía server | P3 | Chưa thực hiện |
@@ -154,9 +154,16 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 - **Kiểm chứng:** `tsc` + `eslint` sạch; xem trên trình duyệt `/`, `/phat`, `/bao-cao`, dialog đặt trước: bố cục và màu giữ như cũ, vòng focus ô nhập đổi sang xanh. Chưa xem lại toàn bộ trang (login, `/me`, `/demo`, mobile) và chưa đo lại tương phản bằng công cụ sau khi gộp màu.
 
 ### C4 — Component dùng chung (P2)
-- **Trạng thái:** Chưa thực hiện
-- Đang lặp: `Info()` ở 3 file (`sach/[id]`, `nguoi-dung/[id]`, `phieu-muon/[maPhieu]`); `initials()` ở 2 file (`library-sidebar`, `library-dashboard`); `PAGE_SIZE = 20` ở 6 nơi; phân trang viết tay ở `sach/page.tsx`, `nguoi-dung/page.tsx`, `danh-muc-page.tsx` trong khi `components/pager.tsx` đã có (dùng ở `phat`, `dat-truoc`, `phieu-muon`, `report-table`); khối `Controller` + `Field` + `FieldError` (sach-form 10, nguoi-dung-form 6…); header trang, ô tìm kiếm, dialog xác nhận xóa.
-- Việc cần làm: tách `PageHeader`, `SearchBar`, `ConfirmDialog`, `InfoItem`, `TextField`, `Avatar/initials`; dùng `Pager` thống nhất; gom hằng `PAGE_SIZE`.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt). Ghi chú cũ về phân trang viết tay đã lỗi thời: `Pager` đã dùng thống nhất từ U3.
+- **Component mới:**
+  - `components/page-header.tsx` `PageHeader({ eyebrow | back, title, description, action, className })`: thay khối tiêu đề trang lặp ở 15 nơi (12 trang/`DanhMucPage` và 3 trang chi tiết dùng `back` + `className="mb-0"`; `mb-7` ở 3 trang form thống nhất thành `mb-6`).
+  - `components/info-item.tsx` `InfoItem`: thay `Info()` ở 3 trang chi tiết.
+  - `components/search-form.tsx` `SearchForm({ value, onChange, onSubmit, label, placeholder, maxLength, submitLabel, className, fieldClassName, children })`: ô tìm/lọc + nút gửi (không gọi API mỗi lần gõ), dùng ở `/sach`, `/nguoi-dung`, `/phat`, `/dat-truoc`, `/phieu-muon`. `MaNguoiDungFilter` trong `bao-cao-panels.tsx` giữ riêng (nút cỡ `sm`, ô `w-64`).
+  - `components/confirm-dialog.tsx` `ConfirmDialog({ open, onClose, title, description, confirmLabel, cancelLabel, destructive, pending, onConfirm })`: thay 7 `AlertDialog` (xóa sách, danh mục, hủy phiếu/đặt trước, thu tiền, đổi trạng thái người dùng, hủy đặt trước ở `/me`). Không đóng được khi `pending`.
+  - `components/form/text-field.tsx` `TextField({ control, name, label, required, id, ...inputProps })`: `Controller` + `Field` + `FieldLabel` + `Input` + `FieldError` cho ô nhập một dòng; dùng ở `nguoi-dung-form` (5), `sach-form` (4), `ban-sach-panel` (2), `nguoi-dung/[id]` (1), `login` (2). Select, Textarea, Checkbox và các ô có `FieldDescription` vẫn viết `Controller` trực tiếp.
+- **Hằng/hàm:** `lib/constants.ts` `PAGE_SIZE = 20` (thay 6 bản khai báo; `report-table.tsx` giữ `PAGE_SIZE = 15` riêng vì phân trang phía FE); `initials()` chuyển sang `lib/format.ts` (thay 2 bản).
+- **Chưa làm:** `Avatar` (chỉ còn là `<div>` chữ cái đầu ở sidebar và header, tách `initials` là đủ); `TextareaField`/`SelectField` (mỗi loại chỉ 1–3 chỗ).
+- **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU): `/nguoi-dung`, `/phieu-muon` (tiêu đề + 2 nút + ô lọc), `/sach/7` (nút quay lại, hộp xác nhận xóa, form sửa với `TextField`) hiển thị đúng. Chưa bấm xác nhận thật ở các hộp thoại, chưa thử lỗi validate của `TextField`, `/login`, `/dat-truoc`, `/phat` và mobile.
 
 ### C5 — Tầng API có kiểu (P2)
 - **Trạng thái:** Chưa thực hiện

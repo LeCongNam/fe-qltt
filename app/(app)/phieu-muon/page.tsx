@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
-import { Plus, RotateCcw, Search } from "lucide-react"
+import { Plus, RotateCcw } from "lucide-react"
 
 import { TRANG_THAI_PHIEU_MUON, isOverdue } from "@/components/luu-thong/luu-thong-meta"
 import { TraSachDialog } from "@/components/luu-thong/tra-sach-dialog"
@@ -11,15 +11,16 @@ import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, type Paged, type Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
+import { PAGE_SIZE } from "@/lib/constants"
+import { PageHeader } from "@/components/page-header"
+import { SearchForm } from "@/components/search-form"
 
 type Phieu = Schemas["PhieuMuonChiTietDto"]
 
-const PAGE_SIZE = 20
 const ALL = "ALL"
 const COLUMNS: DataColumn<Phieu>[] = [
   {
@@ -90,52 +91,42 @@ export default function PhieuMuonPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-xs font-medium text-muted-foreground">Lưu thông</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Mượn - trả</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">Lập phiếu mượn, gia hạn và nhận trả sách.</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setTraOpen(true)}>
-            <RotateCcw aria-hidden="true" />
-            Trả sách nhanh
-          </Button>
-          <Link
-            href="/phieu-muon/moi"
-            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
-          >
-            <Plus className="size-4" aria-hidden="true" />
-            Lập phiếu mượn
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow="Lưu thông"
+        title="Mượn - trả"
+        description="Lập phiếu mượn, gia hạn và nhận trả sách."
+        action={
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setTraOpen(true)}>
+              <RotateCcw aria-hidden="true" />
+              Trả sách nhanh
+            </Button>
+            <Link
+              href="/phieu-muon/moi"
+              className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              Lập phiếu mượn
+            </Link>
+          </div>
+        }
+      />
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
-        <form
-          role="search"
-          className="flex flex-1 gap-2"
-          onSubmit={(e) => {
-            e.preventDefault()
+        <SearchForm
+          value={input}
+          onChange={setInput}
+          onSubmit={() => {
             setPage(1)
             setMaNguoiDung(input.trim())
           }}
-        >
-          <label className="relative w-full max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
-            <Input
-              aria-label="Lọc theo mã người mượn"
-              placeholder="Mã người mượn, ví dụ SV001"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              maxLength={20}
-              className="h-9 rounded-md border-input bg-white pl-9 text-sm"
-            />
-          </label>
-          <Button type="submit" variant="outline">
-            Lọc
-          </Button>
-        </form>
+          label="Lọc theo mã người mượn"
+          placeholder="Mã người mượn, ví dụ SV001"
+          maxLength={20}
+          submitLabel="Lọc"
+          className="flex flex-1 gap-2"
+          fieldClassName="max-w-sm"
+        />
         <div className="flex gap-2">
           <Select
             value={trangThai}
