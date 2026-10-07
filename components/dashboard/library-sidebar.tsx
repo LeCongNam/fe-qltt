@@ -61,14 +61,14 @@ export function LibrarySidebar() {
           </div>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <p className="truncate text-sm font-semibold text-[#1b2c27]">Thư viện số</p>
-            <p className="mt-0.5 text-xs text-[#78847d]">QUẢN TRỊ HỆ THỐNG</p>
+            <p className="mt-0.5 text-xs text-[#5f6b64]">QUẢN TRỊ HỆ THỐNG</p>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent className="px-2">
         {groups.map((group) => (
           <SidebarGroup key={group.label} className="px-2 py-1">
-            <SidebarGroupLabel className="px-2 text-[10px] font-semibold tracking-[0.08em] text-[#89938d]">
+            <SidebarGroupLabel className="px-2 text-[11px] font-semibold tracking-[0.08em] text-[#66736c]">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -121,9 +121,9 @@ export function LibrarySidebar() {
           </div>
           <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
             <p className="truncate text-xs font-semibold text-[#283831]">{user?.hoTen}</p>
-            <p className="truncate text-[11px] text-[#78847d]">{user ? ROLE_LABEL[user.vaiTro] : ""}</p>
+            <p className="truncate text-xs text-[#5f6b64]">{user ? ROLE_LABEL[user.vaiTro] : ""}</p>
           </div>
-          <Settings2 className="size-4 shrink-0 text-[#78847d] group-data-[collapsible=icon]:hidden" aria-hidden="true" />
+          <Settings2 className="size-4 shrink-0 text-[#5f6b64] group-data-[collapsible=icon]:hidden" aria-hidden="true" />
         </div>
       </SidebarFooter>
       <SidebarRail />

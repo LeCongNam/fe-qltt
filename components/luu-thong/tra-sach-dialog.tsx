@@ -61,7 +61,7 @@ export function TraSachDialog({ open, onClose, maBanSach }: { open: boolean; onC
           {!maBanSach && (
             <Field>
               <FieldLabel htmlFor="tra-ma">
-                Mã bản sách <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                Mã bản sách <span aria-hidden="true" className="text-[#a35143]">*</span>
               </FieldLabel>
               <Input id="tra-ma" value={ma} onChange={(e) => setMa(e.target.value)} maxLength={30} placeholder="Ví dụ: BS001" className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
             </Field>

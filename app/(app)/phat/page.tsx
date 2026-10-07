@@ -78,7 +78,7 @@ export default function PhatPage() {
   })
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền xem tiền phạt.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem tiền phạt.</p>
   }
 
   const rows = list.data?.data ?? []
@@ -88,9 +88,9 @@ export default function PhatPage() {
   return (
     <section className="mx-auto w-full max-w-6xl">
       <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#738078]">Lưu thông</p>
+        <p className="text-xs font-medium text-[#5f6b64]">Lưu thông</p>
         <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Tiền phạt</h2>
-        <p className="mt-1.5 text-sm text-[#758078]">Phiếu phạt do hệ thống tự lập khi trả sách quá hạn, hư hỏng hoặc mất.</p>
+        <p className="mt-1.5 text-sm text-[#5f6b64]">Phiếu phạt do hệ thống tự lập khi trả sách quá hạn, hư hỏng hoặc mất.</p>
       </div>
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
@@ -180,7 +180,7 @@ export default function PhatPage() {
               ))}
             {list.isError && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
                   {getApiErrorMessage(list.error, "Không tải được danh sách phiếu phạt.")}{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
@@ -190,7 +190,7 @@ export default function PhatPage() {
             )}
             {list.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#758078]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
                   {filtering ? "Không có phiếu phạt khớp bộ lọc." : "Chưa có phiếu phạt nào."}
                 </TableCell>
               </TableRow>
@@ -200,11 +200,11 @@ export default function PhatPage() {
               return (
                 <TableRow key={f.id}>
                   <TableCell className="whitespace-normal">
-                    {pm.nguoiDung.hoTen} <span className="text-[#758078]">({pm.nguoiDung.maNguoiDung})</span>
+                    {pm.nguoiDung.hoTen} <span className="text-[#5f6b64]">({pm.nguoiDung.maNguoiDung})</span>
                   </TableCell>
                   <TableCell className="whitespace-normal">
                     {f.ctPhieuMuon.banSach.sach.tenSach}{" "}
-                    <span className="text-[#758078]">({f.ctPhieuMuon.banSach.maBanSach})</span>
+                    <span className="text-[#5f6b64]">({f.ctPhieuMuon.banSach.maBanSach})</span>
                     <div className="mt-0.5 text-xs">
                       <Link href={`/phieu-muon/${pm.maPhieu}`} className="text-[#147d64] hover:underline">
                         {pm.maPhieu}
@@ -213,7 +213,7 @@ export default function PhatPage() {
                   </TableCell>
                   <TableCell>{LOAI_PHAT.find((l) => l.value === f.loaiPhat)?.label}</TableCell>
                   <TableCell className="text-right font-medium">{formatVnd(f.soTien)}</TableCell>
-                  <TableCell className="text-[#758078]">{formatDate(f.ngayTao)}</TableCell>
+                  <TableCell className="text-[#5f6b64]">{formatDate(f.ngayTao)}</TableCell>
                   <TableCell>
                     <StatusPill list={TRANG_THAI_PHAT} value={f.trangThai} />
                   </TableCell>
@@ -225,7 +225,7 @@ export default function PhatPage() {
                           Thu tiền
                         </Button>
                         {isAdmin && (
-                          <Button size="sm" variant="ghost" className="text-[#bb6759]" onClick={() => setHuyRow(f)}>
+                          <Button size="sm" variant="ghost" className="text-[#a35143]" onClick={() => setHuyRow(f)}>
                             <Ban aria-hidden="true" />
                             Hủy
                           </Button>
@@ -301,7 +301,7 @@ function HuyPhatDialog({ row, onClose }: { row: Phat | null; onClose: () => void
         >
           <Field>
             <FieldLabel htmlFor="phat-ly-do">
-              Lý do <span aria-hidden="true" className="text-[#bb6759]">*</span>
+              Lý do <span aria-hidden="true" className="text-[#a35143]">*</span>
             </FieldLabel>
             <Input id="phat-ly-do" value={lyDo} onChange={(e) => setLyDo(e.target.value)} maxLength={200} className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
           </Field>

@@ -72,7 +72,7 @@ function ThamSoForm({
     <div className="grid grid-cols-[minmax(0,1fr)] gap-3">
       {chiTiet.tinhHuong.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-[#758078]">Tình huống mẫu:</span>
+          <span className="text-xs text-[#5f6b64]">Tình huống mẫu:</span>
           {chiTiet.tinhHuong.map((t) => (
             <Button key={t.nhan} type="button" variant="outline" size="sm" onClick={() => onChange({ ...t.thamSo })}>
               {t.nhan}
@@ -87,7 +87,7 @@ function ThamSoForm({
             <div key={p.ten} className="grid gap-1.5">
               <Label htmlFor={id} className="text-xs text-[#5f6b64]">
                 {p.nhan}
-                <span className="ml-1 font-mono text-[#9aa59e]">:{p.ten}</span>
+                <span className="ml-1 font-mono text-[#66736c]">:{p.ten}</span>
               </Label>
               <Input
                 id={id}
@@ -167,7 +167,7 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
   const chay = useDemoChay(muc.id)
 
   if (chiTietQuery.isError) {
-    return <p className="text-sm text-[#bb6759]">{getApiErrorMessage(chiTietQuery.error, "Không tải được mục demo.")}</p>
+    return <p className="text-sm text-[#a35143]">{getApiErrorMessage(chiTietQuery.error, "Không tải được mục demo.")}</p>
   }
   if (!chiTiet) {
     return (
@@ -192,8 +192,8 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
           {chiTiet.dinhNghia.map((d) => (
             <div key={d.ten}>
               {caNhieuDinhNghia && <p className="mb-1 font-mono text-xs font-semibold text-[#32433b]">{d.ten}</p>}
-              {d.sql ? <SqlBlock>{d.sql}</SqlBlock> : <p className="text-sm text-[#bb6759]">Không đọc được định nghĩa {d.ten}.</p>}
-              <p className="mt-1 text-xs text-[#758078]">
+              {d.sql ? <SqlBlock>{d.sql}</SqlBlock> : <p className="text-sm text-[#a35143]">Không đọc được định nghĩa {d.ten}.</p>}
+              <p className="mt-1 text-xs text-[#5f6b64]">
                 {d.nguon === "CSDL" ? "Đọc trực tiếp từ CSDL (SHOW CREATE)." : "Đoạn CREATE trong sql/*.sql đã nạp vào CSDL (tài khoản kết nối không có quyền đọc định nghĩa)."}
               </p>
             </div>
@@ -205,7 +205,7 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
         <div className="grid grid-cols-[minmax(0,1fr)] gap-4">
           {chiTiet.thamSo.length > 0 && <ThamSoForm chiTiet={chiTiet} values={form} onChange={setValues} />}
           {bangQuery.isError ? (
-            <p className="text-sm text-[#bb6759]">{getApiErrorMessage(bangQuery.error, "Không tải được bảng liên quan.")}</p>
+            <p className="text-sm text-[#a35143]">{getApiErrorMessage(bangQuery.error, "Không tải được bảng liên quan.")}</p>
           ) : !bangQuery.data ? (
             <DemoTableSkeleton count={chiTiet.bang.length} />
           ) : (
@@ -239,7 +239,7 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
               </label>
             )}
           </div>
-          {chay.isError && <p className="text-sm text-[#bb6759]">{getApiErrorMessage(chay.error, "Không thực thi được.")}</p>}
+          {chay.isError && <p className="text-sm text-[#a35143]">{getApiErrorMessage(chay.error, "Không thực thi được.")}</p>}
         </div>
       </Step>
 
@@ -247,7 +247,7 @@ export function DemoRunner({ muc }: { muc: DemoMuc }) {
         {lanChay ? (
           <KetQuaPanel ketQua={lanChay.ketQua} truoc={lanChay.truoc} />
         ) : (
-          <p className="text-sm text-[#758078]">Bấm “Thực thi” ở bước 4 để xem output và trạng thái các bảng sau khi chạy.</p>
+          <p className="text-sm text-[#5f6b64]">Bấm “Thực thi” ở bước 4 để xem output và trạng thái các bảng sau khi chạy.</p>
         )}
       </Step>
     </div>

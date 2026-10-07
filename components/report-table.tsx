@@ -99,7 +99,7 @@ export function ReportTable<T>({
               ))}
             {query.isError && (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#a35143]">
                   {getApiErrorMessage(query.error, "Không tải được báo cáo.")}{" "}
                   <button type="button" className="underline" onClick={() => query.refetch()}>
                     Thử lại
@@ -109,7 +109,7 @@ export function ReportTable<T>({
             )}
             {query.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#758078]">
+                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#5f6b64]">
                   {emptyText}
                 </TableCell>
               </TableRow>

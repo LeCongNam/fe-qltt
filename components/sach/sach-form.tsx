@@ -165,7 +165,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Mã sách <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                  Mã sách <span aria-hidden="true" className="text-[#a35143]">*</span>
                 </FieldLabel>
                 <Input {...field} id={field.name} aria-invalid={fieldState.invalid} maxLength={20} placeholder="Ví dụ: S016" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -189,7 +189,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="sm:col-span-2">
                 <FieldLabel htmlFor={field.name}>
-                  Tên sách <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                  Tên sách <span aria-hidden="true" className="text-[#a35143]">*</span>
                 </FieldLabel>
                 <Input {...field} id={field.name} aria-invalid={fieldState.invalid} maxLength={255} placeholder="Nhập tên sách" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -202,7 +202,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Thể loại <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                  Thể loại <span aria-hidden="true" className="text-[#a35143]">*</span>
                 </FieldLabel>
                 <Select
                   name={field.name}
@@ -231,7 +231,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Nhà xuất bản <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                  Nhà xuất bản <span aria-hidden="true" className="text-[#a35143]">*</span>
                 </FieldLabel>
                 <Select
                   name={field.name}
@@ -318,8 +318,8 @@ export function SachForm({
           control={form.control}
           render={({ field }) => (
             <div className="grid max-h-56 grid-cols-1 gap-x-5 gap-y-2 overflow-y-auto rounded-md border border-[#dfe5df] bg-white p-3 sm:grid-cols-2">
-              {tacGias.isPending && <p className="text-sm text-[#758078]">Đang tải...</p>}
-              {tacGias.isError && <p className="text-sm text-[#bb6759]">Không tải được danh sách tác giả.</p>}
+              {tacGias.isPending && <p className="text-sm text-[#5f6b64]">Đang tải...</p>}
+              {tacGias.isError && <p className="text-sm text-[#a35143]">Không tải được danh sách tác giả.</p>}
               {(tacGias.data ?? []).map((t) => {
                 const checked = field.value.includes(t.maTacGia)
                 return (
@@ -330,7 +330,7 @@ export function SachForm({
                         field.onChange(next ? [...field.value, t.maTacGia] : field.value.filter((m) => m !== t.maTacGia))
                       }
                     />
-                    {t.tenTacGia} <span className="text-xs text-[#8b9690]">({t.maTacGia})</span>
+                    {t.tenTacGia} <span className="text-xs text-[#66736c]">({t.maTacGia})</span>
                   </label>
                 )
               })}

@@ -20,9 +20,9 @@ const config: DanhMucConfig<NhaXuatBan> = {
   columns: [
     { header: "Mã", cell: (r) => r.maNxb, className: "w-28 font-medium" },
     { header: "Tên nhà xuất bản", cell: (r) => r.tenNxb },
-    { header: "Email", cell: (r) => r.email ?? "—", className: "text-[#758078]" },
-    { header: "Điện thoại", cell: (r) => r.sdt ?? "—", className: "text-[#758078]" },
-    { header: "Địa chỉ", cell: (r) => r.diaChi ?? "—", className: "text-[#758078]" },
+    { header: "Email", cell: (r) => r.email ?? "—", className: "text-[#5f6b64]" },
+    { header: "Điện thoại", cell: (r) => r.sdt ?? "—", className: "text-[#5f6b64]" },
+    { header: "Địa chỉ", cell: (r) => r.diaChi ?? "—", className: "text-[#5f6b64]" },
   ],
   labelOf: (r) => r.tenNxb,
   toFormValues: (r) => ({

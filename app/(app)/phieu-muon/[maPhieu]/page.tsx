@@ -39,7 +39,7 @@ type Phieu = Schemas["PhieuMuonChiTietDto"]
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium text-[#738078]">{label}</dt>
+      <dt className="text-xs font-medium text-[#5f6b64]">{label}</dt>
       <dd className="mt-1 text-sm text-[#1c2c26]">{children || "—"}</dd>
     </div>
   )
@@ -86,7 +86,7 @@ export default function PhieuMuonDetailPage() {
     const status = axios.isAxiosError(query.error) ? query.error.response?.status : undefined
     return (
       <div className="mx-auto w-full max-w-5xl space-y-3 text-sm">
-        <p className="text-[#bb6759]">
+        <p className="text-[#a35143]">
           {status === 404
             ? "Không tìm thấy phiếu mượn."
             : status === 403
@@ -108,13 +108,13 @@ export default function PhieuMuonDetailPage() {
       <div className="flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           {isStaff && (
-            <Link href="/phieu-muon" className="inline-flex items-center gap-1 text-xs font-medium text-[#738078] hover:text-[#147d64]">
+            <Link href="/phieu-muon" className="inline-flex items-center gap-1 text-xs font-medium text-[#5f6b64] hover:text-[#147d64]">
               <ArrowLeft className="size-3.5" aria-hidden="true" />
               Mượn - trả
             </Link>
           )}
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Phiếu mượn {p.maPhieu}</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">
+          <p className="mt-1.5 text-sm text-[#5f6b64]">
             {p.nguoiDung.hoTen} ({p.nguoiDung.maNguoiDung})
           </p>
         </div>
@@ -154,7 +154,7 @@ export default function PhieuMuonDetailPage() {
           <TableBody>
             {p.ctPhieuMuons.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="py-8 text-center text-sm text-[#758078]">
+                <TableCell colSpan={7} className="py-8 text-center text-sm text-[#5f6b64]">
                   Phiếu chưa có sách.
                 </TableCell>
               </TableRow>
@@ -166,11 +166,11 @@ export default function PhieuMuonDetailPage() {
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">{c.banSach.maBanSach}</TableCell>
                   <TableCell className="whitespace-normal">{c.banSach.sach.tenSach}</TableCell>
-                  <TableCell className={quaHan ? "font-medium text-[#b34a38]" : "text-[#758078]"}>
+                  <TableCell className={quaHan ? "font-medium text-[#b34a38]" : "text-[#5f6b64]"}>
                     {formatDate(c.hanTra)}
                     {quaHan && <span className="ml-1 text-xs">(quá hạn)</span>}
                   </TableCell>
-                  <TableCell className="text-[#758078]">
+                  <TableCell className="text-[#5f6b64]">
                     {c.ngayTra ? (
                       <>
                         {formatDate(c.ngayTra)}

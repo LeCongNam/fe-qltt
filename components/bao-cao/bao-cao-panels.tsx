@@ -33,7 +33,7 @@ const phieuLink = (maPhieu: string) => (
 
 const nguoiDung = (r: { ma_nguoi_dung: string; ho_ten: string }) => `${r.ho_ten} (${r.ma_nguoi_dung})`
 
-const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-[#bb6759]">{days} ngày</span> : "—")
+const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-[#a35143]">{days} ngày</span> : "—")
 
 function thangLabel(thang: string) {
   const [y, m] = thang.split("-")
@@ -99,7 +99,7 @@ export function DanhMucSachPanel() {
       align: "right",
       className: "w-24",
       cell: (r) => (
-        <span className={r.so_ban_san_sang === 0 ? "font-medium text-[#bb6759]" : ""}>{r.so_ban_san_sang}</span>
+        <span className={r.so_ban_san_sang === 0 ? "font-medium text-[#a35143]" : ""}>{r.so_ban_san_sang}</span>
       ),
     },
   ]
@@ -159,7 +159,7 @@ export function NguoiDungViPhamPanel() {
     {
       header: "Còn nợ",
       value: (r) => r.con_no,
-      cell: (r) => <span className={r.con_no > 0 ? "font-medium text-[#bb6759]" : ""}>{formatVnd(r.con_no)}</span>,
+      cell: (r) => <span className={r.con_no > 0 ? "font-medium text-[#a35143]" : ""}>{formatVnd(r.con_no)}</span>,
       align: "right",
       className: "w-32",
     },
@@ -275,7 +275,7 @@ export function ThongKeTienPhatPanel() {
               <Bar dataKey="chua_thanh_toan" stackId="phat" fill="var(--color-chua_thanh_toan)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ChartContainer>
-          <div className="mt-2 flex items-center justify-center gap-5 text-[11px] text-[#68756e]">
+          <div className="mt-2 flex items-center justify-center gap-5 text-xs text-[#5f6b64]">
             <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#147d64]" />Đã thu</span>
             <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#e99a68]" />Chưa thu</span>
           </div>

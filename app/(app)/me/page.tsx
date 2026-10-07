@@ -32,9 +32,9 @@ export default function MePage() {
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
       <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#738078]">Cá nhân</p>
+        <p className="text-xs font-medium text-[#5f6b64]">Cá nhân</p>
         <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Của tôi</h2>
-        <p className="mt-1.5 text-sm text-[#758078]">
+        <p className="mt-1.5 text-sm text-[#5f6b64]">
           {user ? `${user.hoTen} — ` : ""}sách đang mượn, đặt trước, tiền phạt và lịch sử của riêng bạn.
         </p>
       </div>
@@ -69,7 +69,7 @@ export default function MePage() {
         </div>
         {SECTIONS.map(({ value, desc, Panel }) => (
           <TabsContent key={value} value={value} className="pt-4">
-            <p className="mb-4 text-sm text-[#758078]">{desc}</p>
+            <p className="mb-4 text-sm text-[#5f6b64]">{desc}</p>
             <Panel />
           </TabsContent>
         ))}

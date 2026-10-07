@@ -88,9 +88,9 @@ export default function DatTruocPage() {
     <section className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#738078]">Lưu thông</p>
+          <p className="text-xs font-medium text-[#5f6b64]">Lưu thông</p>
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Đặt trước</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">
+          <p className="mt-1.5 text-sm text-[#5f6b64]">
             {isStaff ? "Lượt đặt trước của mọi bạn đọc." : "Lượt đặt trước của bạn. Sách còn bản sẵn sàng thì không cần đặt."}
           </p>
         </div>
@@ -188,7 +188,7 @@ export default function DatTruocPage() {
               ))}
             {list.isError && (
               <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#a35143]">
                   {getApiErrorMessage(list.error, "Không tải được danh sách đặt trước.")}{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
@@ -198,7 +198,7 @@ export default function DatTruocPage() {
             )}
             {list.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#758078]">
+                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#5f6b64]">
                   {filtering ? "Không có lượt đặt trước khớp bộ lọc." : "Chưa có lượt đặt trước nào."}
                 </TableCell>
               </TableRow>
@@ -206,21 +206,21 @@ export default function DatTruocPage() {
             {rows.map((d) => (
               <TableRow key={d.id}>
                 <TableCell className="whitespace-normal font-medium">
-                  {d.sach.tenSach} <span className="font-normal text-[#758078]">({d.sach.maSach})</span>
+                  {d.sach.tenSach} <span className="font-normal text-[#5f6b64]">({d.sach.maSach})</span>
                 </TableCell>
                 {isStaff && (
                   <TableCell className="whitespace-normal">
-                    {d.nguoiDung.hoTen} <span className="text-[#758078]">({d.nguoiDung.maNguoiDung})</span>
+                    {d.nguoiDung.hoTen} <span className="text-[#5f6b64]">({d.nguoiDung.maNguoiDung})</span>
                   </TableCell>
                 )}
-                <TableCell className="text-[#758078]">{formatDate(d.ngayDat)}</TableCell>
-                <TableCell className="text-[#758078]">{formatDate(d.hanGiu)}</TableCell>
+                <TableCell className="text-[#5f6b64]">{formatDate(d.ngayDat)}</TableCell>
+                <TableCell className="text-[#5f6b64]">{formatDate(d.hanGiu)}</TableCell>
                 <TableCell>
                   <StatusPill list={TRANG_THAI_DAT_TRUOC} value={d.trangThai} />
                 </TableCell>
                 <TableCell className="text-right">
                   {HUY_DUOC.includes(d.trangThai) && (
-                    <Button variant="ghost" size="sm" className="text-[#bb6759]" onClick={() => setHuyRow(d)}>
+                    <Button variant="ghost" size="sm" className="text-[#a35143]" onClick={() => setHuyRow(d)}>
                       <XCircle aria-hidden="true" />
                       Hủy
                     </Button>
@@ -312,14 +312,14 @@ function DatTruocDialog({ open, isStaff, onClose }: { open: boolean; isStaff: bo
           {isStaff && (
             <Field>
               <FieldLabel htmlFor="dt-nguoi-dung">
-                Mã người đặt <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                Mã người đặt <span aria-hidden="true" className="text-[#a35143]">*</span>
               </FieldLabel>
               <Input id="dt-nguoi-dung" value={maNguoiDung} onChange={(e) => setMaNguoiDung(e.target.value)} maxLength={20} placeholder="Ví dụ: SV001" className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
             </Field>
           )}
           <Field>
             <FieldLabel htmlFor="dt-sach">
-              Sách <span aria-hidden="true" className="text-[#bb6759]">*</span>
+              Sách <span aria-hidden="true" className="text-[#a35143]">*</span>
             </FieldLabel>
             <Select value={maSach} items={items} onValueChange={(v) => setMaSach(v)}>
               <SelectTrigger id="dt-sach" className="h-10 w-full rounded-md border-[#dfe5df] bg-white">

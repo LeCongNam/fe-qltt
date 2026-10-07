@@ -10,10 +10,10 @@ type MetricCardProps = {
 }
 
 const toneClasses = {
-  green: "bg-[#e6f3ed] text-[#147d64]",
-  orange: "bg-[#fbefe3] text-[#bd713c]",
-  blue: "bg-[#e9f0f3] text-[#537687]",
-  rose: "bg-[#f8e9e6] text-[#bb6759]",
+  green: "bg-[#e6f3ed] text-[#0f6a52]",
+  orange: "bg-[#fbefe3] text-[#975e34]",
+  blue: "bg-[#e9f0f3] text-[#456a7c]",
+  rose: "bg-[#f8e9e6] text-[#a35143]",
 }
 
 export function MetricCard({ label, value, hint, icon: Icon, tone }: MetricCardProps) {
@@ -27,7 +27,7 @@ export function MetricCard({ label, value, hint, icon: Icon, tone }: MetricCardP
       </div>
       <div className="mt-4 flex items-end justify-between gap-2">
         <p className="text-[26px] font-semibold leading-none tabular-nums text-[#1c2c26]">{value}</p>
-        {hint && <span className="text-[11px] font-medium text-[#738078]">{hint}</span>}
+        {hint && <span className="text-xs font-medium text-[#5f6b64]">{hint}</span>}
       </div>
     </div>
   )

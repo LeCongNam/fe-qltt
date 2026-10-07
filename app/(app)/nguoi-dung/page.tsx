@@ -54,7 +54,7 @@ export default function NguoiDungPage() {
   })
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền xem danh sách người dùng.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem danh sách người dùng.</p>
   }
 
   const rows = list.data?.data ?? []
@@ -80,9 +80,9 @@ export default function NguoiDungPage() {
     <section className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#738078]">Người dùng</p>
+          <p className="text-xs font-medium text-[#5f6b64]">Người dùng</p>
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Người dùng &amp; tài khoản</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">Quản lý hồ sơ bạn đọc, cán bộ và tài khoản đăng nhập.</p>
+          <p className="mt-1.5 text-sm text-[#5f6b64]">Quản lý hồ sơ bạn đọc, cán bộ và tài khoản đăng nhập.</p>
         </div>
         <Link
           href="/add-doc-gia"
@@ -182,7 +182,7 @@ export default function NguoiDungPage() {
               ))}
             {list.isError && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
                   {getApiErrorMessage(list.error, "Không tải được danh sách người dùng.")}{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
@@ -192,7 +192,7 @@ export default function NguoiDungPage() {
             )}
             {list.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#758078]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
                   {filtering ? "Không có người dùng khớp bộ lọc." : "Chưa có người dùng nào."}
                 </TableCell>
               </TableRow>
@@ -206,8 +206,8 @@ export default function NguoiDungPage() {
                   </Link>
                 </TableCell>
                 <TableCell>{labelOf(LOAI_NGUOI_DUNG, u.loaiNguoiDung)}</TableCell>
-                <TableCell className="whitespace-normal text-[#758078]">{u.email || "—"}</TableCell>
-                <TableCell className="whitespace-normal text-[#758078]">{u.khoaDonVi || "—"}</TableCell>
+                <TableCell className="whitespace-normal text-[#5f6b64]">{u.email || "—"}</TableCell>
+                <TableCell className="whitespace-normal text-[#5f6b64]">{u.khoaDonVi || "—"}</TableCell>
                 <TableCell>
                   <StatusPill list={TRANG_THAI_NGUOI_DUNG} value={u.trangThai} />
                 </TableCell>
@@ -217,7 +217,7 @@ export default function NguoiDungPage() {
         </Table>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-[#758078]">
+      <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
         <span>{total} người dùng</span>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon-sm" aria-label="Trang trước" disabled={page <= 1} onClick={() => setPage(page - 1)}>

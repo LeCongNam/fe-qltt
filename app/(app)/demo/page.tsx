@@ -19,7 +19,7 @@ const LOAI: { value: DemoLoai; label: string; desc: string }[] = [
 function MucList({ items }: { items: DemoMuc[] }) {
   const [chon, setChon] = useState(items[0]?.id)
   const muc = items.find((m) => m.id === chon) ?? items[0]
-  if (!muc) return <p className="text-sm text-[#758078]">Chưa có mục demo.</p>
+  if (!muc) return <p className="text-sm text-[#5f6b64]">Chưa có mục demo.</p>
 
   return (
     <div className="grid gap-5 lg:grid-cols-[16rem_minmax(0,1fr)]">
@@ -35,7 +35,7 @@ function MucList({ items }: { items: DemoMuc[] }) {
               }`}
             >
               <span className="block font-medium">{m.tieuDe}</span>
-              <span className="block truncate font-mono text-xs text-[#758078]">{m.doiTuong[0]}</span>
+              <span className="block truncate font-mono text-xs text-[#5f6b64]">{m.doiTuong[0]}</span>
             </button>
           </li>
         ))}
@@ -53,21 +53,21 @@ export default function DemoPage() {
   const [tab, setTab] = useState<DemoLoai>("PROCEDURE")
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền xem trang demo.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem trang demo.</p>
   }
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
       <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#738078]">Demo</p>
+        <p className="text-xs font-medium text-[#5f6b64]">Demo</p>
         <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Demo xử lý thông tin</h2>
-        <p className="mt-1.5 text-sm text-[#758078]">
+        <p className="mt-1.5 text-sm text-[#5f6b64]">
           Mỗi mục đi qua 5 bước: bài toán, câu SQL, bảng liên quan, thực thi, xem lại bảng/output. Mọi dữ liệu đều đọc trực tiếp từ cơ sở dữ liệu.
         </p>
       </div>
 
       {list.isError ? (
-        <p className="text-sm text-[#bb6759]">{getApiErrorMessage(list.error, "Không tải được danh sách demo.")}</p>
+        <p className="text-sm text-[#a35143]">{getApiErrorMessage(list.error, "Không tải được danh sách demo.")}</p>
       ) : !list.data ? (
         <Skeleton className="h-64 w-full" />
       ) : (
@@ -83,7 +83,7 @@ export default function DemoPage() {
           </div>
           {LOAI.map((l) => (
             <TabsContent key={l.value} value={l.value} className="pt-4">
-              <p className="mb-4 text-sm text-[#758078]">{l.desc}</p>
+              <p className="mb-4 text-sm text-[#5f6b64]">{l.desc}</p>
               <MucList items={list.data.filter((m) => m.loai === l.value)} />
             </TabsContent>
           ))}

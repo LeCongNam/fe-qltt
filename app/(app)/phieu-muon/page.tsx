@@ -51,7 +51,7 @@ export default function PhieuMuonPage() {
   })
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền xem danh sách phiếu mượn.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem danh sách phiếu mượn.</p>
   }
 
   const rows = list.data?.data ?? []
@@ -62,9 +62,9 @@ export default function PhieuMuonPage() {
     <section className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#738078]">Lưu thông</p>
+          <p className="text-xs font-medium text-[#5f6b64]">Lưu thông</p>
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Mượn - trả</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">Lập phiếu mượn, gia hạn và nhận trả sách.</p>
+          <p className="mt-1.5 text-sm text-[#5f6b64]">Lập phiếu mượn, gia hạn và nhận trả sách.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setTraOpen(true)}>
@@ -167,7 +167,7 @@ export default function PhieuMuonPage() {
               ))}
             {list.isError && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
                   {getApiErrorMessage(list.error, "Không tải được danh sách phiếu mượn.")}{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
@@ -177,7 +177,7 @@ export default function PhieuMuonPage() {
             )}
             {list.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#758078]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
                   {filtering ? "Không có phiếu mượn khớp bộ lọc." : "Chưa có phiếu mượn nào."}
                 </TableCell>
               </TableRow>
@@ -192,9 +192,9 @@ export default function PhieuMuonPage() {
                     </Link>
                   </TableCell>
                   <TableCell className="whitespace-normal">
-                    {p.nguoiDung.hoTen} <span className="text-[#758078]">({p.nguoiDung.maNguoiDung})</span>
+                    {p.nguoiDung.hoTen} <span className="text-[#5f6b64]">({p.nguoiDung.maNguoiDung})</span>
                   </TableCell>
-                  <TableCell className="text-[#758078]">{formatDate(p.ngayMuon)}</TableCell>
+                  <TableCell className="text-[#5f6b64]">{formatDate(p.ngayMuon)}</TableCell>
                   <TableCell className="text-right">{p.ctPhieuMuons.length}</TableCell>
                   <TableCell>
                     {quaHan > 0 ? (

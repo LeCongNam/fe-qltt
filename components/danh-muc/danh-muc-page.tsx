@@ -150,9 +150,9 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
     <section className="mx-auto w-full max-w-5xl">
       <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#738078]">Danh mục</p>
+          <p className="text-xs font-medium text-[#5f6b64]">Danh mục</p>
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">{config.title}</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">{config.description}</p>
+          <p className="mt-1.5 text-sm text-[#5f6b64]">{config.description}</p>
         </div>
         {isStaff && (
           <Button className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setEditing("new")}>
@@ -185,7 +185,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
               ))}
             {list.isError && (
               <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#a35143]">
                   {getApiErrorMessage(list.error, `Không tải được danh sách ${singular}.`)}{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
@@ -195,7 +195,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
             )}
             {list.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#758078]">
+                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#5f6b64]">
                   Chưa có {singular} nào.
                 </TableCell>
               </TableRow>
@@ -222,7 +222,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          className="text-[#bb6759]"
+                          className="text-[#a35143]"
                           aria-label={`Xóa ${config.labelOf(row)}`}
                           onClick={() => setDeleting(row)}
                         >
@@ -238,7 +238,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
         </Table>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-[#758078]">
+      <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
         <span>{total} bản ghi</span>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon-sm" aria-label="Trang trước" disabled={page <= 1} onClick={() => setPage(page - 1)}>
@@ -353,7 +353,7 @@ function DanhMucFormDialog<T extends { id: string }>({
                       {f.required && (
                         <>
                           {" "}
-                          <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                          <span aria-hidden="true" className="text-[#a35143]">*</span>
                         </>
                       )}
                     </FieldLabel>

@@ -28,7 +28,7 @@ import { formatVnd } from "@/lib/format"
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium text-[#738078]">{label}</dt>
+      <dt className="text-xs font-medium text-[#5f6b64]">{label}</dt>
       <dd className="mt-1 text-sm text-[#1c2c26]">{children || "—"}</dd>
     </div>
   )
@@ -74,7 +74,7 @@ export default function SachDetailPage() {
     const notFound = axios.isAxiosError(query.error) && query.error.response?.status === 404
     return (
       <div className="mx-auto w-full max-w-4xl space-y-3 text-sm">
-        <p className="text-[#bb6759]">{notFound ? "Không tìm thấy sách." : getApiErrorMessage(query.error, "Không tải được sách.")}</p>
+        <p className="text-[#a35143]">{notFound ? "Không tìm thấy sách." : getApiErrorMessage(query.error, "Không tải được sách.")}</p>
         <Link href="/sach" className="text-[#147d64] hover:underline">
           ← Quay lại danh sách
         </Link>
@@ -88,12 +88,12 @@ export default function SachDetailPage() {
     <section className="mx-auto w-full max-w-4xl space-y-6">
       <div className="flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Link href="/sach" className="inline-flex items-center gap-1 text-xs font-medium text-[#738078] hover:text-[#147d64]">
+          <Link href="/sach" className="inline-flex items-center gap-1 text-xs font-medium text-[#5f6b64] hover:text-[#147d64]">
             <ArrowLeft className="size-3.5" aria-hidden="true" />
             Sách
           </Link>
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">{s.tenSach}</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">Mã sách {s.maSach}</p>
+          <p className="mt-1.5 text-sm text-[#5f6b64]">Mã sách {s.maSach}</p>
         </div>
         {isStaff && !editing && (
           <div className="flex gap-2">

@@ -73,7 +73,7 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
       <div className="flex items-center justify-between gap-3 border-b border-[#e4e8e2] px-4 py-3">
         <div>
           <h3 className="text-sm font-semibold text-[#1c2c26]">Bản sách</h3>
-          <p className="text-xs text-[#758078]">{list.isSuccess ? `${rows.length} bản` : "Các bản vật lý của đầu sách này."}</p>
+          <p className="text-xs text-[#5f6b64]">{list.isSuccess ? `${rows.length} bản` : "Các bản vật lý của đầu sách này."}</p>
         </div>
         <Button size="sm" className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setNhapOpen(true)}>
           <Plus aria-hidden="true" />
@@ -99,7 +99,7 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
           )}
           {list.isError && (
             <TableRow>
-              <TableCell colSpan={4} className="py-8 text-center text-sm text-[#bb6759]">
+              <TableCell colSpan={4} className="py-8 text-center text-sm text-[#a35143]">
                 {getApiErrorMessage(list.error, "Không tải được bản sách.")}{" "}
                 <button type="button" className="underline" onClick={() => list.refetch()}>
                   Thử lại
@@ -109,7 +109,7 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
           )}
           {list.isSuccess && rows.length === 0 && (
             <TableRow>
-              <TableCell colSpan={4} className="py-8 text-center text-sm text-[#758078]">
+              <TableCell colSpan={4} className="py-8 text-center text-sm text-[#5f6b64]">
                 Chưa có bản sách nào.
               </TableCell>
             </TableRow>
@@ -118,7 +118,7 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
             <TableRow key={b.id}>
               <TableCell className="font-medium">{b.maBanSach}</TableCell>
               <TableCell>{b.viTriKe}</TableCell>
-              <TableCell className="text-[#758078]">{formatDate(b.ngayNhap)}</TableCell>
+              <TableCell className="text-[#5f6b64]">{formatDate(b.ngayNhap)}</TableCell>
               <TableCell>
                 <Select
                   value={b.tinhTrang}
@@ -206,7 +206,7 @@ function NhapBanSachDialog({ sachId, open, onClose }: { sachId: string; open: bo
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="bs-viTriKe">
-                    Vị trí kệ <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                    Vị trí kệ <span aria-hidden="true" className="text-[#a35143]">*</span>
                   </FieldLabel>
                   <Input {...field} id="bs-viTriKe" maxLength={50} aria-invalid={fieldState.invalid} placeholder="Ví dụ: A1-03" className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

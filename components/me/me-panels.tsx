@@ -30,7 +30,7 @@ const phieuLink = (maPhieu: string) => (
   </Link>
 )
 
-const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-[#bb6759]">{days} ngày</span> : "—")
+const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-[#a35143]">{days} ngày</span> : "—")
 
 export function SachDangMuonPanel() {
   const query = useMe<SachDangMuonCuaToi>("sach-dang-muon")
@@ -108,7 +108,7 @@ export function DatTruocPanel() {
       className: "w-24",
       cell: (r) =>
         DANG_HOAT_DONG.includes(r.trang_thai) && (
-          <Button size="sm" variant="ghost" className="text-[#bb6759]" onClick={() => setHuyRow(r)}>
+          <Button size="sm" variant="ghost" className="text-[#a35143]" onClick={() => setHuyRow(r)}>
             <XCircle aria-hidden="true" />
             Hủy
           </Button>

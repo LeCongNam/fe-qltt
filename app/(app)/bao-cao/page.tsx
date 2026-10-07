@@ -31,15 +31,15 @@ export default function BaoCaoPage() {
   const [tab, setTab] = useState(REPORTS[0].value)
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền xem báo cáo.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem báo cáo.</p>
   }
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
       <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#738078]">Báo cáo</p>
+        <p className="text-xs font-medium text-[#5f6b64]">Báo cáo</p>
         <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Báo cáo thư viện</h2>
-        <p className="mt-1.5 text-sm text-[#758078]">Số liệu đọc trực tiếp từ các view của cơ sở dữ liệu; có thể xuất từng báo cáo ra CSV.</p>
+        <p className="mt-1.5 text-sm text-[#5f6b64]">Số liệu đọc trực tiếp từ các view của cơ sở dữ liệu; có thể xuất từng báo cáo ra CSV.</p>
       </div>
 
       <Tabs value={tab} onValueChange={(v) => v && setTab(String(v))} className="min-w-0">
@@ -54,7 +54,7 @@ export default function BaoCaoPage() {
         </div>
         {REPORTS.map(({ value, desc, Panel }) => (
           <TabsContent key={value} value={value} className="pt-4">
-            <p className="mb-4 text-sm text-[#758078]">{desc}</p>
+            <p className="mb-4 text-sm text-[#5f6b64]">{desc}</p>
             <Panel />
           </TabsContent>
         ))}

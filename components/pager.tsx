@@ -17,7 +17,7 @@ export function Pager({
   onPage: (page: number) => void
 }) {
   return (
-    <div className="mt-4 flex items-center justify-between text-xs text-[#758078]">
+    <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
       <span>
         {total} {unit}
       </span>

@@ -49,8 +49,8 @@ function buildChartData(history: LichSuMuonDong[]) {
 
 function loanStatus(r: LichSuMuonDong, today: string) {
   if (r.ngay_tra) return { label: "Đã trả", tone: "bg-[#e8f3ed] text-[#35755f]", Icon: Check }
-  if (isOverdue(r.han_tra, r.ngay_tra)) return { label: "Quá hạn", tone: "bg-[#f8e9e6] text-[#a95245]", Icon: AlertCircle }
-  if (r.han_tra.slice(0, 10) === today) return { label: "Đến hạn", tone: "bg-[#fbefe3] text-[#a66739]", Icon: Clock3 }
+  if (isOverdue(r.han_tra, r.ngay_tra)) return { label: "Quá hạn", tone: "bg-[#f8e9e6] text-[#a35143]", Icon: AlertCircle }
+  if (r.han_tra.slice(0, 10) === today) return { label: "Đến hạn", tone: "bg-[#fbefe3] text-[#975e34]", Icon: Clock3 }
   return { label: "Đang mượn", tone: "bg-[#fff3df] text-[#9a6412]", Icon: Clock3 }
 }
 
@@ -64,7 +64,7 @@ export function DashboardOverview() {
   const lichSu = useBaoCao<LichSuMuonDong>("lich-su-muon")
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền xem trang tổng quan.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem trang tổng quan.</p>
   }
 
   const today = todayIso()
@@ -86,9 +86,9 @@ export function DashboardOverview() {
     <>
       <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-xs font-medium capitalize text-[#738078]">{todayLabel}</p>
+          <p className="text-xs font-medium capitalize text-[#5f6b64]">{todayLabel}</p>
           <h1 className="mt-1.5 text-[26px] font-semibold leading-tight text-[#1c2c26]">Tổng quan</h1>
-          <p className="mt-1.5 text-sm text-[#758078]">Tình hình hoạt động và các đầu việc trong thư viện.</p>
+          <p className="mt-1.5 text-sm text-[#5f6b64]">Tình hình hoạt động và các đầu việc trong thư viện.</p>
         </div>
         <Link href="/bao-cao" className="inline-flex h-9 items-center justify-center gap-2 self-start rounded-md border border-[#dfe5df] bg-white px-3 text-xs font-medium text-[#45554c] shadow-sm transition-colors hover:bg-[#f9faf8] sm:self-auto">
           Xem báo cáo
@@ -107,13 +107,13 @@ export function DashboardOverview() {
         <div className="rounded-lg border border-[#e7e9e4] bg-white p-4 sm:p-5">
           <div>
             <h2 className="text-sm font-semibold text-[#293a32]">Lưu thông {DAYS} ngày qua</h2>
-            <p className="mt-1 text-xs text-[#87918b]">So sánh lượt mượn và lượt trả theo ngày</p>
+            <p className="mt-1 text-xs text-[#66736c]">So sánh lượt mượn và lượt trả theo ngày</p>
           </div>
           <div className="mt-5">
             {lichSu.isPending ? (
               <Skeleton className="h-[230px] w-full" />
             ) : lichSu.isError ? (
-              <p className="py-16 text-center text-sm text-[#bb6759]">Không tải được dữ liệu lưu thông.</p>
+              <p className="py-16 text-center text-sm text-[#a35143]">Không tải được dữ liệu lưu thông.</p>
             ) : (
               <ChartContainer config={chartConfig} className="h-[230px] w-full" aria-label="Biểu đồ lượt mượn và trả theo ngày">
                 <AreaChart accessibilityLayer data={chartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
@@ -137,7 +137,7 @@ export function DashboardOverview() {
               </ChartContainer>
             )}
           </div>
-          <div className="mt-3 flex items-center justify-center gap-5 text-[11px] text-[#68756e]">
+          <div className="mt-3 flex items-center justify-center gap-5 text-xs text-[#5f6b64]">
             <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#147d64]" />Lượt mượn</span>
             <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#e99a68]" />Lượt trả</span>
           </div>
@@ -147,22 +147,22 @@ export function DashboardOverview() {
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-sm font-semibold text-[#293a32]">Cần chú ý</h2>
-              <p className="mt-1 text-xs text-[#87918b]">Các việc cần ưu tiên hôm nay</p>
+              <p className="mt-1 text-xs text-[#66736c]">Các việc cần ưu tiên hôm nay</p>
             </div>
-            <span className="flex size-8 items-center justify-center rounded-md bg-[#fbefe3] text-[#bd713c]"><AlertCircle className="size-4" aria-hidden="true" /></span>
+            <span className="flex size-8 items-center justify-center rounded-md bg-[#fbefe3] text-[#975e34]"><AlertCircle className="size-4" aria-hidden="true" /></span>
           </div>
           <div className="mt-4 divide-y divide-[#eef0ec]">
             <Link href="/phieu-muon" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
-              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#fbefe3] text-[#bd713c]"><Clock3 className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Phiếu mượn quá hạn</span><span className="mt-0.5 block text-[11px] text-[#87918b]">Cần nhắc người mượn trả sách</span></span></span>
-              <span className="text-sm font-semibold tabular-nums text-[#bd713c]">{num(quaHan.data?.length)}</span>
+              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#fbefe3] text-[#975e34]"><Clock3 className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Phiếu mượn quá hạn</span><span className="mt-0.5 block text-xs text-[#66736c]">Cần nhắc người mượn trả sách</span></span></span>
+              <span className="text-sm font-semibold tabular-nums text-[#975e34]">{num(quaHan.data?.length)}</span>
             </Link>
             <Link href="/phat" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
-              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#f8e9e6] text-[#bb6759]"><WalletCards className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Khoản phạt chưa thu</span><span className="mt-0.5 block text-[11px] text-[#87918b]">Tổng các phiếu phạt chưa thanh toán</span></span></span>
-              <span className="text-sm font-semibold tabular-nums text-[#bb6759]">{chuaThu === undefined ? "—" : formatVnd(chuaThu)}</span>
+              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#f8e9e6] text-[#a35143]"><WalletCards className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Khoản phạt chưa thu</span><span className="mt-0.5 block text-xs text-[#66736c]">Tổng các phiếu phạt chưa thanh toán</span></span></span>
+              <span className="text-sm font-semibold tabular-nums text-[#a35143]">{chuaThu === undefined ? "—" : formatVnd(chuaThu)}</span>
             </Link>
             <Link href="/dat-truoc" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
-              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#e9f0f3] text-[#537687]"><BookMarked className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Yêu cầu đặt trước</span><span className="mt-0.5 block text-[11px] text-[#87918b]">Đang chờ có bản sách</span></span></span>
-              <span className="text-sm font-semibold tabular-nums text-[#537687]">{num(choXuLy)}</span>
+              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#e9f0f3] text-[#456a7c]"><BookMarked className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Yêu cầu đặt trước</span><span className="mt-0.5 block text-xs text-[#66736c]">Đang chờ có bản sách</span></span></span>
+              <span className="text-sm font-semibold tabular-nums text-[#456a7c]">{num(choXuLy)}</span>
             </Link>
           </div>
           <Link href="/bao-cao" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-[#147d64] hover:text-[#0e634f]">
@@ -175,7 +175,7 @@ export function DashboardOverview() {
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-5">
           <div>
             <h2 className="text-sm font-semibold text-[#293a32]">Lượt mượn gần đây</h2>
-            <p className="mt-1 text-xs text-[#87918b]">Theo dõi tình trạng các giao dịch mới nhất</p>
+            <p className="mt-1 text-xs text-[#66736c]">Theo dõi tình trạng các giao dịch mới nhất</p>
           </div>
           <Link href="/phieu-muon" className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#e5e9e4] px-2.5 text-xs font-medium text-[#58665e] hover:bg-[#f8f9f7]">
             <ListFilter className="size-3.5" aria-hidden="true" />
@@ -185,11 +185,11 @@ export function DashboardOverview() {
         <Table>
           <TableHeader>
             <TableRow className="bg-[#fafbf9] hover:bg-[#fafbf9]">
-              <TableHead className="pl-5 text-[11px] font-semibold uppercase tracking-wide text-[#87918b]">Mã phiếu</TableHead>
-              <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-[#87918b]">Người mượn</TableHead>
-              <TableHead className="hidden text-[11px] font-semibold uppercase tracking-wide text-[#87918b] md:table-cell">Tên sách</TableHead>
-              <TableHead className="text-[11px] font-semibold uppercase tracking-wide text-[#87918b]">Hạn trả</TableHead>
-              <TableHead className="pr-5 text-[11px] font-semibold uppercase tracking-wide text-[#87918b]">Trạng thái</TableHead>
+              <TableHead className="pl-5 text-xs font-semibold uppercase tracking-wide text-[#66736c]">Mã phiếu</TableHead>
+              <TableHead className="text-xs font-semibold uppercase tracking-wide text-[#66736c]">Người mượn</TableHead>
+              <TableHead className="hidden text-xs font-semibold uppercase tracking-wide text-[#66736c] md:table-cell">Tên sách</TableHead>
+              <TableHead className="text-xs font-semibold uppercase tracking-wide text-[#66736c]">Hạn trả</TableHead>
+              <TableHead className="pr-5 text-xs font-semibold uppercase tracking-wide text-[#66736c]">Trạng thái</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -203,14 +203,14 @@ export function DashboardOverview() {
               ))}
             {lichSu.isError && (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-[#a35143]">
                   Không tải được lượt mượn gần đây.
                 </TableCell>
               </TableRow>
             )}
             {lichSu.isSuccess && recent.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-sm text-[#758078]">
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-[#5f6b64]">
                   Chưa có lượt mượn nào.
                 </TableCell>
               </TableRow>
@@ -225,12 +225,12 @@ export function DashboardOverview() {
                     </Link>
                   </TableCell>
                   <TableCell className="text-xs text-[#59675f]">{loan.ho_ten}</TableCell>
-                  <TableCell className="hidden max-w-[260px] truncate text-xs text-[#758078] md:table-cell">{loan.ten_sach}</TableCell>
-                  <TableCell className={`text-xs ${status.label === "Quá hạn" ? "font-medium text-[#bb6759]" : "text-[#758078]"}`}>
+                  <TableCell className="hidden max-w-[260px] truncate text-xs text-[#5f6b64] md:table-cell">{loan.ten_sach}</TableCell>
+                  <TableCell className={`text-xs ${status.label === "Quá hạn" ? "font-medium text-[#a35143]" : "text-[#5f6b64]"}`}>
                     {status.label === "Quá hạn" ? `Quá hạn ${loan.so_ngay_qua_han} ngày` : formatDate(loan.han_tra)}
                   </TableCell>
                   <TableCell className="pr-5">
-                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-medium ${status.tone}`}>
+                    <span className={`inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[11px] font-medium ${status.tone}`}>
                       <status.Icon className="size-3" />
                       {status.label}
                     </span>
@@ -241,7 +241,7 @@ export function DashboardOverview() {
           </TableBody>
         </Table>
       </section>
-      <div className="flex items-center justify-between border-t border-[#e7e9e4] pt-4 text-[11px] text-[#8a948e]">
+      <div className="flex items-center justify-between border-t border-[#e7e9e4] pt-4 text-xs text-[#66736c]">
         <span>Thư viện số · Bảng điều khiển</span>
         <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-[#668f7c]" /> Số liệu đọc trực tiếp từ cơ sở dữ liệu</span>
       </div>

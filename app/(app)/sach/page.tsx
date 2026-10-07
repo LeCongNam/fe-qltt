@@ -49,9 +49,9 @@ export default function SachPage() {
     <section className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#738078]">Danh mục</p>
+          <p className="text-xs font-medium text-[#5f6b64]">Danh mục</p>
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Sách</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">Tra cứu đầu sách, tác giả và số bản có thể mượn.</p>
+          <p className="mt-1.5 text-sm text-[#5f6b64]">Tra cứu đầu sách, tác giả và số bản có thể mượn.</p>
         </div>
         {isStaff && (
           <Link
@@ -118,7 +118,7 @@ export default function SachPage() {
               ))}
             {list.isError && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#bb6759]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
                   {getApiErrorMessage(list.error, "Không tải được danh sách sách.")}{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
@@ -128,7 +128,7 @@ export default function SachPage() {
             )}
             {list.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#758078]">
+                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
                   {tuKhoa ? `Không có sách khớp “${tuKhoa}”.` : "Chưa có sách nào."}
                 </TableCell>
               </TableRow>
@@ -141,15 +141,15 @@ export default function SachPage() {
                     {s.ten_sach}
                   </Link>
                 </TableCell>
-                <TableCell className="whitespace-normal text-[#758078]">{s.ds_tac_gia ?? "—"}</TableCell>
+                <TableCell className="whitespace-normal text-[#5f6b64]">{s.ds_tac_gia ?? "—"}</TableCell>
                 <TableCell className="whitespace-normal">{s.ten_the_loai}</TableCell>
-                <TableCell className="whitespace-normal text-[#758078]">{s.ten_nxb}</TableCell>
-                <TableCell className="text-[#758078]">{s.nam_xuat_ban ?? "—"}</TableCell>
+                <TableCell className="whitespace-normal text-[#5f6b64]">{s.ten_nxb}</TableCell>
+                <TableCell className="text-[#5f6b64]">{s.nam_xuat_ban ?? "—"}</TableCell>
                 <TableCell className="text-right">
                   <span
                     className={
                       s.so_ban_san_sang > 0
-                        ? "rounded-full bg-[#e6f3ee] px-2 py-0.5 text-xs font-medium text-[#147d64]"
+                        ? "rounded-full bg-[#e6f3ee] px-2 py-0.5 text-xs font-medium text-[#0f6a52]"
                         : "rounded-full bg-[#eceeeb] px-2 py-0.5 text-xs font-medium text-[#5f6b64]"
                     }
                   >
@@ -162,7 +162,7 @@ export default function SachPage() {
         </Table>
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs text-[#758078]">
+      <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
         <span>{total} đầu sách</span>
         {pageCount > 1 && (
           <div className="flex items-center gap-2">

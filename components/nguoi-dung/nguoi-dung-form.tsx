@@ -97,7 +97,7 @@ export function NguoiDungForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="nd-maNguoiDung">
-                  Mã người dùng <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                  Mã người dùng <span aria-hidden="true" className="text-[#a35143]">*</span>
                 </FieldLabel>
                 <Input {...field} id="nd-maNguoiDung" aria-invalid={fieldState.invalid} maxLength={20} placeholder="Ví dụ: SV2026001" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -110,7 +110,7 @@ export function NguoiDungForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="nd-hoTen">
-                  Họ và tên <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                  Họ và tên <span aria-hidden="true" className="text-[#a35143]">*</span>
                 </FieldLabel>
                 <Input {...field} id="nd-hoTen" aria-invalid={fieldState.invalid} maxLength={160} autoComplete="name" placeholder="Nhập họ và tên" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -123,7 +123,7 @@ export function NguoiDungForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="nd-loaiNguoiDung">
-                  Loại người dùng <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                  Loại người dùng <span aria-hidden="true" className="text-[#a35143]">*</span>
                 </FieldLabel>
                 <Select
                   value={field.value ?? null}

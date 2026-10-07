@@ -45,7 +45,7 @@ export default function LapPhieuMuonPage() {
   })
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền lập phiếu mượn.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền lập phiếu mượn.</p>
   }
 
   function themBan() {
@@ -66,9 +66,9 @@ export default function LapPhieuMuonPage() {
   return (
     <section className="mx-auto w-full max-w-3xl">
       <div className="mb-7 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#738078]">Mượn - trả</p>
+        <p className="text-xs font-medium text-[#5f6b64]">Mượn - trả</p>
         <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Lập phiếu mượn</h2>
-        <p className="mt-1.5 text-sm text-[#758078]">
+        <p className="mt-1.5 text-sm text-[#5f6b64]">
           Hệ thống kiểm tra điều kiện mượn (số sách tối đa, nợ phạt, quá hạn...) khi lập phiếu; một cuốn bị từ chối thì cả phiếu không được tạo.
         </p>
       </div>
@@ -82,14 +82,14 @@ export default function LapPhieuMuonPage() {
       >
         <Field>
           <FieldLabel htmlFor="pm-nguoi-dung">
-            Mã người mượn <span aria-hidden="true" className="text-[#bb6759]">*</span>
+            Mã người mượn <span aria-hidden="true" className="text-[#a35143]">*</span>
           </FieldLabel>
           <Input id="pm-nguoi-dung" value={maNguoiDung} onChange={(e) => setMaNguoiDung(e.target.value)} maxLength={20} placeholder="Ví dụ: SV001" className="h-10 max-w-xs rounded-md border-[#dfe5df] bg-white text-sm" />
         </Field>
 
         <Field>
           <FieldLabel htmlFor="pm-ban-sach">
-            Bản sách <span aria-hidden="true" className="text-[#bb6759]">*</span>
+            Bản sách <span aria-hidden="true" className="text-[#a35143]">*</span>
           </FieldLabel>
           <div className="flex max-w-xs gap-2">
             <Input
@@ -115,7 +115,7 @@ export default function LapPhieuMuonPage() {
           {danhSach.length > 0 && (
             <ul className="mt-2 flex flex-wrap gap-2" aria-label="Bản sách đã chọn">
               {danhSach.map((ma) => (
-                <li key={ma} className="inline-flex items-center gap-1 rounded-full bg-[#e6f3ee] py-1 pl-3 pr-1 text-xs font-medium text-[#147d64]">
+                <li key={ma} className="inline-flex items-center gap-1 rounded-full bg-[#e6f3ee] py-1 pl-3 pr-1 text-xs font-medium text-[#0f6a52]">
                   {ma}
                   <button
                     type="button"

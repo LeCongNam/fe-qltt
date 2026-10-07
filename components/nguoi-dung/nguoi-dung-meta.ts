@@ -12,13 +12,13 @@ export const LOAI_NGUOI_DUNG: { value: LoaiNguoiDung; label: string }[] = [
 ]
 
 export const TRANG_THAI_NGUOI_DUNG: { value: TrangThaiNguoiDung; label: string; tone: string }[] = [
-  { value: "HOAT_DONG", label: "Hoạt động", tone: "bg-[#e6f3ee] text-[#147d64]" },
+  { value: "HOAT_DONG", label: "Hoạt động", tone: "bg-[#e6f3ee] text-[#0f6a52]" },
   { value: "TAM_KHOA", label: "Tạm khóa", tone: "bg-[#fff3df] text-[#9a6412]" },
   { value: "NGUNG", label: "Ngừng", tone: "bg-[#eceeeb] text-[#5f6b64]" },
 ]
 
 export const TRANG_THAI_TAI_KHOAN: { value: TrangThaiTaiKhoan; label: string; tone: string }[] = [
-  { value: "HOAT_DONG", label: "Hoạt động", tone: "bg-[#e6f3ee] text-[#147d64]" },
+  { value: "HOAT_DONG", label: "Hoạt động", tone: "bg-[#e6f3ee] text-[#0f6a52]" },
   { value: "KHOA", label: "Đã khóa", tone: "bg-[#fbe9e5] text-[#b34a38]" },
 ]
 

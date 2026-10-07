@@ -63,7 +63,7 @@ export default function LoginPage() {
           </div>
           <div>
             <h1 className="text-base font-semibold text-[#1b2c27]">Thư viện số</h1>
-            <p className="text-xs text-[#78847d]">Đăng nhập để tiếp tục</p>
+            <p className="text-xs text-[#5f6b64]">Đăng nhập để tiếp tục</p>
           </div>
         </div>
 

@@ -55,7 +55,7 @@ type TaiKhoan = Schemas["TaiKhoanCongKhaiDto"]
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium text-[#738078]">{label}</dt>
+      <dt className="text-xs font-medium text-[#5f6b64]">{label}</dt>
       <dd className="mt-1 text-sm text-[#1c2c26]">{children || "—"}</dd>
     </div>
   )
@@ -74,7 +74,7 @@ export default function NguoiDungDetailPage() {
   })
 
   if (ready && !isStaff) {
-    return <p className="text-sm text-[#bb6759]">Bạn không có quyền xem người dùng.</p>
+    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem người dùng.</p>
   }
 
   if (query.isPending) {
@@ -90,7 +90,7 @@ export default function NguoiDungDetailPage() {
     const notFound = axios.isAxiosError(query.error) && query.error.response?.status === 404
     return (
       <div className="mx-auto w-full max-w-4xl space-y-3 text-sm">
-        <p className="text-[#bb6759]">
+        <p className="text-[#a35143]">
           {notFound ? "Không tìm thấy người dùng." : getApiErrorMessage(query.error, "Không tải được người dùng.")}
         </p>
         <Link href="/nguoi-dung" className="text-[#147d64] hover:underline">
@@ -106,12 +106,12 @@ export default function NguoiDungDetailPage() {
     <section className="mx-auto w-full max-w-4xl space-y-6">
       <div className="flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Link href="/nguoi-dung" className="inline-flex items-center gap-1 text-xs font-medium text-[#738078] hover:text-[#147d64]">
+          <Link href="/nguoi-dung" className="inline-flex items-center gap-1 text-xs font-medium text-[#5f6b64] hover:text-[#147d64]">
             <ArrowLeft className="size-3.5" aria-hidden="true" />
             Người dùng
           </Link>
           <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">{u.hoTen}</h2>
-          <p className="mt-1.5 text-sm text-[#758078]">Mã người dùng {u.maNguoiDung}</p>
+          <p className="mt-1.5 text-sm text-[#5f6b64]">Mã người dùng {u.maNguoiDung}</p>
         </div>
         {!editing && (
           <Button variant="outline" onClick={() => setEditing(true)}>
@@ -174,7 +174,7 @@ function TrangThaiCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin:
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-sm font-semibold text-[#1c2c26]">Trạng thái người dùng</h3>
-          <p className="mt-1 text-xs text-[#758078]">
+          <p className="mt-1 text-xs text-[#5f6b64]">
             {locked
               ? "Chỉ quản trị được đổi trạng thái của cán bộ."
               : "Rời trạng thái hoạt động sẽ tự khóa tài khoản đăng nhập."}
@@ -259,7 +259,7 @@ function TaiKhoanCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin: 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="text-sm font-semibold text-[#1c2c26]">Tài khoản đăng nhập</h3>
-          {!isAdmin && <p className="mt-1 text-xs text-[#758078]">Chỉ quản trị được tạo hoặc khóa/mở tài khoản.</p>}
+          {!isAdmin && <p className="mt-1 text-xs text-[#5f6b64]">Chỉ quản trị được tạo hoặc khóa/mở tài khoản.</p>}
         </div>
         {isAdmin && !tk && (
           <Button size="sm" className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setCreating(true)}>
@@ -302,7 +302,7 @@ function TaiKhoanCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin: 
           )}
         </>
       ) : (
-        <p className="mt-4 text-sm text-[#758078]">Người dùng này chưa có tài khoản đăng nhập.</p>
+        <p className="mt-4 text-sm text-[#5f6b64]">Người dùng này chưa có tài khoản đăng nhập.</p>
       )}
 
       <TaoTaiKhoanDialog key={creating ? "open" : "closed"} nguoiDung={u} open={creating} onClose={() => setCreating(false)} />
@@ -379,7 +379,7 @@ function TaoTaiKhoanDialog({ nguoiDung: u, open, onClose }: { nguoiDung: ChiTiet
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="tk-matKhau">
-                    Mật khẩu <span aria-hidden="true" className="text-[#bb6759]">*</span>
+                    Mật khẩu <span aria-hidden="true" className="text-[#a35143]">*</span>
                   </FieldLabel>
                   <Input {...field} id="tk-matKhau" type="password" maxLength={72} autoComplete="new-password" aria-invalid={fieldState.invalid} placeholder="Tối thiểu 8 ký tự" className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
