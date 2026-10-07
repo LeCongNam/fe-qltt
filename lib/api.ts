@@ -26,7 +26,7 @@ api.use({
   },
   // 401 (hết hạn, tài khoản bị khóa giữa phiên) → xóa phiên; AuthGuard sẽ chuyển về /login.
   onResponse({ response, schemaPath }) {
-    if (response.status === 401 && schemaPath !== "/auth/login") clearSession()
+    if (response.status === 401 && schemaPath !== "/auth/login") clearSession("unauthorized")
   },
 })
 

@@ -24,6 +24,9 @@ export type DataColumn<T> = {
 
 type QueryState = Pick<UseQueryResult<unknown>, "isPending" | "isError" | "isSuccess" | "error" | "refetch">
 
+// Viền dưới vẽ bằng bóng vì `border-collapse` làm viền của ô dính không đi theo khi cuộn.
+const STICKY_HEAD = "sticky top-0 z-10 bg-white shadow-[inset_0_-1px_0_0_var(--border)]"
+
 const align = (c: { align?: "right" }) => (c.align === "right" ? "text-right" : "")
 
 function HeadContent<T>({ column: c }: { column: DataColumn<T> }) {
@@ -48,6 +51,8 @@ function HeadContent<T>({ column: c }: { column: DataColumn<T> }) {
  * (tiêu đề + các cặp nhãn/giá trị) để không phải cuộn ngang. Gồm đủ trạng thái tải/lỗi/rỗng.
  * Không truyền `query` khi dữ liệu đã có sẵn (coi như đã tải xong). `embedded`: bảng nằm trong một khung có sẵn
  * viền (thẻ có tiêu đề riêng), nên bảng bỏ viền và thẻ mobile có đệm.
+ * `fill`: trang vừa khít màn hình (xem `isFitPage`), từ `md` bảng tự cuộn trong khung và cố định hàng tiêu đề;
+ * phần tử cha phải là cột flex có `min-h-0`.
  */
 export function DataTable<T>({
   query,
@@ -58,6 +63,7 @@ export function DataTable<T>({
   emptyText,
   skeletonRows = 5,
   embedded = false,
+  fill = false,
 }: {
   query?: QueryState
   rows: T[]
@@ -67,6 +73,7 @@ export function DataTable<T>({
   emptyText: string
   skeletonRows?: number
   embedded?: boolean
+  fill?: boolean
 }) {
   const isPending = query?.isPending ?? false
   const isError = query?.isError ?? false
@@ -96,15 +103,18 @@ export function DataTable<T>({
       <p role={isError ? "alert" : "status"} className="sr-only">
         {liveText}
       </p>
-      <div aria-busy={isPending} className={`hidden md:block ${embedded ? "" : "rounded-lg border border-border bg-white"}`}>
-        <Table>
+      <div
+        aria-busy={isPending}
+        className={`hidden md:block ${embedded ? "" : "rounded-lg border border-border bg-white"} ${fill ? "md:min-h-0 md:overflow-auto" : ""}`}
+      >
+        <Table containerClassName={fill ? "overflow-visible" : undefined}>
           <TableHeader>
             <TableRow>
               {columns.map((c) => (
                 <TableHead
                   key={c.header}
                   aria-sort={c.sort?.dir ? (c.sort.dir === "asc" ? "ascending" : "descending") : undefined}
-                  className={`${align(c)} ${c.className ?? ""}`}
+                  className={`${align(c)} ${c.className ?? ""} ${fill ? STICKY_HEAD : ""}`}
                 >
                   <HeadContent column={c} />
                 </TableHead>

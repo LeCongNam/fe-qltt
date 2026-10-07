@@ -132,11 +132,11 @@ export function ReportTable<T>({
   const sortNote = sort && sortCol ? `Đang sắp xếp theo ${sortCol.header}, ${sort.dir === "asc" ? "tăng dần" : "giảm dần"}` : "Thứ tự mặc định"
 
   return (
-    <div>
+    <div className="md:flex md:min-h-72 md:flex-1 md:flex-col">
       <p role="status" className="sr-only">
         {sortNote}
       </p>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {toolbar}
           <SortSelect
@@ -158,6 +158,7 @@ export function ReportTable<T>({
         )}
       </div>
       <DataTable
+        fill
         query={query}
         rows={visible}
         columns={tableColumns}

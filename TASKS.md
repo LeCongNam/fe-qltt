@@ -9,7 +9,7 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 2. Làm xong thì đổi `Trạng thái` của việc đó sang **Đã hoàn thành**, ghi ngày và một dòng kết quả kiểm chứng.
 3. Trước khi làm: đọc `CLAUDE.md` và `AGENTS.md`. Next.js bản này có thay đổi so với kiến thức cũ, đọc `node_modules/next/dist/docs/` trước khi dùng API Next (việc này chưa được làm trong phân tích).
 4. Sau mỗi đợt: chạy `npx tsc --noEmit` và `npx eslint` (hiện cả hai sạch), xem lại giao diện ở desktop và mobile 375px, rồi báo cáo và dừng chờ duyệt.
-5. Quy tắc git (bắt buộc): **không** tự `git commit`/`git push`/stage; chỉ commit khi người dùng bảo trong tin nhắn hiện tại; nhánh `trongminh`; message ngắn tiếng Việt, **không** `Co-Authored-By` hay dấu hiệu AI; `yarn.lock` untracked không commit.
+5. Quy tắc git (bắt buộc): **không** tự `git commit`/`git push`/stage; chỉ commit khi người dùng bảo trong tin nhắn hiện tại; nhánh `trongminh`; message ngắn tiếng Việt, **không** `Co-Authored-By` hay dấu hiệu AI; chỉ dùng npm, không có `yarn.lock`.
 6. Môi trường: FE `npm run dev` cổng 3001, BE cổng 3000. Tài khoản demo xem `../user.md` (ADMIN `ad001`, THU_THU `cb001`, BAN_DOC `sv001`, tài khoản khóa `sv007`). Không chạy `npm run test:e2e` của BE trên DB làm việc.
 
 ## Tổng quan trạng thái
@@ -27,7 +27,7 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 | U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Đã hoàn thành |
 | U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Đã hoàn thành |
 | C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
-| C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
+| C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Đã hoàn thành |
 | C3 | Đưa màu hex cứng vào theme token | P2 | Đã hoàn thành |
 | C4 | Tách component dùng chung (lặp code) | P2 | Đã hoàn thành (trừ `Avatar`) |
 | C5 | Tầng API có kiểu: `openapi-fetch`, key factory, `.gitattributes` | P2 | Đã hoàn thành (chưa dọn `api-types.ts`) |
@@ -35,11 +35,12 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 | C7 | Select giới hạn 100 dòng: combobox có lọc, gom mọi trang | P3 | Đã hoàn thành |
 | C8 | Đổi route `/add-doc-gia` thành `/nguoi-dung/moi` | P3 | Đã hoàn thành |
 | C9 | Metadata/`<title>` theo từng trang | P3 | Đã hoàn thành |
-| C10 | Test, CI, formatter, lockfile | P3 | Chưa thực hiện |
+| C10 | Test, CI, formatter, lockfile | P3 | Đã hoàn thành |
 | C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Đã hoàn thành |
 | C12 | Báo cáo chưa link được sang người dùng | P3 | Đã hoàn thành |
+| C13 | Trang bảng vừa khít màn hình, bảng cuộn trong khung, cố định hàng tiêu đề | P3 | Đã hoàn thành |
 | Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Đã hoàn thành (còn dialog Gia hạn) |
-| B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | Đã hoàn thành (BE + FE, gồm `sapXep`; còn sort theo độ liên quan khi có `tuKhoa`) |
+| B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | Đã hoàn thành (BE + FE, gồm `sapXep` và sort theo độ liên quan khi có `tuKhoa`, BE 2026-10-07) |
 | B2 | Spec sai body `POST /dat-truoc` (trùng tên class `DatTruocDto`) | P3 | Đã hoàn thành (BE đổi tên `TaoDatTruocDto`, FE bỏ ép kiểu) |
 | B3 | Spec chưa khai `nullable` ở DTO sửa | P3 | Đã hoàn thành (BE khai `nullable`, FE bỏ `Clearable`) |
 
@@ -145,8 +146,13 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 - Giới hạn: thao tác ghi vẫn dựa vào BE (403); `isStaff`/`isAdmin` trong trang chỉ còn để ẩn/hiện nút và bật `enabled` của query.
 
 ### C2 — Phiên đăng nhập (P2)
-- **Trạng thái:** Chưa thực hiện
-- Token ở localStorage (key `qltt.session`), guard chỉ ở client, chưa kiểm tra hạn token, 401 giữa phiên đá về `/login` mà không nhớ trang cũ. Cân nhắc: kiểm hạn token, tham số quay lại trang cũ, ghi rõ rủi ro lưu localStorage trong tài liệu. Cần test 401 giữa phiên (đăng nhập, khóa tài khoản từ ADMIN, thao tác tiếp).
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- **Hạn token:** `lib/jwt.ts` `getTokenExpiry` đọc `exp` từ payload JWT (không xác thực chữ ký; BE vẫn là nơi quyết định bằng 401). `lib/auth-store.ts`: phiên lưu từ trước mà đã hết hạn thì bị bỏ ngay khi nạp; có hẹn giờ (`setTimeout`) xóa phiên đúng lúc hết hạn và kiểm lại khi tab nền hiện lại (`visibilitychange`). Token không đọc được `exp` thì không hẹn giờ.
+- **Lý do kết thúc phiên:** `clearSession(reason)` với `logout` (mặc định, người dùng bấm), `expired`, `unauthorized` (BE trả 401 ở `lib/api.ts`). Giữ lý do đầu tiên khi nhiều request cùng 401.
+- **Quay lại trang cũ:** `AuthGuard` chuyển về `/login?next=<đường dẫn + query>` (thêm `reason=expired|unauthorized` nếu phiên mất giữa chừng). Đăng xuất chủ động về `/login` trơn. Trang login (bọc `Suspense` vì dùng `useSearchParams`) hiện hộp thông báo theo `reason` và sau đăng nhập đi tới `next` nếu qua `safeNextPath` (`lib/safe-redirect.ts`: chỉ đường dẫn nội bộ, chặn `//host`, `/\host`, ký tự điều khiển, `/login`) và vai trò được vào (`canSee(getRouteRoles(...))`), không thì về trang chủ theo vai trò.
+- **Rủi ro đã biết:** token nằm ở `localStorage` nên script chạy được trong trang (XSS) đọc được; FE không render HTML thô và không nạp script bên thứ ba, nhưng nếu cần cứng hơn thì chuyển sang cookie `httpOnly` do BE đặt (phải đổi BE). Hạn token do BE đặt, FE không kéo dài phiên.
+- **Kiểm chứng:** `tsc` + `eslint` sạch; `vitest` 7 test cho store (hết hạn khi nạp, hẹn giờ, lý do). Trên trình duyệt: (1) sửa `exp` về quá khứ rồi tải lại `/phat` → `/login?next=%2Fphat&reason=expired` kèm thông báo "Phiên đăng nhập đã hết hạn…", đăng nhập `cb001` quay lại `/phat`; (2) đặt token sai rồi vào `/sach?tuKhoa=java` → BE 401, về `/login?next=…&reason=unauthorized` kèm thông báo, `qltt.session` bị xóa; (3) đăng nhập `sv001` với `next=/phat` (trang chỉ staff) → rơi về `/me`; (4) bấm Đăng xuất → `/login` trơn, không thông báo; (5) thông báo hiển thị đúng ở 375px. Chưa thử khóa tài khoản bằng ADMIN giữa phiên (đã thử ở lượt kiểm trước, đường 401 giống (2)).
+- Ghi chú cũ: token ở localStorage (key `qltt.session`), guard chỉ ở client, chưa kiểm tra hạn token, 401 giữa phiên đá về `/login` mà không nhớ trang cũ. Cân nhắc: kiểm hạn token, tham số quay lại trang cũ, ghi rõ rủi ro lưu localStorage trong tài liệu. Cần test 401 giữa phiên (đăng nhập, khóa tài khoản từ ADMIN, thao tác tiếp).
 
 ### C3 — Theme token màu (P2)
 - **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt). Hex trong `app`/`components`/`lib` giảm từ 559 xuống 19.
@@ -213,9 +219,22 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 - **Phát hiện:** tải thẳng vào một trang (không phải điều hướng mềm), Next đẩy `<title>` của metadata gốc vào `<head>` sau khi hydrate và đè mất tiêu đề vừa đặt (reload thì không bị). Vì vậy `setDocumentTitle` giữ tiêu đề mong muốn bằng `MutationObserver` trên `<head>` và đặt lại khi bị đè; `DocumentTitle` gọi `clearDocumentTitle` khi rời khu vực đã đăng nhập để không đè tiêu đề trang login.
 - Kiểm chứng: `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU), tải thẳng `/phat` → "Tiền phạt · Quản lý thư viện", `/tac-gia` → "Tác giả · …", `/sach/7` → "An toàn thông tin · …" (tên sách), `/nguoi-dung/SV001` → tên người dùng; điều hướng mềm (bấm link) cũng đúng. Chưa kiểm `/login` sau đăng xuất và chưa chạy `npm run build`.
 
+### C13 — Trang bảng vừa khít màn hình (P3)
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- **Yêu cầu:** trang chỉ có bảng thì không cuộn cả trang; bảng cuộn trong khung và hàng tiêu đề cố định. Trang nhiều khối (`/`, `/me`, `/demo`) và trang chi tiết/biểu mẫu giữ cuộn bình thường.
+- **Cách làm:** `isFitPage(pathname)` (`lib/navigation.ts`, danh sách `FIT_PAGES`: `/sach`, `/nguoi-dung`, `/phieu-muon`, `/dat-truoc`, `/phat`, `/the-loai`, `/tac-gia`, `/nha-xuat-ban`, `/bao-cao`). Với các trang đó, `LibraryDashboard` đặt `md:h-svh md:overflow-hidden` cho `SidebarInset` và cho vùng nội dung `md:h-full` (nếu quá thấp, vùng nội dung tự cuộn thay vì tràn trang). Mỗi trang là chuỗi cột flex `md:flex md:min-h-0 md:flex-1 md:flex-col` xuống tới `DataTable fill` (khung bảng `md:overflow-auto`, `th` `sticky top-0`, viền dưới bằng bóng vì `border-collapse`). `Table` có thêm `containerClassName`.
+- **Mobile (<768px):** không đổi, cả trang cuộn và dòng hiện dạng thẻ.
+- **`/bao-cao`:** Tabs/TabsContent/`ReportTable` nằm trong chuỗi flex. Hai tab có biểu đồ (Top mượn nhiều, Tiền phạt) từ `lg` đặt biểu đồ cạnh bảng; hẹp hơn thì panel tự cuộn (`ReportTable` có `md:min-h-72`).
+- **Sửa kèm:** `/demo` (tab Cursor, và mọi tab): danh sách mục bên trái bị tên procedure dài làm rộng hơn cột 16rem nên đè lên card bên phải; đã đặt `grid-cols-1` cho `ul` và `min-w-0` cho `li` ở `app/(app)/demo/page.tsx`.
+- **Kiểm tra:** trình duyệt 1024×768 ở mọi trang trên (chiều cao trang = viewport, bảng cuộn trong), tab chart, `/`, `/me` cuộn như cũ, mobile 375px không tràn ngang.
+
 ### C10 — Test, CI, formatter, lockfile (P3)
-- **Trạng thái:** Chưa thực hiện
-- Chưa có test runner, CI, formatter. Đề xuất: vitest cho `getApiErrorMessage`, `buildSchema` (danh-muc), `canSee`, `isActivePath`; GitHub Actions chạy lint, tsc, build. Có cả `package-lock.json` (lockfile chính) và `yarn.lock` (untracked, không commit): thống nhất một lockfile.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- **Test:** `vitest` (+ `vite`, peer bắt buộc của vitest 5), cấu hình `vitest.config.mts` (alias `@`), `npm test`. 36 test ở 6 file `*.test.ts`: `lib/__tests__/` (`jwt`, `safe-redirect`, `api` = `getApiErrorMessage`/`isApiError`/`unwrap`, `navigation` = `canSee`/`isActivePath`/`getRouteRoles`, `auth-store`) và `components/danh-muc/__tests__/form-utils.test.ts`. Để test được, tách `buildSchema`/`toPayload`/`emptyValues`/`DanhMucField` khỏi `danh-muc-page.tsx` sang `components/danh-muc/form-utils.ts` (page vẫn re-export `DanhMucField`).
+- **Formatter:** `prettier` (`.prettierrc.json`: không dấu `;`, rộng 120, `trailingComma: es5`; `.prettierignore`), `npm run format -- <file>` / `npm run format:check -- <file>`. **Chưa format cả repo** (sẽ đụng nhiều file không liên quan); chỉ file mới/đã sửa trong đợt này đã format. CI không chạy `format:check` vì lý do đó.
+- **CI:** `.github/workflows/ci.yml` (push `main` + pull request): `npm ci`, `lint`, `typecheck` (`tsc --noEmit`), `test`, `build`. **Chưa chạy thử trên GitHub** (repo chưa push) và chưa chạy `npm run build` cục bộ vì dev server cổng 3001 đang dùng `.next`.
+- **Lockfile:** `package-lock.json` đã cập nhật cho vitest/prettier/vite; người dùng chọn dùng npm nên đã **xóa `yarn.lock`** (2026-10-07, xóa bằng `rm`, chưa stage); từ nay chỉ dùng `npm`/`package-lock.json`, CI dùng `npm ci`.
+- Ghi chú cũ: chưa có test runner, CI, formatter. Đề xuất: vitest cho `getApiErrorMessage`, `buildSchema` (danh-muc), `canSee`, `isActivePath`; GitHub Actions chạy lint, tsc, build. Có cả `package-lock.json` (lockfile chính) và `yarn.lock`: đã thống nhất, giữ npm.
 
 ### C11 — Form sửa xóa trắng trường tùy chọn (P3)
 - **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
@@ -248,7 +267,7 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 ## Đề xuất cho BE
 
 ### B1 — Sort mặc định phía BE (P2)
-- **Trạng thái:** BE đã sửa thứ tự mặc định (2026-10-07); FE đã cập nhật dòng quy tắc ở chân bảng của `phieu-muon`, `dat-truoc`, `phat` và `defaultOrder` "Còn nợ ↓" cho báo cáo người dùng vi phạm. BE đã thêm `sapXep` cho `/sach`, `/docgia`, `/phieu-muon`, `/phat`, `/dat-truoc` (2026-10-07) và FE đã bật sort theo cột ở 5 trang này (`hooks/use-server-sort.ts`, `components/sort-select.tsx`; `ReportTable` dùng chung `SortSelect` cho mobile). Chưa có ở BE: sort theo độ liên quan khi có `tuKhoa`.
+- **Trạng thái:** BE đã sửa thứ tự mặc định (2026-10-07); FE đã cập nhật dòng quy tắc ở chân bảng của `phieu-muon`, `dat-truoc`, `phat` và `defaultOrder` "Còn nợ ↓" cho báo cáo người dùng vi phạm. BE đã thêm `sapXep` cho `/sach`, `/docgia`, `/phieu-muon`, `/phat`, `/dat-truoc` (2026-10-07) và FE đã bật sort theo cột ở 5 trang này (`hooks/use-server-sort.ts`, `components/sort-select.tsx`; `ReportTable` dùng chung `SortSelect` cho mobile). BE đã xếp `/sach?tuKhoa` theo độ liên quan (mã/ISBN, tên trùng, tên bắt đầu, tên chứa, tác giả, mô tả) khi không có `sapXep`; message 422 từ SQL đã có dấu; đã thêm index cho phiếu mượn/phạt/đặt trước (2026-10-07, chưa commit).
 - **Nguồn:** đọc `BE/src/*/*.service.ts`, `bao-cao.controller.ts`, `ban-doc.controller.ts`, `sql/07_reports.sql`, index và dữ liệu thật trong DB `qltv_nhom8`.
 - **Phát hiện:**
   1. `/phieu-muon`, `/dat-truoc`, `/phat` đang `ORDER BY id DESC` nhưng `id` không phản ánh ngày nghiệp vụ khi dữ liệu nhập bù hoặc seed. Thực tế: `/phieu-muon` đặt PM000015 (mượn 13/08) lên đầu còn PM000007 (04/10, mới nhất) đứng thứ 9; `/dat-truoc` đặt lượt id 10 (06/07, cũ nhất) lên đầu trong khi lượt mới nhất là 06/10.

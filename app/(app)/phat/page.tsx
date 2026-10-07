@@ -126,7 +126,7 @@ export default function PhatPage() {
   ]
 
   return (
-    <section className="mx-auto w-full max-w-6xl">
+    <section className="mx-auto w-full max-w-6xl md:flex md:min-h-0 md:flex-1 md:flex-col">
       <PageHeader
         eyebrow="Lưu thông"
         title="Tiền phạt"
@@ -189,6 +189,8 @@ export default function PhatPage() {
       <SortSelect {...sort.selectProps} className="mb-3" />
 
       <DataTable
+
+        fill
         query={list}
         rows={rows}
         columns={sort.columns(columns)}

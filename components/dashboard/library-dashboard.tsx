@@ -18,7 +18,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { logout, useAuth } from "@/hooks/use-auth"
-import { findNavLabel } from "@/lib/navigation"
+import { findNavLabel, isFitPage } from "@/lib/navigation"
+import { cn } from "@/lib/utils"
 import { initials } from "@/lib/format"
 
 export function LibraryDashboard({ children }: { children: React.ReactNode }) {
@@ -26,6 +27,7 @@ export function LibraryDashboard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const { user } = useAuth()
   const activeItem = findNavLabel(pathname)
+  const fit = isFitPage(pathname)
 
   function handleLogout() {
     logout()
@@ -35,7 +37,7 @@ export function LibraryDashboard({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <LibrarySidebar />
-      <SidebarInset className="min-h-svh min-w-0 bg-canvas">
+      <SidebarInset className={cn("min-h-svh min-w-0 bg-canvas", fit && "md:h-svh md:min-h-0 md:overflow-hidden")}>
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-border bg-white/95 px-4 backdrop-blur sm:px-7">
           <div className="flex min-w-0 items-center gap-3">
             <SidebarTrigger className="-ml-2 text-ink" />
@@ -71,9 +73,11 @@ export function LibraryDashboard({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-          <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 px-4 py-6 sm:px-7 sm:py-8">
+        <div className={cn("w-full", fit && "md:min-h-0 md:flex-1 md:overflow-y-auto")}>
+          <div className={cn("mx-auto flex w-full max-w-[1480px] flex-col gap-6 px-4 py-6 sm:px-7 sm:py-8", fit && "md:h-full")}>
             {children}
           </div>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   )

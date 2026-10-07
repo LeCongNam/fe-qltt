@@ -112,6 +112,14 @@ export function isActivePath(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
 }
 
+// Trang chỉ có một bảng: từ `md` khung nội dung vừa khít màn hình, bảng tự cuộn bên trong với hàng tiêu đề cố định.
+// Trang nhiều khối (tổng quan, /me, /demo) và trang chi tiết/biểu mẫu vẫn cuộn cả trang.
+const FIT_PAGES = ["/sach", "/nguoi-dung", "/phieu-muon", "/dat-truoc", "/phat", "/the-loai", "/tac-gia", "/nha-xuat-ban", "/bao-cao"]
+
+export function isFitPage(pathname: string) {
+  return FIT_PAGES.includes(pathname.replace(/\/$/, "") || "/")
+}
+
 /** Nhãn mục điều hướng ứng với đường dẫn hiện tại, dùng cho breadcrumb ở header. */
 export function findNavLabel(pathname: string) {
   for (const group of navigationGroups) {

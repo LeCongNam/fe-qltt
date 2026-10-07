@@ -39,6 +39,9 @@ const nguoiDungCell = (r: { ma_nguoi_dung: string; ho_ten: string }) => (
 
 const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-destructive">{days} ngày</span> : "—")
 
+// Panel có biểu đồ: từ `lg` biểu đồ nằm cạnh bảng để bảng vẫn cuộn trong khung; hẹp hơn thì cả panel cuộn.
+const CHART_PANEL = "grid gap-4 md:flex md:min-h-0 md:flex-1 md:flex-col md:overflow-y-auto lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:grid-rows-[minmax(0,1fr)] lg:overflow-visible"
+
 function thangLabel(thang: string) {
   const [y, m] = thang.split("-")
   return `${m}/${y}`
@@ -199,9 +202,9 @@ export function TopSachPanel() {
   ]
   const chartData = (query.data ?? []).slice(0, 10)
   return (
-    <div className="grid gap-4">
+    <div className={chartData.length > 0 ? CHART_PANEL : "md:flex md:min-h-0 md:flex-1 md:flex-col"}>
       {chartData.length > 0 && (
-        <div className="rounded-lg border border-border bg-white p-4">
+        <div className="rounded-lg border border-border bg-white p-4 md:shrink-0 lg:self-start">
           <h3 className="text-sm font-semibold text-heading">Sách được mượn nhiều nhất</h3>
           <ChartContainer config={topChartConfig} className="mt-3 w-full" style={{ height: 36 * chartData.length + 24 }} aria-label="Biểu đồ lượt mượn theo sách">
             <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 0, right: 16, top: 0, bottom: 0 }}>
@@ -269,9 +272,9 @@ export function ThongKeTienPhatPanel() {
   const chartData = [...byMonth.values()].sort((a, b) => a.thang.localeCompare(b.thang)).map((m) => ({ ...m, label: thangLabel(m.thang) }))
 
   return (
-    <div className="grid gap-4">
+    <div className={chartData.length > 0 ? CHART_PANEL : "md:flex md:min-h-0 md:flex-1 md:flex-col"}>
       {chartData.length > 0 && (
-        <div className="rounded-lg border border-border bg-white p-4">
+        <div className="rounded-lg border border-border bg-white p-4 md:shrink-0 lg:self-start">
           <h3 className="text-sm font-semibold text-heading">Tiền phạt theo tháng</h3>
           <ChartContainer config={phatChartConfig} className="mt-3 h-[220px] w-full" aria-label="Biểu đồ tiền phạt theo tháng">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>

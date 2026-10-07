@@ -20,7 +20,7 @@ export function Pager({
   onPage: (page: number) => void
 }) {
   return (
-    <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
+    <div className="mt-4 flex shrink-0 items-center justify-between text-xs text-muted-foreground">
       <span>
         {total} {unit}
         {order && <span> · Xếp theo {order}</span>}

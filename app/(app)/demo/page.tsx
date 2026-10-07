@@ -23,9 +23,9 @@ function MucList({ items }: { items: DemoMuc[] }) {
 
   return (
     <div className="grid gap-5 lg:grid-cols-[16rem_minmax(0,1fr)]">
-      <ul className="grid content-start gap-1.5" aria-label="Danh sách mục demo">
+      <ul className="grid grid-cols-1 content-start gap-1.5" aria-label="Danh sách mục demo">
         {items.map((m) => (
-          <li key={m.id}>
+          <li key={m.id} className="min-w-0">
             <button
               type="button"
               onClick={() => setChon(m.id)}

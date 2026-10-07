@@ -27,18 +27,18 @@ const REPORTS = [
 ]
 
 export default function BaoCaoPage() {
-    const [tab, setTab] = useState(REPORTS[0].value)
+  const [tab, setTab] = useState(REPORTS[0].value)
 
   return (
-    <section className="mx-auto w-full min-w-0 max-w-6xl">
+    <section className="mx-auto w-full min-w-0 max-w-6xl md:flex md:min-h-0 md:flex-1 md:flex-col">
       <PageHeader
         eyebrow="Báo cáo"
         title="Báo cáo thư viện"
         description="Số liệu đọc trực tiếp từ các view của cơ sở dữ liệu; có thể xuất từng báo cáo ra CSV."
       />
 
-      <Tabs value={tab} onValueChange={(v) => v && setTab(String(v))} className="min-w-0">
-        <div className="overflow-x-auto">
+      <Tabs value={tab} onValueChange={(v) => v && setTab(String(v))} className="min-w-0 md:min-h-0 md:flex-1">
+        <div className="shrink-0 overflow-x-auto">
           <TabsList variant="line" className="h-auto min-w-max border-b border-border pb-1">
             {REPORTS.map((r) => (
               <TabsTrigger key={r.value} value={r.value} className="flex-none px-3 py-1.5 data-active:text-primary">
@@ -48,8 +48,8 @@ export default function BaoCaoPage() {
           </TabsList>
         </div>
         {REPORTS.map(({ value, desc, Panel }) => (
-          <TabsContent key={value} value={value} className="pt-4">
-            <p className="mb-4 text-sm text-muted-foreground">{desc}</p>
+          <TabsContent key={value} value={value} className="pt-4 md:flex md:min-h-0 md:flex-col">
+            <p className="mb-4 shrink-0 text-sm text-muted-foreground">{desc}</p>
             <Panel />
           </TabsContent>
         ))}

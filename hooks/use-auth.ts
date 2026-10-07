@@ -20,7 +20,7 @@ export async function login(body: Schemas["LoginDto"]) {
 }
 
 export function logout() {
-  clearSession()
+  clearSession("logout")
 }
 
 export function useAuth() {
