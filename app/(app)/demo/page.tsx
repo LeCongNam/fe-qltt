@@ -5,7 +5,6 @@ import { useState } from "react"
 import { DemoRunner } from "@/components/demo/demo-runner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from "@/hooks/use-auth"
 import { getApiErrorMessage } from "@/lib/api"
 import { useDemoList, type DemoLoai, type DemoMuc } from "@/lib/demo"
 
@@ -48,13 +47,8 @@ function MucList({ items }: { items: DemoMuc[] }) {
 }
 
 export default function DemoPage() {
-  const { isStaff, ready } = useAuth()
-  const list = useDemoList()
+    const list = useDemoList()
   const [tab, setTab] = useState<DemoLoai>("PROCEDURE")
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem trang demo.</p>
-  }
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">

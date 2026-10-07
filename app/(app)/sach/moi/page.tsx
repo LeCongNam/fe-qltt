@@ -3,15 +3,9 @@
 import { useRouter } from "next/navigation"
 
 import { SachForm } from "@/components/sach/sach-form"
-import { useAuth } from "@/hooks/use-auth"
 
 export default function ThemSachPage() {
   const router = useRouter()
-  const { isStaff } = useAuth()
-
-  if (!isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền thêm sách.</p>
-  }
 
   return (
     <section className="mx-auto w-full max-w-4xl">

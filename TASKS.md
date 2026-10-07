@@ -26,7 +26,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 | U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Chưa thực hiện |
 | U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Chưa thực hiện |
 | U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Chưa thực hiện |
-| C1 | Phân quyền tập trung (`RoleGate`) | P1 | Chưa thực hiện |
+| C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
 | C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
 | C3 | Đưa màu hex cứng vào theme token | P2 | Chưa thực hiện |
 | C4 | Tách component dùng chung (lặp code) | P2 | Chưa thực hiện |
@@ -104,9 +104,12 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 ## Chưa thực hiện — Cấu trúc code
 
 ### C1 — Phân quyền tập trung (P1)
-- **Trạng thái:** Chưa thực hiện
-- Hiện mỗi trang tự `if (ready && !isStaff) return <p>…</p>`: `demo`, `nguoi-dung`, `nguoi-dung/[id]`, `phat`, `bao-cao`, `phieu-muon`, `phieu-muon/moi`, `dashboard-overview`. `sach/moi` và `add-doc-gia` dùng `if (!isStaff)` mà không kiểm `ready`. Menu ẩn theo `roles` nhưng URL không bị chặn ở layout.
-- Việc cần làm: `RoleGate`/guard tập trung đọc quyền từ `lib/navigation.ts` (hoặc cấu hình route), dùng thống nhất, xử lý `ready`. Thực thi thật vẫn ở BE (403).
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit.
+- `lib/navigation.ts`: thêm `getRouteRoles(pathname)`, quyền lấy từ `roles` của mục menu (khớp tiền tố dài nhất, có tính `PATH_ALIASES`) cộng `ROUTE_ROLES_EXTRA` cho trang con hẹp quyền hơn trang cha (hiện chỉ `/sach/moi`).
+- `components/auth/role-gate.tsx`: `RoleGate` bọc `children` trong `app/(app)/layout.tsx`; không đủ quyền thì hiện thông báo `role="alert"` kèm link về `/me`. Đã xóa 10 khối `if (…!isStaff) return <p>` ở các trang và `dashboard-overview`.
+- Khi thêm route mới: khai báo `roles` ở mục menu, hoặc thêm vào `ROUTE_ROLES_EXTRA` nếu route không có mục menu.
+- Kiểm chứng: `tsc` + `eslint` sạch; BAN_DOC bị chặn ở `/`, `/nguoi-dung`, `/nguoi-dung/1`, `/add-doc-gia`, `/phieu-muon`, `/phieu-muon/moi`, `/phat`, `/bao-cao`, `/demo`, `/sach/moi`, vẫn vào được `/sach`, `/dat-truoc`, `/me`; THU_THU vào được `/`, `/demo`, `/sach/moi`, `/add-doc-gia`.
+- Giới hạn: thao tác ghi vẫn dựa vào BE (403); `isStaff`/`isAdmin` trong trang chỉ còn để ẩn/hiện nút và bật `enabled` của query.
 
 ### C2 — Phiên đăng nhập (P2)
 - **Trạng thái:** Chưa thực hiện

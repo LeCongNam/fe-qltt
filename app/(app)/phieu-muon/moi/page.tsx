@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
-import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
 
 const MAX_BAN = 20
@@ -18,7 +17,6 @@ const MAX_BAN = 20
 export default function LapPhieuMuonPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { isStaff, ready } = useAuth()
   const [maNguoiDung, setMaNguoiDung] = useState("")
   const [maBan, setMaBan] = useState("")
   const [danhSach, setDanhSach] = useState<string[]>([])
@@ -43,10 +41,6 @@ export default function LapPhieuMuonPage() {
       toast.add({ type: "error", title: "Không thể lập phiếu mượn", description: getApiErrorMessage(error) })
     },
   })
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền lập phiếu mượn.</p>
-  }
 
   function themBan() {
     const ma = maBan.trim().toUpperCase()

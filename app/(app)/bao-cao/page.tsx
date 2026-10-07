@@ -13,7 +13,6 @@ import {
   TopSachPanel,
 } from "@/components/bao-cao/bao-cao-panels"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAuth } from "@/hooks/use-auth"
 
 const REPORTS = [
   { value: "danh-muc-sach", label: "Danh mục sách", desc: "Mọi đầu sách và số bản đang sẵn sàng cho mượn (không tính bản mất/ngừng phục vụ).", Panel: DanhMucSachPanel },
@@ -27,12 +26,7 @@ const REPORTS = [
 ]
 
 export default function BaoCaoPage() {
-  const { isStaff, ready } = useAuth()
-  const [tab, setTab] = useState(REPORTS[0].value)
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem báo cáo.</p>
-  }
+    const [tab, setTab] = useState(REPORTS[0].value)
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">

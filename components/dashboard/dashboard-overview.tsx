@@ -9,7 +9,6 @@ import { isOverdue, todayIso } from "@/components/luu-thong/luu-thong-meta"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useAuth } from "@/hooks/use-auth"
 import {
   type DanhMucSachDong,
   type DatTruocDong,
@@ -55,17 +54,12 @@ function loanStatus(r: LichSuMuonDong, today: string) {
 }
 
 export function DashboardOverview() {
-  const { isStaff, ready } = useAuth()
-  const dangMuon = useBaoCao<SachDangMuonDong>("sach-dang-muon")
+    const dangMuon = useBaoCao<SachDangMuonDong>("sach-dang-muon")
   const quaHan = useBaoCao<MuonQuaHanDong>("muon-qua-han")
   const datTruoc = useBaoCao<DatTruocDong>("dat-truoc")
   const danhMuc = useBaoCao<DanhMucSachDong>("danh-muc-sach")
   const tienPhat = useBaoCao<ThongKeTienPhatDong>("thong-ke-tien-phat")
   const lichSu = useBaoCao<LichSuMuonDong>("lich-su-muon")
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem trang tổng quan.</p>
-  }
 
   const today = todayIso()
   const num = (n: number | undefined) => (n === undefined ? "—" : new Intl.NumberFormat("vi-VN").format(n))

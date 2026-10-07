@@ -26,7 +26,7 @@ const ALL = "ALL"
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_PHIEU_MUON]
 
 export default function PhieuMuonPage() {
-  const { isStaff, ready } = useAuth()
+  const { isStaff } = useAuth()
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
   const [maNguoiDung, setMaNguoiDung] = useState("")
@@ -49,10 +49,6 @@ export default function PhieuMuonPage() {
     placeholderData: keepPreviousData,
     enabled: isStaff,
   })
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem danh sách phiếu mượn.</p>
-  }
 
   const rows = list.data?.data ?? []
   const total = list.data?.total ?? 0

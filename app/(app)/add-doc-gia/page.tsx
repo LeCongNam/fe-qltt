@@ -3,15 +3,9 @@
 import { useRouter } from "next/navigation"
 
 import { NguoiDungForm } from "@/components/nguoi-dung/nguoi-dung-form"
-import { useAuth } from "@/hooks/use-auth"
 
 export default function ThemNguoiDungPage() {
   const router = useRouter()
-  const { isStaff } = useAuth()
-
-  if (!isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền thêm người dùng.</p>
-  }
 
   return (
     <section className="mx-auto w-full max-w-4xl">

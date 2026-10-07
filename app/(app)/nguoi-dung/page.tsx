@@ -28,7 +28,7 @@ const LOAI_FILTER = [{ value: ALL, label: "Mọi loại" }, ...LOAI_NGUOI_DUNG]
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_NGUOI_DUNG]
 
 export default function NguoiDungPage() {
-  const { isStaff, ready } = useAuth()
+  const { isStaff } = useAuth()
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
   const [tuKhoa, setTuKhoa] = useState("")
@@ -52,10 +52,6 @@ export default function NguoiDungPage() {
     placeholderData: keepPreviousData,
     enabled: isStaff,
   })
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem danh sách người dùng.</p>
-  }
 
   const rows = list.data?.data ?? []
   const total = list.data?.total ?? 0

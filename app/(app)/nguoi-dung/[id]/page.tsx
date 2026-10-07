@@ -63,7 +63,7 @@ function Info({ label, children }: { label: string; children: React.ReactNode })
 
 export default function NguoiDungDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const { isStaff, isAdmin, ready } = useAuth()
+  const { isStaff, isAdmin } = useAuth()
   const [editing, setEditing] = useState(false)
 
   const query = useQuery({
@@ -72,10 +72,6 @@ export default function NguoiDungDetailPage() {
     retry: false,
     enabled: isStaff,
   })
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem người dùng.</p>
-  }
 
   if (query.isPending) {
     return (

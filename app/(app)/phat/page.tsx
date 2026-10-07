@@ -37,7 +37,7 @@ const ALL = "ALL"
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_PHAT]
 
 export default function PhatPage() {
-  const { isStaff, isAdmin, ready } = useAuth()
+  const { isStaff, isAdmin } = useAuth()
   const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
@@ -76,10 +76,6 @@ export default function PhatPage() {
       setThanhToan(null)
     },
   })
-
-  if (ready && !isStaff) {
-    return <p className="text-sm text-[#a35143]">Bạn không có quyền xem tiền phạt.</p>
-  }
 
   const rows = list.data?.data ?? []
   const total = list.data?.total ?? 0
