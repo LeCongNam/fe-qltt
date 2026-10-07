@@ -1,7 +1,7 @@
 # TASKS — Cải thiện UI/UX và cấu trúc code FE (qltv_nhom8)
 
 Nguồn: phân tích FE ngày 2026-10-07 (đọc code, chạy tsc/eslint, xem giao diện thật bằng ADMIN trên desktop và mobile).
-Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem_muxvkef3_23b6830071dc` (chưa ghi các việc font/tương phản bên dưới).
+Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem_muxwwjwr_c4ef046b635b` (bản tổng hợp mới nhất; thay các bản cũ).
 
 ## Cách dùng file này (cho session mới)
 
@@ -45,16 +45,16 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 ## Đã hoàn thành
 
 ### T01 — Lỗi lint `use-mobile`
-- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), commit `78da42e`.
 - `hooks/use-mobile.ts` viết lại bằng `useSyncExternalStore` + `matchMedia("(max-width: 767px)")`, server snapshot `false`. Lỗi `react-hooks/set-state-in-effect` hết; sidebar mobile mở đúng ở 375px.
 
 ### T02 — Font
-- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), commit `de116f0`.
 - Nguyên nhân: `app/layout.tsx` gắn class biến font vào `<body>` trong khi theme Tailwind đọc ở `<html>`, nên `font-family` rơi về Times.
 - Sửa: chuyển `className={geistSans.variable} ${geistMono.variable}` sang `<html>`. Đã kiểm chứng `body`/`h2` là `Geist` và face tiếng Việt (`U+1EA0–1EF9`) đã tải.
 
 ### T03 — Độ tương phản và cỡ chữ
-- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (37 file, chỉ đổi class màu/cỡ chữ).
+- **Trạng thái:** Đã hoàn thành (2026-10-07), commit `9a34554` (37 file, chỉ đổi class màu/cỡ chữ).
 - Mục tiêu AA 4,5:1. Bảng thay màu (chỉ đổi màu chữ, giữ nguyên icon trang trí vì chuẩn chỉ cần 3:1):
   - chữ phụ `#758078/#738078/#78847d/#68756e` → `#5f6b64`
   - chữ nhạt `#87918b/#8a948e/#9aa59e/#9ca69f` (và nhãn nhóm sidebar, mã tác giả) → `#66736c`
@@ -71,7 +71,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 ## Chưa thực hiện — UI/UX
 
 ### U1 — Ô tìm kiếm và chuông giả ở header (P1)
-- **Trạng thái:** Một phần (2026-10-07), chưa commit. Tìm kiếm đã làm thật; chuông **giữ nguyên theo ý người dùng** (chấm đỏ vẫn là giả, sẽ làm sau).
+- **Trạng thái:** Một phần (2026-10-07), commit `bc4c915`. Tìm kiếm đã làm thật; chuông **giữ nguyên theo ý người dùng** (chấm đỏ vẫn là giả, sẽ làm sau).
 - `components/dashboard/global-search.tsx`: ô tìm kiếm mở hộp tìm nhanh (nút ở header, `Ctrl/⌘ + K`; dưới `md` là nút kính lúp). Chỉ FE, dùng endpoint có sẵn: `GET /sach?tuKhoa` (ai cũng tìm được), `GET /docgia?tuKhoa&limit=6` (chỉ staff), `GET /phieu-muon/{ma}` khi gõ đúng dạng `PM…` (staff). Mũi tên chọn, Enter mở, mỗi nhóm hiện tối đa 6 kết quả kèm link sang trang danh sách.
 - **Chỉ tìm khi bấm Enter, không tìm theo từng phím:** `sp_tra_cuu_sach` ghi mỗi lượt tra cứu sách vào `nhat_ky_hanh_vi` (`TRA_CUU`), tìm khi đang gõ sẽ ghi cả từ khóa dở dang. Khi đang sửa từ khóa, kết quả cũ bị làm mờ và hiện gợi ý "Nhấn Enter để tìm".
 - `hooks/use-debounced.ts` tách từ `demo-runner.tsx` (còn dùng ở đó).
@@ -100,7 +100,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 - Mới có 3 chỗ dùng `aria-live`/`role`. Kiểm tra toast, kết quả tìm kiếm, trạng thái tải/lỗi bảng.
 
 ### U7 — Kiểm tra bố cục sau đổi font (P1)
-- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), commit `bcbe6ff`.
 - Đã xem bằng ADMIN ở 1000px, 1280px và 375px: `/phieu-muon` (+`moi`, `PM000015`), `/dat-truoc`, `/demo` (đủ 5 bước, SQL, bảng), `/me`, `/nguoi-dung/13`, `/sach/7`, `/sach/moi`, `/add-doc-gia`, `/tac-gia`, `/the-loai`, `/nha-xuat-ban`, dialog thêm tác giả và đặt trước hộ (mobile), `/login` (mobile). Không trang nào tràn ngang (`scrollWidth` = `clientWidth`).
 - Lỗi tìm thấy và đã sửa: ở `/phieu-muon/[maPhieu]` ô "Phạt" bị bóp, số tiền "Trả quá hạn 15.000 đ" xuống 5 dòng ở 1000px. Sửa: số tiền `whitespace-nowrap`, hàng phạt `flex-wrap`.
 - Còn lại, không phải lỗi bố cục mới: bảng ở mobile cuộn ngang trong khung (đúng việc U2); tab ở `/demo` và `/me` cuộn ngang trên mobile, tab cuối bị cắt không có gợi ý; tên người mượn xuống 2 dòng ở `/phieu-muon`, `/dat-truoc` ở 1000px (chấp nhận được).
@@ -109,7 +109,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 ## Chưa thực hiện — Cấu trúc code
 
 ### C1 — Phân quyền tập trung (P1)
-- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), commit `3a6b90c`.
 - `lib/navigation.ts`: thêm `getRouteRoles(pathname)`, quyền lấy từ `roles` của mục menu (khớp tiền tố dài nhất, có tính `PATH_ALIASES`) cộng `ROUTE_ROLES_EXTRA` cho trang con hẹp quyền hơn trang cha (hiện chỉ `/sach/moi`).
 - `components/auth/role-gate.tsx`: `RoleGate` bọc `children` trong `app/(app)/layout.tsx`; không đủ quyền thì hiện thông báo `role="alert"` kèm link về `/me`. Đã xóa 10 khối `if (…!isStaff) return <p>` ở các trang và `dashboard-overview`.
 - Khi thêm route mới: khai báo `roles` ở mục menu, hoặc thêm vào `ROUTE_ROLES_EXTRA` nếu route không có mục menu.
