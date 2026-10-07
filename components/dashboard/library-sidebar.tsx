@@ -56,8 +56,8 @@ export function LibrarySidebar() {
     <Sidebar collapsible="icon" className="border-r border-[#e6e9e3] bg-[#fbfcf9]">
       <SidebarHeader className="px-5 pb-5 pt-6 group-data-[collapsible=icon]:px-2">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#147d64] text-white">
-            <BookOpenCheck className="size-5" aria-hidden="true" />
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#147d64] text-white group-data-[collapsible=icon]:size-8">
+            <BookOpenCheck className="size-5 group-data-[collapsible=icon]:size-4" aria-hidden="true" />
           </div>
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
             <p className="truncate text-sm font-semibold text-[#1b2c27]">Thư viện số</p>
@@ -67,7 +67,7 @@ export function LibrarySidebar() {
       </SidebarHeader>
       <SidebarContent className="px-2">
         {groups.map((group) => (
-          <SidebarGroup key={group.label} className="px-2 py-1">
+          <SidebarGroup key={group.label} className="px-2 py-1 group-data-[collapsible=icon]:px-0">
             <SidebarGroupLabel className="px-2 text-[11px] font-semibold tracking-[0.08em] text-[#66736c]">
               {group.label}
             </SidebarGroupLabel>
@@ -116,7 +116,7 @@ export function LibrarySidebar() {
       </SidebarContent>
       <SidebarFooter className="border-t border-[#e6e9e3] px-4 py-4 group-data-[collapsible=icon]:px-2">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f3e8d8] text-xs font-semibold text-[#845c35]">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f3e8d8] text-xs font-semibold text-[#845c35] group-data-[collapsible=icon]:size-8">
             {user ? initials(user.hoTen) : ""}
           </div>
           <div className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
