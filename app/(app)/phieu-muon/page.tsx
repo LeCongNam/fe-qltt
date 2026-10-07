@@ -9,10 +9,12 @@ import { TRANG_THAI_PHIEU_MUON, isOverdue, type TrangThaiPhieuMuon } from "@/com
 import { TraSachDialog } from "@/components/luu-thong/tra-sach-dialog"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
+import { SortSelect } from "@/components/sort-select"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/use-auth"
+import { useServerSort } from "@/hooks/use-server-sort"
 import { phieuMuonQueries } from "@/features/phieu-muon/queries"
 import type { Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
@@ -59,6 +61,7 @@ const COLUMNS: DataColumn<Phieu>[] = [
 ]
 
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_PHIEU_MUON]
+const SORT_FIELDS = { "Mã phiếu": "maPhieu", "Ngày mượn": "ngayMuon" } as const
 
 export default function PhieuMuonPage() {
   const { isStaff } = useAuth()
@@ -67,11 +70,13 @@ export default function PhieuMuonPage() {
   const [maNguoiDung, setMaNguoiDung] = useState("")
   const [trangThai, setTrangThai] = useState<TrangThaiPhieuMuon | typeof ALL>(ALL)
   const [traOpen, setTraOpen] = useState(false)
+  const sort = useServerSort(SORT_FIELDS, { defaultOrder: { field: "ngayMuon", dir: "desc" }, onChange: () => setPage(1) })
 
   const list = useQuery({
     ...phieuMuonQueries.list({
       page,
       limit: PAGE_SIZE,
+      ...(sort.sapXep && { sapXep: sort.sapXep }),
       ...(maNguoiDung && { maNguoiDung }),
       ...(trangThai !== ALL && { trangThai }),
     }),
@@ -159,17 +164,19 @@ export default function PhieuMuonPage() {
         </div>
       </div>
 
+      <SortSelect {...sort.selectProps} className="mb-3" />
+
       <DataTable
         query={list}
         rows={rows}
-        columns={COLUMNS}
+        columns={sort.columns(COLUMNS)}
         rowKey={(p) => p.id}
         errorText="Không tải được danh sách phiếu mượn."
         emptyText={filtering ? "Không có phiếu mượn khớp bộ lọc." : "Chưa có phiếu mượn nào."}
         skeletonRows={6}
       />
 
-      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu mượn" order="ngày mượn, mới nhất trước" onPage={setPage} />
+      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu mượn" order={sort.orderText("ngày mượn, mới nhất trước")} onPage={setPage} />
 
       <TraSachDialog key={traOpen ? "open" : "closed"} open={traOpen} onClose={() => setTraOpen(false)} />
     </section>

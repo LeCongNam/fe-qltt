@@ -2,12 +2,12 @@
 
 import { useState, type ReactNode } from "react"
 import type { UseQueryResult } from "@tanstack/react-query"
-import { ArrowDown, ArrowUp, Download } from "lucide-react"
+import { Download } from "lucide-react"
 
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SortSelect } from "@/components/sort-select"
 
 export type Column<T> = {
   header: string
@@ -30,7 +30,6 @@ export type Column<T> = {
 type SortDir = "asc" | "desc"
 type SortState = { header: string; dir: SortDir }
 
-const DEFAULT_ORDER = "__default"
 const collator = new Intl.Collator("vi", { numeric: true, sensitivity: "base" })
 
 function compareKeys(a: string | number, b: string | number) {
@@ -140,43 +139,16 @@ export function ReportTable<T>({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {toolbar}
-          {sortableColumns.length > 0 && (
-            <div className="flex items-center gap-1 md:hidden">
-              <Select
-                value={sortCol?.header ?? DEFAULT_ORDER}
-                items={[{ value: DEFAULT_ORDER, label: "Thứ tự mặc định" }, ...sortableColumns.map((c) => ({ value: c.header, label: c.header }))]}
-                onValueChange={(v) => {
-                  if (!v) return
-                  setPage(1)
-                  setSort(v === DEFAULT_ORDER ? null : { header: v, dir: "asc" })
-                }}
-              >
-                <SelectTrigger aria-label="Sắp xếp theo" className="h-9 w-44 border-input bg-white">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={DEFAULT_ORDER}>Thứ tự mặc định</SelectItem>
-                  {sortableColumns.map((c) => (
-                    <SelectItem key={c.header} value={c.header}>
-                      {c.header}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {sort && sortCol && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  className="size-9"
-                  aria-label={sort.dir === "asc" ? "Đang tăng dần, bấm để giảm dần" : "Đang giảm dần, bấm để tăng dần"}
-                  onClick={() => setSort({ header: sort.header, dir: sort.dir === "asc" ? "desc" : "asc" })}
-                >
-                  {sort.dir === "asc" ? <ArrowUp aria-hidden="true" /> : <ArrowDown aria-hidden="true" />}
-                </Button>
-              )}
-            </div>
-          )}
+          <SortSelect
+            options={sortableColumns.map((c) => ({ value: c.header, label: c.header }))}
+            value={sortCol?.header ?? null}
+            dir={sort?.dir ?? "asc"}
+            onValueChange={(v) => {
+              setPage(1)
+              setSort(v === null ? null : { header: v, dir: "asc" })
+            }}
+            onToggleDir={() => sort && setSort({ header: sort.header, dir: sort.dir === "asc" ? "desc" : "asc" })}
+          />
         </div>
         {filename && (
           <Button type="button" variant="outline" size="sm" disabled={rows.length === 0} onClick={exportCsv}>

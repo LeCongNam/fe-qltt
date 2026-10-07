@@ -14,11 +14,13 @@ import {
 } from "@/components/nguoi-dung/nguoi-dung-meta"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
+import { SortSelect } from "@/components/sort-select"
 import { StatusPill } from "@/components/status-pill"
 import type { NguoiDung } from "@/components/nguoi-dung/nguoi-dung-form"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/use-auth"
+import { useServerSort } from "@/hooks/use-server-sort"
 import { nguoiDungQueries } from "@/features/nguoi-dung/queries"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
@@ -44,6 +46,7 @@ const COLUMNS: DataColumn<NguoiDung>[] = [
   { header: "Trạng thái", className: "w-28", cell: (u) => <StatusPill list={TRANG_THAI_NGUOI_DUNG} value={u.trangThai} /> },
 ]
 
+const SORT_FIELDS = { "Mã": "maNguoiDung", "Họ tên": "hoTen" } as const
 const LOAI_FILTER = [{ value: ALL, label: "Mọi loại" }, ...LOAI_NGUOI_DUNG]
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_NGUOI_DUNG]
 
@@ -54,11 +57,13 @@ export default function NguoiDungPage() {
   const [tuKhoa, setTuKhoa] = useState("")
   const [loai, setLoai] = useState<LoaiNguoiDung | typeof ALL>(ALL)
   const [trangThai, setTrangThai] = useState<TrangThaiNguoiDung | typeof ALL>(ALL)
+  const sort = useServerSort(SORT_FIELDS, { defaultOrder: { field: "maNguoiDung", dir: "asc" }, onChange: () => setPage(1) })
 
   const list = useQuery({
     ...nguoiDungQueries.list({
       page,
       limit: PAGE_SIZE,
+      ...(sort.sapXep && { sapXep: sort.sapXep }),
       ...(tuKhoa && { tuKhoa }),
       ...(loai !== ALL && { loaiNguoiDung: loai }),
       ...(trangThai !== ALL && { trangThai }),
@@ -161,17 +166,19 @@ export default function NguoiDungPage() {
         </div>
       </div>
 
+      <SortSelect {...sort.selectProps} className="mb-3" />
+
       <DataTable
         query={list}
         rows={rows}
-        columns={COLUMNS}
+        columns={sort.columns(COLUMNS)}
         rowKey={(u) => u.id}
         errorText="Không tải được danh sách người dùng."
         emptyText={filtering ? "Không có người dùng khớp bộ lọc." : "Chưa có người dùng nào."}
         skeletonRows={6}
       />
 
-      <Pager page={page} pageCount={pageCount} total={total} unit="người dùng" order="mã người dùng" onPage={setPage} />
+      <Pager page={page} pageCount={pageCount} total={total} unit="người dùng" order={sort.orderText("mã người dùng")} onPage={setPage} />
     </section>
   )
 }

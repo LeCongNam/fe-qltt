@@ -8,11 +8,13 @@ import { TRANG_THAI_DAT_TRUOC, type TrangThaiDatTruoc } from "@/components/luu-t
 import { DatTruocDialog } from "@/components/luu-thong/dat-truoc-dialog"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
+import { SortSelect } from "@/components/sort-select"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
+import { useServerSort } from "@/hooks/use-server-sort"
 import { datTruocApi } from "@/features/dat-truoc/api"
 import { datTruocKeys, datTruocQueries } from "@/features/dat-truoc/queries"
 import { sachKeys } from "@/features/sach/queries"
@@ -29,6 +31,7 @@ type DatTruoc = Schemas["DatTruocDto"]
 const ALL = "ALL"
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_DAT_TRUOC]
 const HUY_DUOC = ["CHO_XU_LY", "SAN_SANG_NHAN"]
+const SORT_FIELDS = { "Ngày đặt": "ngayDat", "Hạn giữ": "hanGiu" } as const
 
 export default function DatTruocPage() {
   const { isStaff } = useAuth()
@@ -39,11 +42,13 @@ export default function DatTruocPage() {
   const [trangThai, setTrangThai] = useState<TrangThaiDatTruoc | typeof ALL>(ALL)
   const [datOpen, setDatOpen] = useState(false)
   const [huyRow, setHuyRow] = useState<DatTruoc | null>(null)
+  const sort = useServerSort(SORT_FIELDS, { onChange: () => setPage(1) })
 
   const list = useQuery({
     ...datTruocQueries.list({
       page,
       limit: PAGE_SIZE,
+      ...(sort.sapXep && { sapXep: sort.sapXep }),
       ...(isStaff && maNguoiDung && { maNguoiDung }),
       ...(trangThai !== ALL && { trangThai }),
     }),
@@ -178,16 +183,18 @@ export default function DatTruocPage() {
         </div>
       </div>
 
+      <SortSelect {...sort.selectProps} className="mb-3" />
+
       <DataTable
         query={list}
         rows={rows}
-        columns={columns}
+        columns={sort.columns(columns)}
         rowKey={(d) => d.id}
         errorText="Không tải được danh sách đặt trước."
         emptyText={filtering ? "Không có lượt đặt trước khớp bộ lọc." : "Chưa có lượt đặt trước nào."}
       />
 
-      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="lượt đặt" order="đang chờ trước, rồi mới nhất" onPage={setPage} />
+      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="lượt đặt" order={sort.orderText("đang chờ trước, rồi mới nhất")} onPage={setPage} />
 
       <DatTruocDialog key={datOpen ? "open" : "closed"} open={datOpen} isStaff={isStaff} onClose={() => setDatOpen(false)} />
 

@@ -473,7 +473,9 @@ export interface paths {
         };
         /**
          * Danh sách phiếu mượn (phân trang, lọc theo trạng thái/người mượn)
-         * @description **Quyền:** `ADMIN`, `THU_THU`
+         * @description Sắp theo ngày mượn mới nhất trước, rồi `id` giảm dần.
+         *
+         *     **Quyền:** `ADMIN`, `THU_THU`
          */
         get: operations["MuonTra_list"];
         put?: never;
@@ -587,7 +589,7 @@ export interface paths {
         };
         /**
          * Danh sách lượt đặt trước
-         * @description Bạn đọc luôn chỉ thấy lượt của mình (bỏ qua `maNguoiDung`). Cán bộ thấy tất cả và lọc được theo `maNguoiDung`.
+         * @description Bạn đọc luôn chỉ thấy lượt của mình (bỏ qua `maNguoiDung`). Cán bộ thấy tất cả và lọc được theo `maNguoiDung`. Lượt đang chờ (`CHO_XU_LY`, `SAN_SANG_NHAN`) đứng trước, rồi lượt đã đóng; mỗi nhóm sắp theo ngày đặt mới nhất trước.
          *
          *     **Quyền:** mọi tài khoản đã đăng nhập.
          */
@@ -637,7 +639,7 @@ export interface paths {
         };
         /**
          * Danh sách phiếu phạt (phân trang, lọc theo trạng thái/người dùng)
-         * @description Phiếu phạt do DB tự lập khi trả sách quá hạn/hư hỏng/mất. Bạn đọc xem phạt của mình ở `GET /me/tien-phat`.
+         * @description Phiếu phạt do DB tự lập khi trả sách quá hạn/hư hỏng/mất. Bạn đọc xem phạt của mình ở `GET /me/tien-phat`. Phiếu `CHUA_THANH_TOAN` đứng trước, rồi các phiếu còn lại; mỗi nhóm sắp theo ngày tạo mới nhất trước.
          *
          *     **Quyền:** `ADMIN`, `THU_THU`
          */
@@ -857,7 +859,7 @@ export interface paths {
         };
         /**
          * Báo cáo 4: người dùng vi phạm / phát sinh tiền phạt
-         * @description View `vw_nguoi_dung_vi_pham`, gồm cả người đang giữ sách quá hạn chưa bị lập phiếu phạt.
+         * @description View `vw_nguoi_dung_vi_pham`, gồm cả người đang giữ sách quá hạn chưa bị lập phiếu phạt. Sắp theo còn nợ giảm dần, rồi tiền phạt tạm tính giảm dần.
          *
          *     **Quyền:** `ADMIN`, `THU_THU`
          */
@@ -2148,6 +2150,8 @@ export interface operations {
                 page?: number;
                 /** @description Số dòng mỗi trang (1–100). */
                 limit?: number;
+                /** @description Sắp xếp theo một cột: `<field>:<asc|desc>`, field thuộc: `maNguoiDung`, `hoTen`. Bỏ trống thì dùng thứ tự mặc định của endpoint. Khóa phụ cố định luôn được nối thêm để phân trang không lệch. */
+                sapXep?: string;
                 tuKhoa?: string;
                 loaiNguoiDung?: "SINH_VIEN" | "GIANG_VIEN" | "CAN_BO";
                 trangThai?: "HOAT_DONG" | "TAM_KHOA" | "NGUNG";
@@ -3824,6 +3828,8 @@ export interface operations {
                 page?: number;
                 /** @description Số dòng mỗi trang (1–100). */
                 limit?: number;
+                /** @description Sắp xếp theo một cột: `<field>:<asc|desc>`, field thuộc: `tenSach`, `maSach`, `namXuatBan`, `soBanSanSang`. Bỏ trống thì dùng thứ tự mặc định của endpoint. Khóa phụ cố định luôn được nối thêm để phân trang không lệch. */
+                sapXep?: string;
                 tuKhoa?: string;
             };
             header?: never;
@@ -4451,6 +4457,8 @@ export interface operations {
                 page?: number;
                 /** @description Số dòng mỗi trang (1–100). */
                 limit?: number;
+                /** @description Sắp xếp theo một cột: `<field>:<asc|desc>`, field thuộc: `ngayMuon`, `maPhieu`. Bỏ trống thì dùng thứ tự mặc định của endpoint. Khóa phụ cố định luôn được nối thêm để phân trang không lệch. */
+                sapXep?: string;
                 trangThai?: "DANG_MUON" | "HOAN_TAT" | "HUY";
                 maNguoiDung?: string;
             };
@@ -4866,6 +4874,8 @@ export interface operations {
                 page?: number;
                 /** @description Số dòng mỗi trang (1–100). */
                 limit?: number;
+                /** @description Sắp xếp theo một cột: `<field>:<asc|desc>`, field thuộc: `ngayDat`, `hanGiu`. Bỏ trống thì dùng thứ tự mặc định của endpoint. Khóa phụ cố định luôn được nối thêm để phân trang không lệch. */
+                sapXep?: string;
                 trangThai?: "CHO_XU_LY" | "SAN_SANG_NHAN" | "DA_NHAN" | "HUY" | "HET_HAN";
                 maNguoiDung?: string;
             };
@@ -5054,6 +5064,8 @@ export interface operations {
                 page?: number;
                 /** @description Số dòng mỗi trang (1–100). */
                 limit?: number;
+                /** @description Sắp xếp theo một cột: `<field>:<asc|desc>`, field thuộc: `ngayTao`, `soTien`. Bỏ trống thì dùng thứ tự mặc định của endpoint. Khóa phụ cố định luôn được nối thêm để phân trang không lệch. */
+                sapXep?: string;
                 trangThai?: "CHUA_THANH_TOAN" | "DA_THANH_TOAN" | "HUY";
                 maNguoiDung?: string;
             };

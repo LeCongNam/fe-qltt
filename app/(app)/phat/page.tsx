@@ -9,11 +9,13 @@ import { LOAI_PHAT, TRANG_THAI_PHAT, type TrangThaiPhat } from "@/components/luu
 import { HuyPhatDialog } from "@/components/luu-thong/huy-phat-dialog"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
+import { SortSelect } from "@/components/sort-select"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
+import { useServerSort } from "@/hooks/use-server-sort"
 import { phatApi } from "@/features/phat/api"
 import { phatKeys, phatQueries } from "@/features/phat/queries"
 import { phieuMuonKeys } from "@/features/phieu-muon/queries"
@@ -29,6 +31,7 @@ type Phat = Schemas["PhieuPhatChiTietDto"]
 
 const ALL = "ALL"
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_PHAT]
+const SORT_FIELDS = { "Số tiền": "soTien", "Ngày tạo": "ngayTao" } as const
 
 export default function PhatPage() {
   const { isStaff, isAdmin } = useAuth()
@@ -39,11 +42,13 @@ export default function PhatPage() {
   const [trangThai, setTrangThai] = useState<TrangThaiPhat | typeof ALL>(ALL)
   const [thanhToan, setThanhToan] = useState<Phat | null>(null)
   const [huyRow, setHuyRow] = useState<Phat | null>(null)
+  const sort = useServerSort(SORT_FIELDS, { onChange: () => setPage(1) })
 
   const list = useQuery({
     ...phatQueries.list({
       page,
       limit: PAGE_SIZE,
+      ...(sort.sapXep && { sapXep: sort.sapXep }),
       ...(maNguoiDung && { maNguoiDung }),
       ...(trangThai !== ALL && { trangThai }),
     }),
@@ -181,16 +186,18 @@ export default function PhatPage() {
         </div>
       </div>
 
+      <SortSelect {...sort.selectProps} className="mb-3" />
+
       <DataTable
         query={list}
         rows={rows}
-        columns={columns}
+        columns={sort.columns(columns)}
         rowKey={(f) => f.id}
         errorText="Không tải được danh sách phiếu phạt."
         emptyText={filtering ? "Không có phiếu phạt khớp bộ lọc." : "Chưa có phiếu phạt nào."}
       />
 
-      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu phạt" order="chưa thu trước, rồi mới nhất" onPage={setPage} />
+      <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu phạt" order={sort.orderText("chưa thu trước, rồi mới nhất")} onPage={setPage} />
 
       <ConfirmDialog
         open={thanhToan !== null}

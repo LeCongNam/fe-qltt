@@ -7,8 +7,10 @@ import { Plus } from "lucide-react"
 
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
+import { SortSelect } from "@/components/sort-select"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/use-auth"
+import { useServerSort } from "@/hooks/use-server-sort"
 import { sachQueries } from "@/features/sach/queries"
 import type { Schemas } from "@/lib/api"
 import { PAGE_SIZE } from "@/lib/constants"
@@ -51,14 +53,17 @@ const COLUMNS: DataColumn<SachRow>[] = [
   },
 ]
 
+const SORT_FIELDS = { "Tên sách": "tenSach", "Mã": "maSach", "Năm": "namXuatBan", "Có thể mượn": "soBanSanSang" } as const
+
 export default function SachPage() {
   const { isStaff } = useAuth()
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
   const [tuKhoa, setTuKhoa] = useState("")
+  const sort = useServerSort(SORT_FIELDS, { defaultOrder: { field: "tenSach", dir: "asc" }, onChange: () => setPage(1) })
 
   const list = useQuery({
-    ...sachQueries.list({ page, limit: PAGE_SIZE, ...(tuKhoa && { tuKhoa }) }),
+    ...sachQueries.list({ page, limit: PAGE_SIZE, ...(sort.sapXep && { sapXep: sort.sapXep }), ...(tuKhoa && { tuKhoa }) }),
     placeholderData: keepPreviousData,
   })
 
@@ -115,17 +120,19 @@ export default function SachPage() {
         )}
       </SearchForm>
 
+      <SortSelect {...sort.selectProps} className="mb-3" />
+
       <DataTable
         query={list}
         rows={rows}
-        columns={COLUMNS}
+        columns={sort.columns(COLUMNS)}
         rowKey={(s) => s.ma_sach}
         errorText="Không tải được danh sách sách."
         emptyText={tuKhoa ? `Không có sách khớp “${tuKhoa}”.` : "Chưa có sách nào."}
         skeletonRows={6}
       />
 
-      <Pager page={page} pageCount={pageCount} total={total} unit="đầu sách" order="tên sách A–Z" onPage={setPage} />
+      <Pager page={page} pageCount={pageCount} total={total} unit="đầu sách" order={sort.orderText("tên sách A–Z")} onPage={setPage} />
     </section>
   )
 }

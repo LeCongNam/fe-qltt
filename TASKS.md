@@ -248,7 +248,7 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 ## Đề xuất cho BE
 
 ### B1 — Sort mặc định phía BE (P2)
-- **Trạng thái:** BE đã sửa thứ tự mặc định (2026-10-07); FE đã cập nhật dòng quy tắc ở chân bảng của `phieu-muon`, `dat-truoc`, `phat` và `defaultOrder` "Còn nợ ↓" cho báo cáo người dùng vi phạm. Còn lại: tham số `sapXep` và sort theo độ liên quan khi có `tuKhoa` (chưa có ở BE).
+- **Trạng thái:** BE đã sửa thứ tự mặc định (2026-10-07); FE đã cập nhật dòng quy tắc ở chân bảng của `phieu-muon`, `dat-truoc`, `phat` và `defaultOrder` "Còn nợ ↓" cho báo cáo người dùng vi phạm. BE đã thêm `sapXep` cho `/sach`, `/docgia`, `/phieu-muon`, `/phat`, `/dat-truoc` (2026-10-07) và FE đã bật sort theo cột ở 5 trang này (`hooks/use-server-sort.ts`, `components/sort-select.tsx`; `ReportTable` dùng chung `SortSelect` cho mobile). Chưa có ở BE: sort theo độ liên quan khi có `tuKhoa`.
 - **Nguồn:** đọc `BE/src/*/*.service.ts`, `bao-cao.controller.ts`, `ban-doc.controller.ts`, `sql/07_reports.sql`, index và dữ liệu thật trong DB `qltv_nhom8`.
 - **Phát hiện:**
   1. `/phieu-muon`, `/dat-truoc`, `/phat` đang `ORDER BY id DESC` nhưng `id` không phản ánh ngày nghiệp vụ khi dữ liệu nhập bù hoặc seed. Thực tế: `/phieu-muon` đặt PM000015 (mượn 13/08) lên đầu còn PM000007 (04/10, mới nhất) đứng thứ 9; `/dat-truoc` đặt lượt id 10 (06/07, cũ nhất) lên đầu trong khi lượt mới nhất là 06/10.
