@@ -38,7 +38,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 | C10 | Test, CI, formatter, lockfile | P3 | Chưa thực hiện |
 | C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Chưa thực hiện |
 | C12 | Báo cáo chưa link được sang người dùng | P3 | Chưa thực hiện |
-| Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Chưa thực hiện |
+| Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Đã hoàn thành (còn dialog Gia hạn) |
 
 ---
 
@@ -172,12 +172,16 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 ## Chưa thực hiện — Kiểm thử còn thiếu
 
 ### Q1 — Kiểm thử thủ công còn thiếu (P1)
-- **Trạng thái:** Chưa thực hiện
-- Vai `THU_THU` trên mọi trang (kể cả `/demo`, ẩn nút xóa danh mục, đổi trạng thái cán bộ bị 403).
-- 401 giữa phiên (khóa tài khoản khi đang đăng nhập) trên browser.
-- Nút "Hủy đặt trước" ở `/me` (cần user có lượt `CHO_XU_LY`/`SAN_SANG_NHAN`, ví dụ SV002; **backup DB trước** vì thao tác ghi dữ liệu).
-- Giao diện mobile của các trang chưa xem (xem U7).
-- Vai `BAN_DOC` ở các route staff (đã thấy bị chặn bằng thông báo ở `/bao-cao` và `/`; kiểm tra lại sau C1).
+- **Trạng thái:** Đã hoàn thành (2026-10-07), không sửa code; chưa commit phần ghi chú này.
+- **THU_THU (`cb001`):**
+  - API: đọc `/demo`, `/bao-cao/*`, `/docgia`, `/phat` được (200). `DELETE /the-loai|/nha-xuat-ban|/tac-gia`, `POST /phat/{id}/huy`, `POST /docgia/{id}/tai-khoan`, `PATCH /docgia/{id}/tai-khoan/trang-thai` đều 403 (thử trên id không tồn tại). Đổi trạng thái cán bộ `CB002` trả 403 "Chi quan tri doi trang thai can bo", trạng thái không đổi. Sửa/thu tiền phạt không bị chặn (404/422 vì id giả).
+  - Giao diện: vào được `/`, `/demo` (4 tab), `/sach/moi`, `/add-doc-gia`, `/phieu-muon/moi`, `/bao-cao` (8 tab), `/nguoi-dung`, `/tac-gia`, `/the-loai`, `/phat`, `/me`, không có thông báo chặn. `/the-loai`, `/tac-gia` chỉ có nút "Sửa", không có "Xóa". `/phat` chỉ có "Thu tiền", không có "Hủy". `/nguoi-dung/12` (cán bộ) có ghi chú "Chỉ quản trị…", không có nút tạo/khóa tài khoản.
+- **BAN_DOC (`sv002`):** `/bao-cao`, `/demo`, `/nguoi-dung/1` hiện `role="alert"` "Bạn không có quyền truy cập trang này" kèm link về `/me`; sidebar chỉ còn Sách, Tác giả, Thể loại, NXB, Đặt trước, Của tôi.
+- **Hủy đặt trước ở `/me`:** đã backup dữ liệu 15 bảng trước khi làm. Hủy lượt `CHO_XU_LY` của SV002 (sách S006): hộp xác nhận đúng, toast "Đã hủy đặt trước", dòng đổi sang "Đã hủy", thẻ tổng hợp "Đặt trước đang hoạt động" về 0, nút Hủy biến mất, DB `dat_truoc` id 2 = `HUY`. Đã khôi phục `trang_thai = CHO_XU_LY` (khớp backup); các dòng `nhat_ky_hanh_vi` sinh ra khi hủy vẫn còn.
+- **401 giữa phiên:** đăng nhập SV002, ADMIN khóa tài khoản qua API, rồi bấm tab "Tiền phạt" ở `/me`: FE xóa `qltt.session` và chuyển về `/login` (đúng). Hạn chế (thuộc C2): trang login không có thông báo "phiên hết hạn/tài khoản bị khóa" và không nhớ trang cũ. Đã mở khóa lại SV002 (đăng nhập lại 200).
+- **Mobile 375px:** `/me` (không tràn ngang, thẻ tổng hợp xếp dọc), dialog "Trả sách nhanh" hiển thị tốt. Còn thấy: dải tab của `/me` bị cắt ở "Lịch s…" không có gợi ý cuộn (đã ghi ở U7).
+- **Chưa kiểm:** dialog "Gia hạn" (cần đăng nhập SV có sách đang mượn), thao tác "Thu tiền" thật ở `/phat` (ghi dữ liệu).
+- **Phát hiện phụ:** lỗi 403 của BE là tiếng Việt không dấu ("Khong du quyen thuc hien thao tac nay"), FE hiện nguyên văn nên sẽ lệch với phần UI còn lại (việc của BE, hoặc FE ánh xạ 403 sang câu có dấu). `DataTable` render cả bảng lẫn thẻ nên `find`/test E2E sẽ thấy nút trùng (một bản `display:none`, trình đọc màn hình không đọc).
 
 ---
 
