@@ -62,9 +62,9 @@ export const navigationGroups: NavGroup[] = [
   {
     label: "LƯU THÔNG",
     items: [
-      { label: "Mượn - trả", icon: BookMarked, href: "/phieu-muon", roles: STAFF, ready: false },
-      { label: "Đặt trước", icon: ListFilter, href: "/dat-truoc", ready: false },
-      { label: "Tiền phạt", icon: CircleDollarSign, href: "/phat", roles: STAFF, ready: false },
+      { label: "Mượn - trả", icon: BookMarked, href: "/phieu-muon", roles: STAFF },
+      { label: "Đặt trước", icon: ListFilter, href: "/dat-truoc" },
+      { label: "Tiền phạt", icon: CircleDollarSign, href: "/phat", roles: STAFF },
     ],
   },
   {
