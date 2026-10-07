@@ -21,8 +21,8 @@ import { Providers } from "@/components/providers"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="vi" className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
