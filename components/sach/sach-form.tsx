@@ -83,8 +83,12 @@ function toFormValues(sach?: SachChiTiet): FormValues {
   }
 }
 
-/** Chuỗi rỗng bị bỏ khỏi payload; `maTacGias` luôn gửi (thay toàn bộ danh sách tác giả). */
-function toPayload(v: FormValues) {
+/**
+ * Ô tùy chọn trống: thêm mới thì bỏ trường, sửa (`clearEmpty`) thì gửi `null` để xóa giá trị cũ.
+ * `maTacGias` luôn gửi (thay toàn bộ danh sách tác giả).
+ */
+function toPayload(v: FormValues, clearEmpty: boolean) {
+  const optional = <T,>(value: T | "" ): T | null | undefined => (value !== "" ? value : clearEmpty ? null : undefined)
   return {
     maSach: v.maSach,
     tenSach: v.tenSach,
@@ -92,10 +96,10 @@ function toPayload(v: FormValues) {
     maNxb: v.maNxb,
     ngonNgu: v.ngonNgu,
     maTacGias: v.maTacGias,
-    ...(v.isbn && { isbn: v.isbn }),
-    ...(v.namXuatBan && { namXuatBan: Number(v.namXuatBan) }),
-    ...(v.giaBia && { giaBia: Number(v.giaBia) }),
-    ...(v.moTa && { moTa: v.moTa }),
+    isbn: optional(v.isbn),
+    namXuatBan: optional(v.namXuatBan === "" ? "" : Number(v.namXuatBan)),
+    giaBia: optional(v.giaBia === "" ? "" : Number(v.giaBia)),
+    moTa: optional(v.moTa),
   }
 }
 
@@ -134,12 +138,11 @@ export function SachForm({
 
   const save = useMutation({
     mutationFn: async (values: FormValues) => {
-      const payload = toPayload(values)
       if (sach) {
-        await sachApi.update(sach.id, payload)
+        await sachApi.update(sach.id, toPayload(values, true))
         return sach.id
       }
-      return (await sachApi.create(payload)).id
+      return (await sachApi.create(toPayload(values, false) as Schemas["CreateSachDto"])).id
     },
     onSuccess: (id, values) => {
       toast.add({

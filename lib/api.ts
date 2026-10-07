@@ -5,6 +5,12 @@ import type { components, paths } from "@/lib/api-types"
 
 export type Schemas = components["schemas"]
 
+/**
+ * Nội dung sửa (`PATCH`): trường tùy chọn gửi `null` để xóa giá trị. BE chấp nhận `null` (`@IsOptional` bỏ qua cả
+ * `null`, Prisma ghi NULL) nhưng spec chưa khai `nullable`, nên các hàm `update` ép một lần từ kiểu này.
+ */
+export type Clearable<T> = { [K in keyof T]?: T[K] | null }
+
 /** Dạng danh sách có phân trang của BE. */
 export type Paged<T> = { data: T[]; total: number; page: number; limit: number }
 

@@ -22,6 +22,7 @@ import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { SearchForm } from "@/components/search-form"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { NguoiDungLink } from "@/components/nguoi-dung/nguoi-dung-link"
 
 type DatTruoc = Schemas["DatTruocDto"]
 
@@ -85,9 +86,7 @@ export default function DatTruocPage() {
             header: "Người đặt",
             className: "whitespace-normal",
             cell: (d: DatTruoc) => (
-              <>
-                {d.nguoiDung.hoTen} <span className="text-muted-foreground">({d.nguoiDung.maNguoiDung})</span>
-              </>
+              <NguoiDungLink maNguoiDung={d.nguoiDung.maNguoiDung} hoTen={d.nguoiDung.hoTen} />
             ),
           },
         ]

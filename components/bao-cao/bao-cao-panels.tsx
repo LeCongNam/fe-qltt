@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { NguoiDungLink } from "@/components/nguoi-dung/nguoi-dung-link"
 import {
   type DanhMucSachDong,
   type DatTruocDong,
@@ -32,6 +33,9 @@ const phieuLink = (maPhieu: string) => (
 )
 
 const nguoiDung = (r: { ma_nguoi_dung: string; ho_ten: string }) => `${r.ho_ten} (${r.ma_nguoi_dung})`
+const nguoiDungCell = (r: { ma_nguoi_dung: string; ho_ten: string }) => (
+  <NguoiDungLink maNguoiDung={r.ma_nguoi_dung} hoTen={r.ho_ten} />
+)
 
 const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-destructive">{days} ngày</span> : "—")
 
@@ -110,7 +114,7 @@ export function SachDangMuonPanel() {
   const query = useBaoCao("sach-dang-muon")
   const columns: Column<SachDangMuonDong>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
-    { header: "Người mượn", value: nguoiDung, className: "whitespace-normal" },
+    { header: "Người mượn", value: nguoiDung, cell: nguoiDungCell, className: "whitespace-normal" },
     { header: "Sách", value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
     { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), sortBy: (r) => r.ngay_muon, className: "w-28" },
     { header: "Hạn trả", value: (r) => formatDate(r.han_tra), sortBy: (r) => r.han_tra, className: "w-28" },
@@ -133,7 +137,7 @@ export function MuonQuaHanPanel() {
   const query = useBaoCao("muon-qua-han")
   const columns: Column<MuonQuaHanDong>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
-    { header: "Người mượn", value: nguoiDung, className: "whitespace-normal" },
+    { header: "Người mượn", value: nguoiDung, cell: nguoiDungCell, className: "whitespace-normal" },
     { header: "Sách", value: (r) => r.ten_sach, className: "whitespace-normal" },
     { header: "Hạn trả", value: (r) => formatDate(r.han_tra), sortBy: (r) => r.han_tra, className: "w-28" },
     { header: "Quá hạn", value: (r) => r.so_ngay_qua_han, cell: (r) => quaHan(r.so_ngay_qua_han), align: "right", className: "w-24" },
@@ -155,7 +159,7 @@ export function MuonQuaHanPanel() {
 export function NguoiDungViPhamPanel() {
   const query = useBaoCao("nguoi-dung-vi-pham")
   const columns: Column<NguoiDungViPhamDong>[] = [
-    { header: "Người dùng", value: nguoiDung, className: "whitespace-normal" },
+    { header: "Người dùng", value: nguoiDung, cell: nguoiDungCell, className: "whitespace-normal" },
     { header: "Số lần phạt", value: (r) => r.so_lan_phat, align: "right", className: "w-28" },
     { header: "Tổng tiền phạt", value: (r) => r.tong_tien_phat, cell: (r) => formatVnd(r.tong_tien_phat), align: "right", className: "w-36" },
     {
@@ -302,7 +306,7 @@ export function LichSuMuonPanel() {
   const query = useBaoCao("lich-su-muon", { maNguoiDung })
   const columns: Column<LichSuMuonDong>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
-    { header: "Người mượn", value: nguoiDung, className: "whitespace-normal" },
+    { header: "Người mượn", value: nguoiDung, cell: nguoiDungCell, className: "whitespace-normal" },
     { header: "Sách", value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
     { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), sortBy: (r) => r.ngay_muon, className: "w-28" },
     { header: "Hạn trả", value: (r) => formatDate(r.han_tra), sortBy: (r) => r.han_tra, className: "w-28" },
@@ -343,7 +347,7 @@ export function DatTruocPanel() {
   const [trangThai, setTrangThai] = useState<TrangThaiDatTruoc | typeof ALL>(ALL)
   const query = useBaoCao("dat-truoc", { maNguoiDung, trangThai: trangThai === ALL ? undefined : trangThai })
   const columns: Column<DatTruocDong>[] = [
-    { header: "Người đặt", value: nguoiDung, className: "whitespace-normal" },
+    { header: "Người đặt", value: nguoiDung, cell: nguoiDungCell, className: "whitespace-normal" },
     { header: "Sách", value: (r) => `${r.ten_sach} (${r.ma_sach})`, className: "whitespace-normal" },
     { header: "Ngày đặt", value: (r) => formatDate(r.ngay_dat), sortBy: (r) => r.ngay_dat, className: "w-28" },
     {

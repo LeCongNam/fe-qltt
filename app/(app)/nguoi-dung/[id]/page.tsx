@@ -1,8 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { Pencil } from "lucide-react"
 
@@ -12,8 +12,9 @@ import { TrangThaiCard } from "@/components/nguoi-dung/trang-thai-card"
 import { LOAI_NGUOI_DUNG, labelOf } from "@/components/nguoi-dung/nguoi-dung-meta"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { nguoiDungQueries } from "@/features/nguoi-dung/queries"
+import { isNumericId, nguoiDungQueries } from "@/features/nguoi-dung/queries"
 import { useAuth } from "@/hooks/use-auth"
+import { useDocumentTitle } from "@/hooks/use-document-title"
 import { getApiErrorMessage, isApiError } from "@/lib/api"
 import { formatDate } from "@/lib/format"
 import { InfoItem } from "@/components/info-item"
@@ -21,10 +22,19 @@ import { PageHeader } from "@/components/page-header"
 
 export default function NguoiDungDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const router = useRouter()
   const { isStaff, isAdmin } = useAuth()
   const [editing, setEditing] = useState(false)
 
   const query = useQuery({ ...nguoiDungQueries.detail(id), retry: false, enabled: isStaff })
+
+  useDocumentTitle(query.data?.hoTen)
+
+  // Vào bằng mã (link từ báo cáo) thì đổi sang địa chỉ theo id để mọi thao tác sau đó dùng một khóa.
+  const resolvedId = query.data?.id
+  useEffect(() => {
+    if (resolvedId && !isNumericId(id)) router.replace(`/nguoi-dung/${resolvedId}`)
+  }, [resolvedId, id, router])
 
   if (query.isPending) {
     return (

@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { danhMucKeys, danhMucQueries, type DanhMucApi, type DanhMucKind } from "@/features/danh-muc/queries"
-import { getApiErrorMessage } from "@/lib/api"
+import { getApiErrorMessage, type Clearable } from "@/lib/api"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { ConfirmDialog } from "@/components/confirm-dialog"
@@ -78,12 +78,18 @@ function buildSchema(fields: DanhMucField[]) {
   return z.object(shape)
 }
 
-/** Chuỗi rỗng bị bỏ khỏi payload (BE không nhận chuỗi rỗng cho trường tùy chọn như email). */
-function toPayload(fields: DanhMucField[], values: Record<string, string>) {
-  const payload: Record<string, string | number> = {}
+/**
+ * Ô trống không gửi chuỗi rỗng (BE không nhận cho email, số…). Khi thêm mới thì bỏ trường; khi sửa (`clearEmpty`)
+ * gửi `null` để xóa giá trị cũ, vì bỏ trường nghĩa là "giữ nguyên".
+ */
+function toPayload(fields: DanhMucField[], values: Record<string, string>, clearEmpty: boolean) {
+  const payload: Record<string, string | number | null> = {}
   for (const f of fields) {
     const v = values[f.name]?.trim() ?? ""
-    if (v === "") continue
+    if (v === "") {
+      if (clearEmpty && !f.required) payload[f.name] = null
+      continue
+    }
     payload[f.name] = f.kind === "number" ? Number(v) : v
   }
   return payload
@@ -235,11 +241,10 @@ function DanhMucFormDialog<T extends { id: string }, TCreate>({
 
   const save = useMutation({
     mutationFn: async (values: Record<string, string>) => {
-      const payload = toPayload(fields, values) as Partial<TCreate>
       if (editing && editing !== "new") {
-        await api.update(editing.id, payload)
+        await api.update(editing.id, toPayload(fields, values, true) as Clearable<TCreate>)
       } else {
-        await api.create(payload)
+        await api.create(toPayload(fields, values, false) as Partial<TCreate>)
       }
     },
     onSuccess: () => {

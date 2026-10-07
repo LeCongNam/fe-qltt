@@ -19,6 +19,7 @@ import { formatVnd } from "@/lib/format"
 import { InfoItem } from "@/components/info-item"
 import { PageHeader } from "@/components/page-header"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { useDocumentTitle } from "@/hooks/use-document-title"
 
 export default function SachDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -29,6 +30,7 @@ export default function SachDetailPage() {
   const [confirmDelete, setConfirmDelete] = useState(false)
 
   const query = useQuery({ ...sachQueries.detail(id), retry: false })
+  useDocumentTitle(query.data?.tenSach)
 
   const remove = useMutation({
     mutationFn: () => sachApi.remove(id),

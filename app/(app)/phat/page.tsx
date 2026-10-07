@@ -23,6 +23,7 @@ import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { SearchForm } from "@/components/search-form"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { NguoiDungLink } from "@/components/nguoi-dung/nguoi-dung-link"
 
 type Phat = Schemas["PhieuPhatChiTietDto"]
 
@@ -75,11 +76,7 @@ export default function PhatPage() {
       className: "whitespace-normal",
       cell: (f) => {
         const nd = f.ctPhieuMuon.phieuMuon.nguoiDung
-        return (
-          <>
-            {nd.hoTen} <span className="text-muted-foreground">({nd.maNguoiDung})</span>
-          </>
-        )
+        return <NguoiDungLink maNguoiDung={nd.maNguoiDung} hoTen={nd.hoTen} />
       },
     },
     {

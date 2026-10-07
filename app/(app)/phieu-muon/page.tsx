@@ -19,6 +19,7 @@ import { formatDate } from "@/lib/format"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { SearchForm } from "@/components/search-form"
+import { NguoiDungLink } from "@/components/nguoi-dung/nguoi-dung-link"
 
 type Phieu = Schemas["PhieuMuonChiTietDto"]
 
@@ -37,9 +38,7 @@ const COLUMNS: DataColumn<Phieu>[] = [
     header: "Người mượn",
     className: "whitespace-normal",
     cell: (p) => (
-      <>
-        {p.nguoiDung.hoTen} <span className="text-muted-foreground">({p.nguoiDung.maNguoiDung})</span>
-      </>
+      <NguoiDungLink maNguoiDung={p.nguoiDung.maNguoiDung} hoTen={p.nguoiDung.hoTen} />
     ),
   },
   { header: "Ngày mượn", className: "w-28 text-muted-foreground", cell: (p) => formatDate(p.ngayMuon) },

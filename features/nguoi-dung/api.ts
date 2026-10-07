@@ -1,8 +1,15 @@
-import { api, unwrap, type QueryOf, type Schemas } from "@/lib/api"
+import { ApiError, api, unwrap, type QueryOf, type Schemas } from "@/lib/api"
 
 export const nguoiDungApi = {
   list: (query: QueryOf<"/docgia">) => api.GET("/docgia", { params: { query } }).then(unwrap),
   detail: (id: string) => api.GET("/docgia/{id}", { params: { path: { id } } }).then(unwrap),
+  /** Tra theo mã (BE chưa có `GET /docgia?ma=`): tìm theo từ khóa rồi lấy dòng trùng mã. */
+  byMa: async (maNguoiDung: string) => {
+    const { data } = await nguoiDungApi.list({ tuKhoa: maNguoiDung, limit: 100 })
+    const found = data.find((u) => u.maNguoiDung.toUpperCase() === maNguoiDung.toUpperCase())
+    if (!found) throw new ApiError(404, "Khong tim thay nguoi dung")
+    return found
+  },
   create: (body: Schemas["CreateDocgiaDto"]) => api.POST("/docgia", { body }).then(unwrap),
   update: (id: string, body: Schemas["UpdateDocgiaDto"]) =>
     api.PATCH("/docgia/{id}", { params: { path: { id } }, body }).then(unwrap),

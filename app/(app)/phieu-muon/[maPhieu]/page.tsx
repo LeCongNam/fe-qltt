@@ -29,6 +29,7 @@ import { formatDate, formatVnd } from "@/lib/format"
 import { InfoItem } from "@/components/info-item"
 import { PageHeader } from "@/components/page-header"
 import { ConfirmDialog } from "@/components/confirm-dialog"
+import { NguoiDungLink } from "@/components/nguoi-dung/nguoi-dung-link"
 
 export default function PhieuMuonDetailPage() {
   const { maPhieu } = useParams<{ maPhieu: string }>()
@@ -162,7 +163,13 @@ export default function PhieuMuonDetailPage() {
       <PageHeader
         back={isStaff ? { href: "/phieu-muon", label: "Mượn - trả" } : undefined}
         title={`Phiếu mượn ${p.maPhieu}`}
-        description={`${p.nguoiDung.hoTen} (${p.nguoiDung.maNguoiDung})`}
+        description={
+          isStaff ? (
+            <NguoiDungLink maNguoiDung={p.nguoiDung.maNguoiDung} hoTen={p.nguoiDung.hoTen} />
+          ) : (
+            `${p.nguoiDung.hoTen} (${p.nguoiDung.maNguoiDung})`
+          )
+        }
         className="mb-0"
         action={
           isStaff &&

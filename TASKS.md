@@ -34,10 +34,10 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 | C6 | Tách các trang quá lớn | P3 | Đã hoàn thành |
 | C7 | Select giới hạn 100 dòng: combobox có lọc, gom mọi trang | P3 | Đã hoàn thành |
 | C8 | Đổi route `/add-doc-gia` thành `/nguoi-dung/moi` | P3 | Đã hoàn thành |
-| C9 | Metadata/`<title>` theo từng trang | P3 | Chưa thực hiện |
+| C9 | Metadata/`<title>` theo từng trang | P3 | Đã hoàn thành |
 | C10 | Test, CI, formatter, lockfile | P3 | Chưa thực hiện |
-| C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Chưa thực hiện |
-| C12 | Báo cáo chưa link được sang người dùng | P3 | Chưa thực hiện |
+| C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Đã hoàn thành |
+| C12 | Báo cáo chưa link được sang người dùng | P3 | Đã hoàn thành |
 | Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Đã hoàn thành (còn dialog Gia hạn) |
 | B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | Đã phân tích, chờ BE |
 | B2 | Spec sai body `POST /dat-truoc` (trùng tên class `DatTruocDto`) | P3 | Chờ BE |
@@ -207,20 +207,29 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 - **Kiểm chứng:** `tsc` + `eslint` sạch (phải xóa `.next/types` cũ vì còn tham chiếu route cũ). Trên trình duyệt (THU_THU): bấm "Thêm người dùng" sang `/nguoi-dung/moi`, form hiện đủ, sidebar sáng mục "Người dùng & tài khoản". Chưa thử BAN_DOC vào `/nguoi-dung/moi` (kỳ vọng bị `RoleGate` chặn như `/nguoi-dung`).
 
 ### C9 — Metadata theo trang (P3)
-- **Trạng thái:** Chưa thực hiện
-- Chỉ `app/layout.tsx` có `metadata`, nên mọi trang cùng `<title>`. 50 file `"use client"`. Cân nhắc `document.title` theo `findNavLabel` hoặc tách phần server để dùng `generateMetadata`.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- Các trang là `"use client"` nên không dùng được `metadata`/`generateMetadata`. `components/document-title.tsx` (`<DocumentTitle />`, gắn trong `app/(app)/layout.tsx`) đặt `document.title = "<tiêu đề> · Quản lý thư viện"` theo `getPageTitle(pathname)` (`lib/navigation.ts`): mục menu, cộng bảng `SUB_PAGE_TITLES` cho trang con (Thêm sách, Chi tiết sách, Thêm người dùng, Chi tiết người dùng, Lập phiếu mượn, "Phiếu mượn PM…"). Trang đăng nhập có `app/(auth)/login/layout.tsx` (server) với `metadata`.
+- `hooks/use-document-title.ts`: `useDocumentTitle(ten)` cho trang chi tiết ghi đè bằng tên bản ghi sau khi tải xong (đã dùng ở `sach/[id]` và `nguoi-dung/[id]`). `DocumentTitle` dùng `useLayoutEffect` nên luôn chạy trước `useEffect` của trang con.
+- **Phát hiện:** tải thẳng vào một trang (không phải điều hướng mềm), Next đẩy `<title>` của metadata gốc vào `<head>` sau khi hydrate và đè mất tiêu đề vừa đặt (reload thì không bị). Vì vậy `setDocumentTitle` giữ tiêu đề mong muốn bằng `MutationObserver` trên `<head>` và đặt lại khi bị đè; `DocumentTitle` gọi `clearDocumentTitle` khi rời khu vực đã đăng nhập để không đè tiêu đề trang login.
+- Kiểm chứng: `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU), tải thẳng `/phat` → "Tiền phạt · Quản lý thư viện", `/tac-gia` → "Tác giả · …", `/sach/7` → "An toàn thông tin · …" (tên sách), `/nguoi-dung/SV001` → tên người dùng; điều hướng mềm (bấm link) cũng đúng. Chưa kiểm `/login` sau đăng xuất và chưa chạy `npm run build`.
 
 ### C10 — Test, CI, formatter, lockfile (P3)
 - **Trạng thái:** Chưa thực hiện
 - Chưa có test runner, CI, formatter. Đề xuất: vitest cho `getApiErrorMessage`, `buildSchema` (danh-muc), `canSee`, `isActivePath`; GitHub Actions chạy lint, tsc, build. Có cả `package-lock.json` (lockfile chính) và `yarn.lock` (untracked, không commit): thống nhất một lockfile.
 
-### C11 — Form sửa chưa xóa trắng trường tùy chọn (P3)
-- **Trạng thái:** Chưa thực hiện
-- `DanhMucPage` và `SachForm` bỏ chuỗi rỗng khỏi payload nên không xóa được giá trị tùy chọn khi sửa (riêng form người dùng đã gửi chuỗi rỗng). Cần đối chiếu với BE để biết cách xóa đúng (chuỗi rỗng hay `null`).
+### C11 — Form sửa xóa trắng trường tùy chọn (P3)
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- **Đối chiếu BE:** thử trên bản ghi tạm (đã xóa): `PATCH` với chuỗi rỗng bị DB từ chối (400 "vi pham rang buoc CHECK"), còn **`null` xóa được** (`@IsOptional` bỏ qua cả `null`, Prisma ghi NULL), áp dụng cho `quocTich`, `namSinh` (tác giả) và `isbn`, `namXuatBan`, `giaBia`, `moTa` (sách); NXB `diaChi`/`email`/`sdt` và thể loại `moTa` cùng kiểu DTO nên tương tự (chưa thử riêng).
+- FE: khi **sửa**, ô tùy chọn để trống gửi `null`; khi **thêm mới** vẫn bỏ trường. `DanhMucPage` (`toPayload(fields, values, clearEmpty)`, trường `required` không bao giờ gửi `null`) và `SachForm` (`toPayload(values, clearEmpty)`); form người dùng vốn đã gửi chuỗi rỗng, không đụng.
+- Kiểu: `Clearable<T>` ở `lib/api.ts`; `update` của `danh-muc` và `sach` nhận `Clearable<…>` rồi ép một lần sang kiểu spec, vì spec chưa khai `nullable` (xem **B3**).
+- Kiểm chứng: `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU): sách tạm `ZZS01` xóa trắng ISBN, năm xuất bản, giá bìa, mô tả rồi Lưu → BE trả cả bốn `null`; tác giả tạm `ZZTMP2` xóa quốc tịch và năm sinh → cả hai `null`. Đã xóa hai bản ghi tạm. Chưa thử form NXB, thể loại và việc xóa `diaChi`/`email`/`sdt`.
 
-### C12 — Báo cáo chưa link sang người dùng (P3)
-- **Trạng thái:** Chưa thực hiện
-- `/nguoi-dung/[id]` dùng `id` số, báo cáo chỉ có `ma_nguoi_dung`. Cần endpoint tra theo mã, hoặc route theo mã.
+### C12 — Báo cáo link sang người dùng (P3)
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- `components/nguoi-dung/nguoi-dung-link.tsx` `NguoiDungLink({ maNguoiDung, hoTen })`: "Họ tên (MÃ)" dẫn tới `/nguoi-dung/<mã>`. Dùng ở 5 báo cáo (`bao-cao-panels.tsx`: quá hạn, người dùng vi phạm, lịch sử mượn, đặt trước, sách đang mượn), danh sách `/phieu-muon`, `/dat-truoc` (cột chỉ staff), `/phat`, và dòng mô tả ở `phieu-muon/[maPhieu]` (chỉ staff). Cột báo cáo giữ `value` là chuỗi để CSV và sắp xếp không đổi, thêm `cell`.
+- Không cần BE: `/nguoi-dung/[id]` nhận **id hoặc mã**. `nguoiDungApi.byMa` gọi `GET /docgia?tuKhoa=<mã>&limit=100` rồi lấy dòng trùng mã (không phân biệt hoa thường), không thấy thì `ApiError 404` → "Không tìm thấy người dùng". Khi vào bằng mã, trang `router.replace` sang `/nguoi-dung/<id>` để mọi thao tác sau dùng một khóa cache.
+- Đề xuất BE nếu muốn bỏ vòng tra cứu: thêm `GET /docgia/ma/{maNguoiDung}` hoặc cho `NguoiDungTomTatDto` có `id`.
+- Kiểm chứng: `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU): `/phieu-muon` có link `/nguoi-dung/SV00x` ở mọi dòng, bấm sang `/nguoi-dung/1` với đúng người; vào thẳng `/nguoi-dung/SV001` tự chuyển sang `/nguoi-dung/1`; `/nguoi-dung/ZZ999` hiện "Không tìm thấy người dùng.". Chưa xem từng tab báo cáo, mobile và `/dat-truoc`, `/phat`.
 
 ## Chưa thực hiện — Kiểm thử còn thiếu
 
@@ -271,6 +280,10 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 - **Việc FE sau khi BE đổi:** đổi `order` của `Pager` ở `phieu-muon` ("ngày mượn, mới nhất trước"), `dat-truoc` ("đang chờ trước, rồi mới nhất"), `phat` ("chưa thu trước, rồi mới nhất"); khai báo `defaultOrder` cho báo cáo "Người dùng vi phạm" (Còn nợ ↓).
 
 ---
+
+### B3 — Spec chưa khai `nullable` ở DTO sửa (P3)
+- **Trạng thái:** Chờ người phụ trách BE. Liên quan C11.
+- `Update*Dto` (`PartialType` của DTO tạo) khai trường tùy chọn là `string`/`number`, nhưng BE chấp nhận `null` để xóa giá trị. Đề xuất thêm `@ApiPropertyOptional({ nullable: true })` ở các trường tùy chọn (`isbn`, `namXuatBan`, `giaBia`, `moTa`, `diaChi`, `email`, `sdt`, `quocTich`, `namSinh`) rồi chạy lại `npm run api:types`; khi đó bỏ `Clearable` và chỗ ép kiểu ở `features/danh-muc/api.ts`, `features/sach/api.ts`.
 
 ### B2 — Spec sai body `POST /dat-truoc` (P3)
 - **Trạng thái:** Chờ người phụ trách BE.

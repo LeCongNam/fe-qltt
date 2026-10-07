@@ -123,3 +123,22 @@ export function findNavLabel(pathname: string) {
   }
   return "Tổng quan"
 }
+
+// Trang con không có mục menu riêng nên cần tiêu đề riêng; khớp trước, mục menu là mặc định.
+const SUB_PAGE_TITLES: [RegExp, (match: RegExpMatchArray) => string][] = [
+  [/^\/sach\/moi$/, () => "Thêm sách"],
+  [/^\/sach\/[^/]+$/, () => "Chi tiết sách"],
+  [/^\/nguoi-dung\/moi$/, () => "Thêm người dùng"],
+  [/^\/nguoi-dung\/[^/]+$/, () => "Chi tiết người dùng"],
+  [/^\/phieu-muon\/moi$/, () => "Lập phiếu mượn"],
+  [/^\/phieu-muon\/([^/]+)$/, (m) => `Phiếu mượn ${decodeURIComponent(m[1])}`],
+]
+
+/** Tiêu đề trang (không kèm tên ứng dụng) theo đường dẫn, dùng cho `<title>`. */
+export function getPageTitle(pathname: string) {
+  for (const [pattern, title] of SUB_PAGE_TITLES) {
+    const match = pathname.match(pattern)
+    if (match) return title(match)
+  }
+  return findNavLabel(pathname)
+}
