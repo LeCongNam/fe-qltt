@@ -5,6 +5,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { Loader2, Plus, Search, XCircle } from "lucide-react"
 
 import { TRANG_THAI_DAT_TRUOC } from "@/components/luu-thong/luu-thong-meta"
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import {
@@ -21,8 +22,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
@@ -44,7 +43,6 @@ export default function DatTruocPage() {
   const [trangThai, setTrangThai] = useState(ALL)
   const [datOpen, setDatOpen] = useState(false)
   const [huyRow, setHuyRow] = useState<DatTruoc | null>(null)
-  const colCount = isStaff ? 7 : 6
 
   const list = useQuery({
     queryKey: ["/dat-truoc", "list", page, maNguoiDung, trangThai],
@@ -83,6 +81,48 @@ export default function DatTruocPage() {
   const rows = list.data?.data ?? []
   const total = list.data?.total ?? 0
   const filtering = maNguoiDung !== "" || trangThai !== ALL
+
+  const columns: DataColumn<DatTruoc>[] = [
+    {
+      header: "Sách",
+      title: true,
+      className: "whitespace-normal font-medium",
+      cell: (d) => (
+        <>
+          {d.sach.tenSach} <span className="font-normal text-[#5f6b64]">({d.sach.maSach})</span>
+        </>
+      ),
+    },
+    ...(isStaff
+      ? [
+          {
+            header: "Người đặt",
+            className: "whitespace-normal",
+            cell: (d: DatTruoc) => (
+              <>
+                {d.nguoiDung.hoTen} <span className="text-[#5f6b64]">({d.nguoiDung.maNguoiDung})</span>
+              </>
+            ),
+          },
+        ]
+      : []),
+    { header: "Ngày đặt", className: "w-28 text-[#5f6b64]", cell: (d) => formatDate(d.ngayDat) },
+    { header: "Hạn giữ", className: "w-28 text-[#5f6b64]", cell: (d) => formatDate(d.hanGiu) },
+    { header: "Trạng thái", className: "w-36", cell: (d) => <StatusPill list={TRANG_THAI_DAT_TRUOC} value={d.trangThai} /> },
+    {
+      header: "Thao tác",
+      actions: true,
+      align: "right",
+      className: "w-24",
+      cell: (d) =>
+        HUY_DUOC.includes(d.trangThai) && (
+          <Button variant="ghost" size="sm" className="text-[#a35143]" onClick={() => setHuyRow(d)}>
+            <XCircle aria-hidden="true" />
+            Hủy
+          </Button>
+        ),
+    },
+  ]
 
   return (
     <section className="mx-auto w-full max-w-6xl">
@@ -165,72 +205,14 @@ export default function DatTruocPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Sách</TableHead>
-              {isStaff && <TableHead>Người đặt</TableHead>}
-              <TableHead className="w-28">Ngày đặt</TableHead>
-              <TableHead className="w-28">Hạn giữ</TableHead>
-              <TableHead className="w-36">Trạng thái</TableHead>
-              <TableHead className="w-24 text-right">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list.isPending &&
-              Array.from({ length: 5 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={colCount}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {list.isError && (
-              <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#a35143]">
-                  {getApiErrorMessage(list.error, "Không tải được danh sách đặt trước.")}{" "}
-                  <button type="button" className="underline" onClick={() => list.refetch()}>
-                    Thử lại
-                  </button>
-                </TableCell>
-              </TableRow>
-            )}
-            {list.isSuccess && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#5f6b64]">
-                  {filtering ? "Không có lượt đặt trước khớp bộ lọc." : "Chưa có lượt đặt trước nào."}
-                </TableCell>
-              </TableRow>
-            )}
-            {rows.map((d) => (
-              <TableRow key={d.id}>
-                <TableCell className="whitespace-normal font-medium">
-                  {d.sach.tenSach} <span className="font-normal text-[#5f6b64]">({d.sach.maSach})</span>
-                </TableCell>
-                {isStaff && (
-                  <TableCell className="whitespace-normal">
-                    {d.nguoiDung.hoTen} <span className="text-[#5f6b64]">({d.nguoiDung.maNguoiDung})</span>
-                  </TableCell>
-                )}
-                <TableCell className="text-[#5f6b64]">{formatDate(d.ngayDat)}</TableCell>
-                <TableCell className="text-[#5f6b64]">{formatDate(d.hanGiu)}</TableCell>
-                <TableCell>
-                  <StatusPill list={TRANG_THAI_DAT_TRUOC} value={d.trangThai} />
-                </TableCell>
-                <TableCell className="text-right">
-                  {HUY_DUOC.includes(d.trangThai) && (
-                    <Button variant="ghost" size="sm" className="text-[#a35143]" onClick={() => setHuyRow(d)}>
-                      <XCircle aria-hidden="true" />
-                      Hủy
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        query={list}
+        rows={rows}
+        columns={columns}
+        rowKey={(d) => d.id}
+        errorText="Không tải được danh sách đặt trước."
+        emptyText={filtering ? "Không có lượt đặt trước khớp bộ lọc." : "Chưa có lượt đặt trước nào."}
+      />
 
       <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="lượt đặt" onPage={setPage} />
 

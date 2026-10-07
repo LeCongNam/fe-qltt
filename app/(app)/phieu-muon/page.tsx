@@ -7,22 +7,56 @@ import { Plus, RotateCcw, Search } from "lucide-react"
 
 import { TRANG_THAI_PHIEU_MUON, isOverdue } from "@/components/luu-thong/luu-thong-meta"
 import { TraSachDialog } from "@/components/luu-thong/tra-sach-dialog"
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { apiClient, type Paged, type Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
 
 type Phieu = Schemas["PhieuMuonChiTietDto"]
 
 const PAGE_SIZE = 20
-const COL_COUNT = 6
 const ALL = "ALL"
+const COLUMNS: DataColumn<Phieu>[] = [
+  {
+    header: "Mã phiếu",
+    className: "w-28",
+    cell: (p) => (
+      <Link href={`/phieu-muon/${p.maPhieu}`} className="font-medium text-[#147d64] hover:underline">
+        {p.maPhieu}
+      </Link>
+    ),
+  },
+  {
+    header: "Người mượn",
+    className: "whitespace-normal",
+    cell: (p) => (
+      <>
+        {p.nguoiDung.hoTen} <span className="text-[#5f6b64]">({p.nguoiDung.maNguoiDung})</span>
+      </>
+    ),
+  },
+  { header: "Ngày mượn", className: "w-28 text-[#5f6b64]", cell: (p) => formatDate(p.ngayMuon) },
+  { header: "Số sách", align: "right", className: "w-24", cell: (p) => p.ctPhieuMuons.length },
+  {
+    header: "Quá hạn",
+    className: "w-28",
+    cell: (p) => {
+      const quaHan = p.ctPhieuMuons.filter((c) => isOverdue(c.hanTra, c.ngayTra)).length
+      return quaHan > 0 ? (
+        <span className="rounded-full bg-[#fbe9e5] px-2 py-0.5 text-xs font-medium text-[#b34a38]">{quaHan} cuốn</span>
+      ) : (
+        "—"
+      )
+    },
+  },
+  { header: "Trạng thái", className: "w-28", cell: (p) => <StatusPill list={TRANG_THAI_PHIEU_MUON} value={p.trangThai} /> },
+]
+
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_PHIEU_MUON]
 
 export default function PhieuMuonPage() {
@@ -140,74 +174,15 @@ export default function PhieuMuonPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-28">Mã phiếu</TableHead>
-              <TableHead>Người mượn</TableHead>
-              <TableHead className="w-28">Ngày mượn</TableHead>
-              <TableHead className="w-24 text-right">Số sách</TableHead>
-              <TableHead className="w-28">Quá hạn</TableHead>
-              <TableHead className="w-28">Trạng thái</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list.isPending &&
-              Array.from({ length: 6 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={COL_COUNT}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {list.isError && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
-                  {getApiErrorMessage(list.error, "Không tải được danh sách phiếu mượn.")}{" "}
-                  <button type="button" className="underline" onClick={() => list.refetch()}>
-                    Thử lại
-                  </button>
-                </TableCell>
-              </TableRow>
-            )}
-            {list.isSuccess && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
-                  {filtering ? "Không có phiếu mượn khớp bộ lọc." : "Chưa có phiếu mượn nào."}
-                </TableCell>
-              </TableRow>
-            )}
-            {rows.map((p) => {
-              const quaHan = p.ctPhieuMuons.filter((c) => isOverdue(c.hanTra, c.ngayTra)).length
-              return (
-                <TableRow key={p.id}>
-                  <TableCell className="font-medium">
-                    <Link href={`/phieu-muon/${p.maPhieu}`} className="text-[#147d64] hover:underline">
-                      {p.maPhieu}
-                    </Link>
-                  </TableCell>
-                  <TableCell className="whitespace-normal">
-                    {p.nguoiDung.hoTen} <span className="text-[#5f6b64]">({p.nguoiDung.maNguoiDung})</span>
-                  </TableCell>
-                  <TableCell className="text-[#5f6b64]">{formatDate(p.ngayMuon)}</TableCell>
-                  <TableCell className="text-right">{p.ctPhieuMuons.length}</TableCell>
-                  <TableCell>
-                    {quaHan > 0 ? (
-                      <span className="rounded-full bg-[#fbe9e5] px-2 py-0.5 text-xs font-medium text-[#b34a38]">{quaHan} cuốn</span>
-                    ) : (
-                      "—"
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <StatusPill list={TRANG_THAI_PHIEU_MUON} value={p.trangThai} />
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        query={list}
+        rows={rows}
+        columns={COLUMNS}
+        rowKey={(p) => p.id}
+        errorText="Không tải được danh sách phiếu mượn."
+        emptyText={filtering ? "Không có phiếu mượn khớp bộ lọc." : "Chưa có phiếu mượn nào."}
+        skeletonRows={6}
+      />
 
       <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu mượn" onPage={setPage} />
 

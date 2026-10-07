@@ -4,11 +4,9 @@ import { useState, type ReactNode } from "react"
 import type { UseQueryResult } from "@tanstack/react-query"
 import { Download } from "lucide-react"
 
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { getApiErrorMessage } from "@/lib/api"
 
 export type Column<T> = {
   header: string
@@ -18,6 +16,10 @@ export type Column<T> = {
   cell?: (row: T) => ReactNode
   align?: "right"
   className?: string
+  /** Cột làm tiêu đề thẻ trên mobile (mặc định cột đầu). */
+  title?: boolean
+  /** Cột nút thao tác: nằm cuối thẻ trên mobile, không có nhãn. */
+  actions?: boolean
 }
 
 const PAGE_SIZE = 15
@@ -56,6 +58,15 @@ export function ReportTable<T>({
   const current = Math.min(page, pageCount)
   const visible = rows.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE)
 
+  const tableColumns: DataColumn<T>[] = columns.map((c) => ({
+    header: c.header,
+    cell: (row) => (c.cell ? c.cell(row) : (c.value(row) ?? "—")),
+    align: c.align,
+    className: c.className,
+    title: c.title,
+    actions: c.actions,
+  }))
+
   function exportCsv() {
     if (!filename) return
     const url = URL.createObjectURL(new Blob([toCsv(columns, rows)], { type: "text/csv;charset=utf-8" }))
@@ -77,55 +88,14 @@ export function ReportTable<T>({
           </Button>
         )}
       </div>
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns.map((c) => (
-                <TableHead key={c.header} className={`${c.align === "right" ? "text-right" : ""} ${c.className ?? ""}`}>
-                  {c.header}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {query.isPending &&
-              Array.from({ length: 5 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={columns.length}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {query.isError && (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#a35143]">
-                  {getApiErrorMessage(query.error, "Không tải được báo cáo.")}{" "}
-                  <button type="button" className="underline" onClick={() => query.refetch()}>
-                    Thử lại
-                  </button>
-                </TableCell>
-              </TableRow>
-            )}
-            {query.isSuccess && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#5f6b64]">
-                  {emptyText}
-                </TableCell>
-              </TableRow>
-            )}
-            {visible.map((row, i) => (
-              <TableRow key={rowKey(row, (current - 1) * PAGE_SIZE + i)}>
-                {columns.map((c) => (
-                  <TableCell key={c.header} className={`${c.align === "right" ? "text-right" : ""} ${c.className ?? ""}`}>
-                    {c.cell ? c.cell(row) : (c.value(row) ?? "—")}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        query={query}
+        rows={visible}
+        columns={tableColumns}
+        rowKey={(row, i) => rowKey(row, (current - 1) * PAGE_SIZE + i)}
+        errorText="Không tải được báo cáo."
+        emptyText={emptyText}
+      />
       <Pager page={current} pageCount={pageCount} total={rows.length} unit={unit} onPage={setPage} />
     </div>
   )

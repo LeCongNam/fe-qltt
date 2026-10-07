@@ -20,7 +20,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 | T02 | Sửa font (đang render Times thay vì Geist) | — | Đã hoàn thành |
 | T03 | Độ tương phản chữ + cỡ chữ tối thiểu | — | Đã hoàn thành |
 | U1 | Bỏ/làm thật ô tìm kiếm và chuông ở header | P1 | Một phần: tìm kiếm xong, chuông giữ nguyên |
-| U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Chưa thực hiện |
+| U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Đã hoàn thành (còn vài bảng nhỏ chưa áp dụng) |
 | U3 | Quy tắc sắp xếp và sort theo cột | P2 | Chưa thực hiện |
 | U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Chưa thực hiện |
 | U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Chưa thực hiện |
@@ -79,9 +79,11 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 - Chuông (`library-dashboard.tsx`): nếu làm thật thì xem phương án trong lịch sử trao đổi: suy ra từ `/me/*` và `/bao-cao/*` (chỉ FE) hoặc bảng `thong_bao` ở CSDL (cần BE).
 
 ### U2 — Bảng nhiều cột trên mobile (P1)
-- **Trạng thái:** Chưa thực hiện
-- `/sach` ở 375px có 7 cột, chữ xuống dòng từng từ và cột cuối bị cắt. Tương tự các bảng ở `/nguoi-dung`, `/phieu-muon`, `/dat-truoc`, `/phat`, `/bao-cao` (`components/report-table.tsx`).
-- Việc cần làm: chế độ thẻ (card list) dưới `md`, hoặc ẩn bớt cột phụ. Nên làm thành một component bảng dùng chung rồi áp dụng dần.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- `components/data-table.tsx`: `DataTable<T>` dùng chung, nhận `query`, `rows`, `columns: DataColumn<T>[]`, `rowKey`, `errorText`, `emptyText`. Từ `md` là bảng như cũ (cùng class); dưới `md` mỗi dòng thành thẻ: cột `title` (mặc định cột đầu) làm tiêu đề, các cột còn lại là cặp nhãn/giá trị, cột `actions` nằm cuối thẻ (ẩn nếu rỗng). Gồm trạng thái tải/lỗi/rỗng cho cả hai chế độ. Hai chế độ render bằng CSS (`hidden md:block` / `md:hidden`), không dùng `useIsMobile` nên không nháy khi hydrate.
+- Đã áp dụng: `/sach`, `/nguoi-dung`, `/phieu-muon`, `/dat-truoc` (cột "Người đặt" chỉ staff), `/phat`, và `components/report-table.tsx` (nên `/bao-cao` và `/me` cũng có thẻ). `Column` của `ReportTable` có thêm `title`/`actions`; đã đánh dấu `title` ở cột "Sách"/"Tên sách" và `actions` ở hai cột "Thao tác" của `/me`.
+- Kiểm chứng: `tsc` + `eslint` sạch; ở 375px `/sach`, `/phat`, `/phieu-muon`, `/dat-truoc`, `/nguoi-dung`, `/bao-cao` không tràn ngang (`scrollWidth` = `clientWidth`), bảng ẩn, thẻ hiện; `/dat-truoc` có nút Hủy trong thẻ; ở desktop vẫn là bảng, danh sách thẻ ẩn.
+- Chưa áp dụng (bảng ít cột, chưa gặp lỗi): `components/sach/ban-sach-panel.tsx` (4 cột), `components/danh-muc/danh-muc-page.tsx`, bảng chi tiết trong `phieu-muon/[maPhieu]`, `dashboard-overview.tsx` (đã ẩn cột bằng `hidden md:table-cell`), `demo-table.tsx` (bảng dữ liệu thô, giữ cuộn ngang). Chưa thử bấm thật các nút trong thẻ (Thu tiền/Hủy ở `/phat`, Gia hạn ở `/me`), chưa xem `/me` ở mobile.
 
 ### U3 — Quy tắc sắp xếp (P2)
 - **Trạng thái:** Chưa thực hiện

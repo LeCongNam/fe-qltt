@@ -6,6 +6,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tansta
 import { Ban, Banknote, Loader2, Search } from "lucide-react"
 
 import { LOAI_PHAT, TRANG_THAI_PHAT } from "@/components/luu-thong/luu-thong-meta"
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import {
@@ -22,8 +23,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
@@ -32,7 +31,6 @@ import { formatDate, formatVnd } from "@/lib/format"
 type Phat = Schemas["PhieuPhatChiTietDto"]
 
 const PAGE_SIZE = 20
-const COL_COUNT = 7
 const ALL = "ALL"
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_PHAT]
 
@@ -80,6 +78,61 @@ export default function PhatPage() {
   const rows = list.data?.data ?? []
   const total = list.data?.total ?? 0
   const filtering = maNguoiDung !== "" || trangThai !== ALL
+
+  const columns: DataColumn<Phat>[] = [
+    {
+      header: "Người bị phạt",
+      title: true,
+      className: "whitespace-normal",
+      cell: (f) => {
+        const nd = f.ctPhieuMuon.phieuMuon.nguoiDung
+        return (
+          <>
+            {nd.hoTen} <span className="text-[#5f6b64]">({nd.maNguoiDung})</span>
+          </>
+        )
+      },
+    },
+    {
+      header: "Sách",
+      className: "whitespace-normal",
+      cell: (f) => (
+        <>
+          {f.ctPhieuMuon.banSach.sach.tenSach} <span className="text-[#5f6b64]">({f.ctPhieuMuon.banSach.maBanSach})</span>
+          <div className="mt-0.5 text-xs">
+            <Link href={`/phieu-muon/${f.ctPhieuMuon.phieuMuon.maPhieu}`} className="text-[#147d64] hover:underline">
+              {f.ctPhieuMuon.phieuMuon.maPhieu}
+            </Link>
+          </div>
+        </>
+      ),
+    },
+    { header: "Loại phạt", className: "w-28", cell: (f) => LOAI_PHAT.find((l) => l.value === f.loaiPhat)?.label },
+    { header: "Số tiền", align: "right", className: "w-28 font-medium", cell: (f) => formatVnd(f.soTien) },
+    { header: "Ngày tạo", className: "w-28 text-[#5f6b64]", cell: (f) => formatDate(f.ngayTao) },
+    { header: "Trạng thái", className: "w-36", cell: (f) => <StatusPill list={TRANG_THAI_PHAT} value={f.trangThai} /> },
+    {
+      header: "Thao tác",
+      actions: true,
+      align: "right",
+      className: "w-40",
+      cell: (f) =>
+        f.trangThai === "CHUA_THANH_TOAN" && (
+          <div className="flex justify-end gap-1">
+            <Button size="sm" className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setThanhToan(f)}>
+              <Banknote aria-hidden="true" />
+              Thu tiền
+            </Button>
+            {isAdmin && (
+              <Button size="sm" variant="ghost" className="text-[#a35143]" onClick={() => setHuyRow(f)}>
+                <Ban aria-hidden="true" />
+                Hủy
+              </Button>
+            )}
+          </div>
+        ),
+    },
+  ]
 
   return (
     <section className="mx-auto w-full max-w-6xl">
@@ -152,89 +205,14 @@ export default function PhatPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Người bị phạt</TableHead>
-              <TableHead>Sách</TableHead>
-              <TableHead className="w-28">Loại phạt</TableHead>
-              <TableHead className="w-28 text-right">Số tiền</TableHead>
-              <TableHead className="w-28">Ngày tạo</TableHead>
-              <TableHead className="w-36">Trạng thái</TableHead>
-              <TableHead className="w-40 text-right">Thao tác</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list.isPending &&
-              Array.from({ length: 5 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={COL_COUNT}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {list.isError && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
-                  {getApiErrorMessage(list.error, "Không tải được danh sách phiếu phạt.")}{" "}
-                  <button type="button" className="underline" onClick={() => list.refetch()}>
-                    Thử lại
-                  </button>
-                </TableCell>
-              </TableRow>
-            )}
-            {list.isSuccess && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
-                  {filtering ? "Không có phiếu phạt khớp bộ lọc." : "Chưa có phiếu phạt nào."}
-                </TableCell>
-              </TableRow>
-            )}
-            {rows.map((f) => {
-              const pm = f.ctPhieuMuon.phieuMuon
-              return (
-                <TableRow key={f.id}>
-                  <TableCell className="whitespace-normal">
-                    {pm.nguoiDung.hoTen} <span className="text-[#5f6b64]">({pm.nguoiDung.maNguoiDung})</span>
-                  </TableCell>
-                  <TableCell className="whitespace-normal">
-                    {f.ctPhieuMuon.banSach.sach.tenSach}{" "}
-                    <span className="text-[#5f6b64]">({f.ctPhieuMuon.banSach.maBanSach})</span>
-                    <div className="mt-0.5 text-xs">
-                      <Link href={`/phieu-muon/${pm.maPhieu}`} className="text-[#147d64] hover:underline">
-                        {pm.maPhieu}
-                      </Link>
-                    </div>
-                  </TableCell>
-                  <TableCell>{LOAI_PHAT.find((l) => l.value === f.loaiPhat)?.label}</TableCell>
-                  <TableCell className="text-right font-medium">{formatVnd(f.soTien)}</TableCell>
-                  <TableCell className="text-[#5f6b64]">{formatDate(f.ngayTao)}</TableCell>
-                  <TableCell>
-                    <StatusPill list={TRANG_THAI_PHAT} value={f.trangThai} />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {f.trangThai === "CHUA_THANH_TOAN" && (
-                      <div className="flex justify-end gap-1">
-                        <Button size="sm" className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setThanhToan(f)}>
-                          <Banknote aria-hidden="true" />
-                          Thu tiền
-                        </Button>
-                        {isAdmin && (
-                          <Button size="sm" variant="ghost" className="text-[#a35143]" onClick={() => setHuyRow(f)}>
-                            <Ban aria-hidden="true" />
-                            Hủy
-                          </Button>
-                        )}
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        query={list}
+        rows={rows}
+        columns={columns}
+        rowKey={(f) => f.id}
+        errorText="Không tải được danh sách phiếu phạt."
+        emptyText={filtering ? "Không có phiếu phạt khớp bộ lọc." : "Chưa có phiếu phạt nào."}
+      />
 
       <Pager page={page} pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))} total={total} unit="phiếu phạt" onPage={setPage} />
 

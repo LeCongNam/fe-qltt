@@ -37,12 +37,13 @@ export function SachDangMuonPanel() {
   const [giaHan, setGiaHan] = useState<string | null>(null)
   const columns: Column<SachDangMuonCuaToi>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
-    { header: "Sách", value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
+    { header: "Sách", title: true, value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
     { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), className: "w-28" },
     { header: "Hạn trả", value: (r) => formatDate(r.han_tra), className: "w-28" },
     { header: "Quá hạn", value: (r) => r.so_ngay_qua_han, cell: (r) => quaHan(r.so_ngay_qua_han), align: "right", className: "w-24" },
     {
       header: "Thao tác",
+      actions: true,
       value: () => null,
       align: "right",
       className: "w-32",
@@ -90,7 +91,7 @@ export function DatTruocPanel() {
   })
 
   const columns: Column<DatTruocCuaToi>[] = [
-    { header: "Sách", value: (r) => `${r.ten_sach} (${r.ma_sach})`, className: "whitespace-normal" },
+    { header: "Sách", title: true, value: (r) => `${r.ten_sach} (${r.ma_sach})`, className: "whitespace-normal" },
     { header: "Ngày đặt", value: (r) => formatDate(r.ngay_dat), className: "w-28" },
     {
       header: "Trạng thái",
@@ -103,6 +104,7 @@ export function DatTruocPanel() {
     { header: "Thứ tự chờ", value: (r) => r.thu_tu_cho, align: "right", className: "w-24" },
     {
       header: "Thao tác",
+      actions: true,
       value: () => null,
       align: "right",
       className: "w-24",
@@ -184,7 +186,7 @@ export function LichSuMuonPanel() {
   const query = useMe<LichSuMuonCuaToi>("lich-su-muon")
   const columns: Column<LichSuMuonCuaToi>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
-    { header: "Sách", value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
+    { header: "Sách", title: true, value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },
     { header: "Ngày mượn", value: (r) => formatDate(r.ngay_muon), className: "w-28" },
     { header: "Hạn trả", value: (r) => formatDate(r.han_tra), className: "w-28" },
     { header: "Ngày trả", value: (r) => formatDate(r.ngay_tra), className: "w-28" },

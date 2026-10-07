@@ -10,19 +10,35 @@ import {
   TRANG_THAI_NGUOI_DUNG,
   labelOf,
 } from "@/components/nguoi-dung/nguoi-dung-meta"
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { StatusPill } from "@/components/status-pill"
 import type { NguoiDung } from "@/components/nguoi-dung/nguoi-dung-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Paged } from "@/lib/api"
+import { apiClient, type Paged } from "@/lib/api"
 
 const PAGE_SIZE = 20
-const COL_COUNT = 6
 const ALL = "ALL"
+
+const COLUMNS: DataColumn<NguoiDung>[] = [
+  { header: "Mã", className: "w-28", cell: (u) => <span className="font-medium">{u.maNguoiDung}</span> },
+  {
+    header: "Họ tên",
+    title: true,
+    className: "whitespace-normal",
+    cell: (u) => (
+      <Link href={`/nguoi-dung/${u.id}`} className="font-medium text-[#147d64] hover:underline">
+        {u.hoTen}
+      </Link>
+    ),
+  },
+  { header: "Loại", className: "w-28", cell: (u) => labelOf(LOAI_NGUOI_DUNG, u.loaiNguoiDung) },
+  { header: "Email", className: "whitespace-normal text-[#5f6b64]", cell: (u) => u.email || "—" },
+  { header: "Khoa / đơn vị", className: "whitespace-normal text-[#5f6b64]", cell: (u) => u.khoaDonVi || "—" },
+  { header: "Trạng thái", className: "w-28", cell: (u) => <StatusPill list={TRANG_THAI_NGUOI_DUNG} value={u.trangThai} /> },
+]
 
 const LOAI_FILTER = [{ value: ALL, label: "Mọi loại" }, ...LOAI_NGUOI_DUNG]
 const TRANG_THAI_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG_THAI_NGUOI_DUNG]
@@ -155,63 +171,15 @@ export default function NguoiDungPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-28">Mã</TableHead>
-              <TableHead>Họ tên</TableHead>
-              <TableHead className="w-28">Loại</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Khoa / đơn vị</TableHead>
-              <TableHead className="w-28">Trạng thái</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list.isPending &&
-              Array.from({ length: 6 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={COL_COUNT}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {list.isError && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
-                  {getApiErrorMessage(list.error, "Không tải được danh sách người dùng.")}{" "}
-                  <button type="button" className="underline" onClick={() => list.refetch()}>
-                    Thử lại
-                  </button>
-                </TableCell>
-              </TableRow>
-            )}
-            {list.isSuccess && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
-                  {filtering ? "Không có người dùng khớp bộ lọc." : "Chưa có người dùng nào."}
-                </TableCell>
-              </TableRow>
-            )}
-            {rows.map((u) => (
-              <TableRow key={u.id}>
-                <TableCell className="font-medium">{u.maNguoiDung}</TableCell>
-                <TableCell className="whitespace-normal">
-                  <Link href={`/nguoi-dung/${u.id}`} className="font-medium text-[#147d64] hover:underline">
-                    {u.hoTen}
-                  </Link>
-                </TableCell>
-                <TableCell>{labelOf(LOAI_NGUOI_DUNG, u.loaiNguoiDung)}</TableCell>
-                <TableCell className="whitespace-normal text-[#5f6b64]">{u.email || "—"}</TableCell>
-                <TableCell className="whitespace-normal text-[#5f6b64]">{u.khoaDonVi || "—"}</TableCell>
-                <TableCell>
-                  <StatusPill list={TRANG_THAI_NGUOI_DUNG} value={u.trangThai} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        query={list}
+        rows={rows}
+        columns={COLUMNS}
+        rowKey={(u) => u.id}
+        errorText="Không tải được danh sách người dùng."
+        emptyText={filtering ? "Không có người dùng khớp bộ lọc." : "Chưa có người dùng nào."}
+        skeletonRows={6}
+      />
 
       <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
         <span>{total} người dùng</span>

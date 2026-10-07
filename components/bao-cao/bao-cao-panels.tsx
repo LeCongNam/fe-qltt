@@ -88,7 +88,7 @@ export function DanhMucSachPanel() {
   const query = useBaoCao<DanhMucSachDong>("danh-muc-sach")
   const columns: Column<DanhMucSachDong>[] = [
     { header: "Mã sách", value: (r) => r.ma_sach, className: "w-24" },
-    { header: "Tên sách", value: (r) => r.ten_sach, className: "whitespace-normal" },
+    { header: "Tên sách", title: true, value: (r) => r.ten_sach, className: "whitespace-normal" },
     { header: "Thể loại", value: (r) => r.ten_the_loai },
     { header: "Nhà xuất bản", value: (r) => r.ten_nxb, className: "whitespace-normal" },
     { header: "Năm XB", value: (r) => r.nam_xuat_ban, align: "right", className: "w-20" },
@@ -187,7 +187,7 @@ export function TopSachPanel() {
   const columns: Column<TopSachMuonNhieuDong>[] = [
     { header: "Hạng", value: (r) => (query.data?.indexOf(r) ?? 0) + 1, className: "w-16" },
     { header: "Mã sách", value: (r) => r.ma_sach, className: "w-24" },
-    { header: "Tên sách", value: (r) => r.ten_sach, className: "whitespace-normal" },
+    { header: "Tên sách", title: true, value: (r) => r.ten_sach, className: "whitespace-normal" },
     { header: "Lượt mượn", value: (r) => r.so_luot_muon, align: "right", className: "w-28" },
   ]
   const chartData = (query.data ?? []).slice(0, 10)

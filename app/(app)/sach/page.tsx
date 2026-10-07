@@ -5,17 +5,49 @@ import Link from "next/link"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react"
 
+import { DataTable, type DataColumn } from "@/components/data-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { apiClient, type Paged, type Schemas } from "@/lib/api"
 
 type SachRow = Schemas["TraCuuSachDto"]
 
 const PAGE_SIZE = 20
-const COL_COUNT = 7
+
+const COLUMNS: DataColumn<SachRow>[] = [
+  { header: "Mã", className: "w-24", cell: (s) => <span className="font-medium">{s.ma_sach}</span> },
+  {
+    header: "Tên sách",
+    title: true,
+    className: "whitespace-normal",
+    cell: (s) => (
+      <Link href={`/sach/${s.id}`} className="font-medium text-[#147d64] hover:underline">
+        {s.ten_sach}
+      </Link>
+    ),
+  },
+  { header: "Tác giả", className: "whitespace-normal text-[#5f6b64]", cell: (s) => s.ds_tac_gia ?? "—" },
+  { header: "Thể loại", className: "whitespace-normal", cell: (s) => s.ten_the_loai },
+  { header: "NXB", className: "whitespace-normal text-[#5f6b64]", cell: (s) => s.ten_nxb },
+  { header: "Năm", className: "w-20 text-[#5f6b64]", cell: (s) => s.nam_xuat_ban ?? "—" },
+  {
+    header: "Có thể mượn",
+    align: "right",
+    className: "w-28",
+    cell: (s) => (
+      <span
+        className={
+          s.so_ban_san_sang > 0
+            ? "rounded-full bg-[#e6f3ee] px-2 py-0.5 text-xs font-medium text-[#0f6a52]"
+            : "rounded-full bg-[#eceeeb] px-2 py-0.5 text-xs font-medium text-[#5f6b64]"
+        }
+      >
+        {s.so_ban_san_sang > 0 ? `${s.so_ban_san_sang} bản` : "Hết"}
+      </span>
+    ),
+  },
+]
 
 export default function SachPage() {
   const { isStaff } = useAuth()
@@ -94,73 +126,15 @@ export default function SachPage() {
         )}
       </form>
 
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-24">Mã</TableHead>
-              <TableHead>Tên sách</TableHead>
-              <TableHead>Tác giả</TableHead>
-              <TableHead>Thể loại</TableHead>
-              <TableHead>NXB</TableHead>
-              <TableHead className="w-20">Năm</TableHead>
-              <TableHead className="w-28 text-right">Có thể mượn</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {list.isPending &&
-              Array.from({ length: 6 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell colSpan={COL_COUNT}>
-                    <Skeleton className="h-5 w-full" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            {list.isError && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#a35143]">
-                  {getApiErrorMessage(list.error, "Không tải được danh sách sách.")}{" "}
-                  <button type="button" className="underline" onClick={() => list.refetch()}>
-                    Thử lại
-                  </button>
-                </TableCell>
-              </TableRow>
-            )}
-            {list.isSuccess && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={COL_COUNT} className="py-10 text-center text-sm text-[#5f6b64]">
-                  {tuKhoa ? `Không có sách khớp “${tuKhoa}”.` : "Chưa có sách nào."}
-                </TableCell>
-              </TableRow>
-            )}
-            {rows.map((s) => (
-              <TableRow key={s.ma_sach}>
-                <TableCell className="font-medium">{s.ma_sach}</TableCell>
-                <TableCell className="whitespace-normal">
-                  <Link href={`/sach/${s.id}`} className="font-medium text-[#147d64] hover:underline">
-                    {s.ten_sach}
-                  </Link>
-                </TableCell>
-                <TableCell className="whitespace-normal text-[#5f6b64]">{s.ds_tac_gia ?? "—"}</TableCell>
-                <TableCell className="whitespace-normal">{s.ten_the_loai}</TableCell>
-                <TableCell className="whitespace-normal text-[#5f6b64]">{s.ten_nxb}</TableCell>
-                <TableCell className="text-[#5f6b64]">{s.nam_xuat_ban ?? "—"}</TableCell>
-                <TableCell className="text-right">
-                  <span
-                    className={
-                      s.so_ban_san_sang > 0
-                        ? "rounded-full bg-[#e6f3ee] px-2 py-0.5 text-xs font-medium text-[#0f6a52]"
-                        : "rounded-full bg-[#eceeeb] px-2 py-0.5 text-xs font-medium text-[#5f6b64]"
-                    }
-                  >
-                    {s.so_ban_san_sang > 0 ? `${s.so_ban_san_sang} bản` : "Hết"}
-                  </span>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        query={list}
+        rows={rows}
+        columns={COLUMNS}
+        rowKey={(s) => s.ma_sach}
+        errorText="Không tải được danh sách sách."
+        emptyText={tuKhoa ? `Không có sách khớp “${tuKhoa}”.` : "Chưa có sách nào."}
+        skeletonRows={6}
+      />
 
       <div className="mt-4 flex items-center justify-between text-xs text-[#5f6b64]">
         <span>{total} đầu sách</span>
