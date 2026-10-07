@@ -1,14 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Combobox } from "@/components/ui/combobox"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
 import { datTruocApi } from "@/features/dat-truoc/api"
 import { datTruocKeys } from "@/features/dat-truoc/queries"
@@ -20,12 +20,8 @@ export function DatTruocDialog({ open, isStaff, onClose }: { open: boolean; isSt
   const [maSach, setMaSach] = useState<string | null>(null)
   const [maNguoiDung, setMaNguoiDung] = useState("")
 
-  // Chọn từ danh sách sách (BE giới hạn 100 dòng mỗi trang).
-  const sachs = useQuery({
-    ...sachQueries.list({ page: 1, limit: 100 }),
-    select: (res) => res.data,
-    enabled: open,
-  })
+  // Toàn bộ đầu sách (gom mọi trang), lọc ngay trong ô chọn.
+  const sachs = useQuery({ ...sachQueries.options(), enabled: open })
 
   const dat = useMutation({
     mutationFn: () =>
@@ -41,10 +37,14 @@ export function DatTruocDialog({ open, isStaff, onClose }: { open: boolean; isSt
     },
   })
 
-  const items = (sachs.data ?? []).map((s) => ({
-    value: s.ma_sach,
-    label: `${s.ten_sach} (${s.so_ban_san_sang > 0 ? `còn ${s.so_ban_san_sang} bản` : "hết bản"})`,
-  }))
+  const items = useMemo(
+    () =>
+      (sachs.data ?? []).map((s) => ({
+        value: s.ma_sach,
+        label: `${s.ten_sach} (${s.so_ban_san_sang > 0 ? `còn ${s.so_ban_san_sang} bản` : "hết bản"})`,
+      })),
+    [sachs.data]
+  )
   const hopLe = maSach !== null && (!isStaff || maNguoiDung.trim() !== "")
 
   return (
@@ -73,18 +73,13 @@ export function DatTruocDialog({ open, isStaff, onClose }: { open: boolean; isSt
             <FieldLabel htmlFor="dt-sach">
               Sách <span aria-hidden="true" className="text-destructive">*</span>
             </FieldLabel>
-            <Select value={maSach} items={items} onValueChange={(v) => setMaSach(v)}>
-              <SelectTrigger id="dt-sach" className="h-10 w-full rounded-md border-input bg-white">
-                <SelectValue placeholder={sachs.isPending ? "Đang tải..." : "Chọn sách"} />
-              </SelectTrigger>
-              <SelectContent>
-                {items.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Combobox
+              id="dt-sach"
+              value={maSach}
+              onValueChange={setMaSach}
+              options={items}
+              placeholder={sachs.isPending ? "Đang tải..." : "Gõ tên sách để tìm"}
+            />
             {sachs.isError && <FieldDescription>Không tải được danh sách sách.</FieldDescription>}
           </Field>
           <DialogFooter>

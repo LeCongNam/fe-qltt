@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query"
 import { sachApi } from "@/features/sach/api"
 import { sachKeys } from "@/features/sach/queries"
 import type { Schemas } from "@/lib/api"
+import { fetchAllPages } from "@/lib/paging"
 
 type SachRow = Schemas["TraCuuSachDto"]
 type BanSach = Schemas["BanSachDto"]
@@ -27,12 +28,7 @@ export function useBanSachIndex(enabled = true) {
     enabled,
     staleTime: 30_000,
     queryFn: async () => {
-      const sachs: SachRow[] = []
-      for (let page = 1; ; page++) {
-        const res = await sachApi.list({ page, limit: 100 })
-        sachs.push(...res.data)
-        if (sachs.length >= res.total || res.data.length === 0) break
-      }
+      const sachs: SachRow[] = await fetchAllPages((page, limit) => sachApi.list({ page, limit }))
       const index = new Map<string, BanSachInfo>()
       for (let i = 0; i < sachs.length; i += BATCH) {
         const chunk = sachs.slice(i, i + BATCH)

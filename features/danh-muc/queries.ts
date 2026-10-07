@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query"
 
 import type { Paged, QueryOf } from "@/lib/api"
+import { fetchAllPages } from "@/lib/paging"
 
 /** Ba danh mục: `/the-loai`, `/nha-xuat-ban`, `/tac-gia`. */
 export type DanhMucKind = "the-loai" | "nha-xuat-ban" | "tac-gia"
@@ -21,11 +22,11 @@ export const danhMucKeys = {
 export const danhMucQueries = {
   list: <T, TCreate>(kind: DanhMucKind, api: DanhMucApi<T, TCreate>, page: number, limit: number) =>
     queryOptions({ queryKey: danhMucKeys.list(kind, page), queryFn: () => api.list({ page, limit }) }),
-  /** Danh sách để chọn trong ô Select (BE giới hạn 100 dòng mỗi trang). */
+  /** Toàn bộ danh mục để chọn trong ô chọn: gom mọi trang vì BE giới hạn 100 dòng mỗi trang và chưa có tham số tìm kiếm. */
   options: <T, TCreate>(kind: DanhMucKind, api: DanhMucApi<T, TCreate>) =>
     queryOptions({
       queryKey: danhMucKeys.options(kind),
-      queryFn: async () => (await api.list({ page: 1, limit: 100 })).data,
+      queryFn: () => fetchAllPages((page, limit) => api.list({ page, limit })),
       staleTime: 60_000,
     }),
 }

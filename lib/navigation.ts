@@ -86,9 +86,6 @@ export function canSee(roles: VaiTro[] | undefined, vaiTro: VaiTro | undefined) 
   return !roles || (vaiTro !== undefined && roles.includes(vaiTro))
 }
 
-// Trang con không nằm dưới href của mục menu: coi như thuộc mục đó.
-const PATH_ALIASES: Record<string, string> = { "/add-doc-gia": "/nguoi-dung" }
-
 // Quyền theo route: lấy từ `roles` của mục menu, cộng thêm các trang con không có mục menu
 // nhưng hẹp quyền hơn trang cha. Route khớp dài nhất (theo tiền tố) được áp dụng.
 const ROUTE_ROLES_EXTRA: Record<string, VaiTro[]> = { "/sach/moi": STAFF }
@@ -108,12 +105,10 @@ const ROUTE_ROLES = collectRouteRoles()
 
 /** Vai trò được vào route này; `undefined` = mọi tài khoản đã đăng nhập (hoặc route không có trong cấu hình). */
 export function getRouteRoles(pathname: string) {
-  pathname = PATH_ALIASES[pathname] ?? pathname
   return ROUTE_ROLES.find(([href]) => isActivePath(pathname, href))?.[1]
 }
 
 export function isActivePath(pathname: string, href: string) {
-  pathname = PATH_ALIASES[pathname] ?? pathname
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
 }
 

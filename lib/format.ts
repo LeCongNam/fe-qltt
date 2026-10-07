@@ -16,3 +16,8 @@ export function initials(name: string) {
   const parts = name.trim().split(/\s+/)
   return (parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : parts[0]?.slice(0, 2) ?? "").toUpperCase()
 }
+
+/** Chữ thường, bỏ dấu tiếng Việt: để so khớp từ khóa không phân biệt dấu. */
+export function boDau(text: string) {
+  return text.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase()
+}

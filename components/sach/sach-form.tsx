@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo, useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -9,6 +10,7 @@ import { z } from "zod"
 import { NGON_NGU } from "@/components/sach/sach-meta"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Combobox } from "@/components/ui/combobox"
 import {
   Field,
   FieldDescription,
@@ -26,6 +28,7 @@ import { danhMucQueries } from "@/features/danh-muc/queries"
 import { sachApi } from "@/features/sach/api"
 import { sachKeys } from "@/features/sach/queries"
 import { getApiErrorMessage, type Schemas } from "@/lib/api"
+import { boDau } from "@/lib/format"
 import { TextField } from "@/components/form/text-field"
 
 export type SachChiTiet = Schemas["SachChiTietDto"]
@@ -112,6 +115,16 @@ export function SachForm({
   const theLoais = useQuery(danhMucQueries.options("the-loai", theLoaiApi))
   const nxbs = useQuery(danhMucQueries.options("nha-xuat-ban", nhaXuatBanApi))
   const tacGias = useQuery(danhMucQueries.options("tac-gia", tacGiaApi))
+  const theLoaiOptions = useMemo(
+    () => (theLoais.data ?? []).map((t) => ({ value: t.maTheLoai, label: t.tenTheLoai })),
+    [theLoais.data]
+  )
+  const [locTacGia, setLocTacGia] = useState("")
+  const tacGiaHienThi = useMemo(() => {
+    const q = boDau(locTacGia.trim())
+    return (tacGias.data ?? []).filter((t) => boDau(`${t.tenTacGia} ${t.maTacGia}`).includes(q))
+  }, [tacGias.data, locTacGia])
+  const nxbOptions = useMemo(() => (nxbs.data ?? []).map((n) => ({ value: n.maNxb, label: n.tenNxb })), [nxbs.data])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -186,23 +199,15 @@ export function SachForm({
                 <FieldLabel htmlFor={field.name}>
                   Thể loại <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
-                <Select
+                <Combobox
+                  id={field.name}
                   name={field.name}
                   value={field.value || null}
                   onValueChange={(v) => field.onChange(v ?? "")}
-                  items={(theLoais.data ?? []).map((t) => ({ value: t.maTheLoai, label: t.tenTheLoai }))}
-                >
-                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-input bg-white">
-                    <SelectValue placeholder={theLoais.isPending ? "Đang tải..." : "Chọn thể loại"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(theLoais.data ?? []).map((t) => (
-                      <SelectItem key={t.id} value={t.maTheLoai}>
-                        {t.tenTheLoai}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  options={theLoaiOptions}
+                  invalid={fieldState.invalid}
+                  placeholder={theLoais.isPending ? "Đang tải..." : "Chọn thể loại"}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
@@ -215,23 +220,15 @@ export function SachForm({
                 <FieldLabel htmlFor={field.name}>
                   Nhà xuất bản <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
-                <Select
+                <Combobox
+                  id={field.name}
                   name={field.name}
                   value={field.value || null}
                   onValueChange={(v) => field.onChange(v ?? "")}
-                  items={(nxbs.data ?? []).map((n) => ({ value: n.maNxb, label: n.tenNxb }))}
-                >
-                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-input bg-white">
-                    <SelectValue placeholder={nxbs.isPending ? "Đang tải..." : "Chọn nhà xuất bản"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(nxbs.data ?? []).map((n) => (
-                      <SelectItem key={n.id} value={n.maNxb}>
-                        {n.tenNxb}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  options={nxbOptions}
+                  invalid={fieldState.invalid}
+                  placeholder={nxbs.isPending ? "Đang tải..." : "Chọn nhà xuất bản"}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
@@ -295,10 +292,22 @@ export function SachForm({
           name="maTacGias"
           control={form.control}
           render={({ field }) => (
+            <>
+            <Input
+              value={locTacGia}
+              onChange={(e) => setLocTacGia(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+              aria-label="Lọc danh sách tác giả"
+              placeholder="Lọc tác giả theo tên hoặc mã"
+              className={inputClass}
+            />
             <div className="grid max-h-56 grid-cols-1 gap-x-5 gap-y-2 overflow-y-auto rounded-md border border-input bg-white p-3 sm:grid-cols-2">
               {tacGias.isPending && <p role="status" className="text-sm text-muted-foreground">Đang tải...</p>}
               {tacGias.isError && <p role="alert" className="text-sm text-destructive">Không tải được danh sách tác giả.</p>}
-              {(tacGias.data ?? []).map((t) => {
+              {tacGiaHienThi.length === 0 && tacGias.data && (
+                <p role="status" className="text-sm text-muted-foreground">Không có tác giả phù hợp.</p>
+              )}
+              {tacGiaHienThi.map((t) => {
                 const checked = field.value.includes(t.maTacGia)
                 return (
                   <label key={t.id} className="flex cursor-pointer items-center gap-2 text-sm text-ink">
@@ -313,6 +322,7 @@ export function SachForm({
                 )
               })}
             </div>
+            </>
           )}
         />
       </FieldSet>

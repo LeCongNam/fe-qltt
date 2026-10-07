@@ -93,7 +93,7 @@ export default function NguoiDungPage() {
         description="Quản lý hồ sơ bạn đọc, cán bộ và tài khoản đăng nhập."
         action={
           <Link
-            href="/add-doc-gia"
+            href="/nguoi-dung/moi"
             className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             <Plus className="size-4" aria-hidden="true" />

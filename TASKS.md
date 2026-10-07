@@ -32,8 +32,8 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 | C4 | Tách component dùng chung (lặp code) | P2 | Đã hoàn thành (trừ `Avatar`) |
 | C5 | Tầng API có kiểu: `openapi-fetch`, key factory, `.gitattributes` | P2 | Đã hoàn thành (chưa dọn `api-types.ts`) |
 | C6 | Tách các trang quá lớn | P3 | Đã hoàn thành |
-| C7 | Select giới hạn 100 dòng: combobox tìm phía server | P3 | Chưa thực hiện |
-| C8 | Đổi route `/add-doc-gia` thành `/nguoi-dung/moi` | P3 | Chưa thực hiện |
+| C7 | Select giới hạn 100 dòng: combobox có lọc, gom mọi trang | P3 | Đã hoàn thành |
+| C8 | Đổi route `/add-doc-gia` thành `/nguoi-dung/moi` | P3 | Đã hoàn thành |
 | C9 | Metadata/`<title>` theo từng trang | P3 | Chưa thực hiện |
 | C10 | Test, CI, formatter, lockfile | P3 | Chưa thực hiện |
 | C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Chưa thực hiện |
@@ -187,12 +187,21 @@ Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (pr
 - Kiểm chứng: `tsc` + `eslint` sạch; `/nguoi-dung/12` hiển thị đủ thẻ trạng thái và tài khoản, hộp "Đặt trước hộ" mở và tải danh sách sách. Chưa mở hộp "Tạo tài khoản" và "Hủy phiếu phạt" (chỉ ADMIN).
 
 ### C7 — Select giới hạn 100 dòng (P3)
-- **Trạng thái:** Chưa thực hiện
-- `sach-form.tsx` (`useOptions`: thể loại, NXB, tác giả) và `dat-truoc` (chọn sách) lấy `limit: 100`; vượt 100 sẽ bị cắt mà không báo. Cần combobox tìm kiếm phía server hoặc phân trang trong ô chọn.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- **Khảo sát BE:** `/the-loai`, `/nha-xuat-ban`, `/tac-gia` chỉ có `page`/`limit`, **không có `tuKhoa`** nên không tìm phía server được; `/sach?tuKhoa` có nhưng mỗi lượt bị ghi `TRA_CUU` (xem U1). Vì vậy chọn cách: gom mọi trang rồi lọc ở FE, hết bị cắt ở 100 dòng.
+- `lib/paging.ts` `fetchAllPages(fetchPage)`: gọi từng trang `limit=100` đến khi đủ `total`. Đã dùng lại ở `useBanSachIndex` (thay vòng lặp riêng).
+- `danhMucQueries.options` (thể loại, NXB, tác giả) và `sachQueries.options()` (khóa mới `sachKeys.options`, dưới `sachKeys.all` nên làm mới cùng sách) đều gom mọi trang.
+- `components/ui/combobox.tsx` `Combobox({ id, name, options, value, onValueChange, placeholder, emptyText, invalid, clearable })`: dựng trên `@base-ui/react/combobox`, giá trị là chuỗi `value`, lọc không phân biệt hoa thường và dấu (`locale="vi"`), là ô nhập thật nên `<label htmlFor>` hoạt động. Dùng ở `sach-form` (thể loại, NXB) và `dat-truoc-dialog` (chọn sách, nhãn kèm "còn N bản / hết bản").
+- Tác giả ở `sach-form` là danh sách checkbox (chọn nhiều, tối đa 20): thêm ô lọc theo tên/mã (không dấu); tác giả đã chọn nhưng bị ẩn bởi bộ lọc vẫn giữ trong form.
+- `boDau()` chuyển sang `lib/format.ts` (trước là `bo_dau` trong `ban-sach-picker.tsx`).
+- **Giới hạn:** tải trọn danh sách mỗi lần mở form/hộp thoại (cache 60s danh mục, 30s sách); hàng nghìn dòng sẽ chậm. Khi đó cần BE thêm `tuKhoa` cho ba danh mục và tìm sách không ghi nhật ký, rồi đổi `Combobox` sang `onInputValueChange` gọi API.
+- **Kiểm chứng:** `tsc` + `eslint` sạch. `fetchAllPages` với 0/1/100/101/250 dòng giả ra đủ. Trên trình duyệt (THU_THU): `/sach/moi` gõ `cong nghe` ra "Công nghệ thông tin", chọn xong ô hiện nhãn và giá trị gửi là `TL01`; `/sach/7` mở sửa hiện đúng thể loại/NXB hiện có; lọc tác giả gõ `nguyen` còn 2 người; hộp "Đặt trước hộ" gõ `lap trinh` ra 2 sách, chọn được, hộp thoại không đóng; 375px `/sach/moi` không tràn ngang. Chưa bấm "Thêm sách"/"Đặt trước" thật (ghi dữ liệu), chưa thử bàn phím/trình đọc màn hình, chưa thử >100 dòng thật.
 
 ### C8 — Đổi route `/add-doc-gia` (P3)
-- **Trạng thái:** Chưa thực hiện
-- Route tiếng Anh lệch với các route khác; `PATH_ALIASES` trong `lib/navigation.ts` đang vá. Đổi thành `/nguoi-dung/moi`, xóa alias, cập nhật link và `CLAUDE.md`.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- `app/(app)/add-doc-gia` đổi thành `app/(app)/nguoi-dung/moi` (tệp được di chuyển, chưa stage). Nút "Thêm người dùng" ở `/nguoi-dung` trỏ `/nguoi-dung/moi`. Đã xóa `PATH_ALIASES` khỏi `lib/navigation.ts`: route mới nằm dưới tiền tố `/nguoi-dung` nên sidebar, breadcrumb và quyền (`STAFF`) tự khớp. `CLAUDE.md` đã cập nhật.
+- Không để redirect từ `/add-doc-gia` (đường dẫn cũ giờ là 404).
+- **Kiểm chứng:** `tsc` + `eslint` sạch (phải xóa `.next/types` cũ vì còn tham chiếu route cũ). Trên trình duyệt (THU_THU): bấm "Thêm người dùng" sang `/nguoi-dung/moi`, form hiện đủ, sidebar sáng mục "Người dùng & tài khoản". Chưa thử BAN_DOC vào `/nguoi-dung/moi` (kỳ vọng bị `RoleGate` chặn như `/nguoi-dung`).
 
 ### C9 — Metadata theo trang (P3)
 - **Trạng thái:** Chưa thực hiện

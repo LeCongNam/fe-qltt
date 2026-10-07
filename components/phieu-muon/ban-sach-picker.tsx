@@ -9,13 +9,13 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
 import { type BanSachInfo, useBanSachIndex } from "@/features/sach/ban-sach-index"
+import { boDau } from "@/lib/format"
 
 export const MAX_BAN = 20
 const MAX_GOI_Y = 8
 /** Tình trạng có thể đưa vào phiếu mượn; bản đang giữ có thể là bản đã giữ cho chính người mượn, BE quyết định. */
 const MUON_DUOC = new Set(["SAN_SANG", "DANG_GIU"])
 
-const bo_dau = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toLowerCase()
 const tinhTrangOf = (v: string) => TINH_TRANG_BAN_SACH.find((t) => t.value === v)
 
 /** Chọn các bản sách cho phiếu: nhập mã rồi Enter (hợp máy quét mã vạch) hoặc gõ tên sách để chọn từ gợi ý. */
@@ -25,12 +25,12 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
   const index = useBanSachIndex()
   const map = index.data
 
-  const q = bo_dau(text.trim())
+  const q = boDau(text.trim())
   const goiY: BanSachInfo[] =
     map && q
       ? [...map.values()]
           .filter((i) => MUON_DUOC.has(i.ban.tinhTrang) && !value.includes(i.ban.maBanSach.toUpperCase()))
-          .filter((i) => bo_dau(i.ban.maBanSach).includes(q) || bo_dau(i.tenSach).includes(q))
+          .filter((i) => boDau(i.ban.maBanSach).includes(q) || boDau(i.tenSach).includes(q))
           .slice(0, MAX_GOI_Y)
       : []
 
