@@ -73,7 +73,7 @@ export const navigationGroups: NavGroup[] = [
   },
   {
     label: "BÁO CÁO",
-    items: [{ label: "Báo cáo", icon: FileChartColumn, href: "/bao-cao", roles: STAFF, ready: false }],
+    items: [{ label: "Báo cáo", icon: FileChartColumn, href: "/bao-cao", roles: STAFF }],
   },
 ]
 

@@ -39,7 +39,7 @@ export function LibraryDashboard({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <LibrarySidebar />
-      <SidebarInset className="min-h-svh bg-[#f6f7f4]">
+      <SidebarInset className="min-h-svh min-w-0 bg-[#f6f7f4]">
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-[#e7e9e4] bg-white/95 px-4 backdrop-blur sm:px-7">
           <div className="flex min-w-0 items-center gap-3">
             <SidebarTrigger className="-ml-2 text-[#526159]" />
