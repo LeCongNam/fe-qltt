@@ -958,6 +958,94 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/demo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Danh sách mục demo (Procedure, Trigger, Function, Cursor)
+         * @description Mỗi mục có bài toán (bước 1); chi tiết, câu SQL, bảng liên quan và nút chạy ở các endpoint bên dưới.
+         *
+         *     **Quyền:** `ADMIN`, `THU_THU`
+         */
+        get: operations["Demo_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/demo/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Chi tiết một mục demo: câu SQL (bước 2), tham số, câu lệnh thực thi (bước 4)
+         * @description Câu SQL của procedure/function đọc từ CSDL bằng `SHOW CREATE`; trigger đọc từ `sql/05_triggers.sql` vì user `qltt` không có quyền TRIGGER. Gợi ý tham số lấy từ dữ liệu hiện có.
+         *
+         *     **Quyền:** `ADMIN`, `THU_THU`
+         */
+        get: operations["Demo_chiTiet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/demo/{id}/bang": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Các bảng liên quan trước khi chạy (bước 3)
+         * @description Chỉ đọc; dữ liệu truy vấn trực tiếp từ CSDL theo tham số.
+         *
+         *     **Quyền:** `ADMIN`, `THU_THU`
+         */
+        post: operations["Demo_bang"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/demo/{id}/chay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Thực thi và xem lại các bảng liên quan (bước 4 và 5)
+         * @description Chạy trong transaction; `hoanTac = true` (mặc định) thì ROLLBACK sau khi đọc lại bảng nên dữ liệu không đổi. Lỗi nghiệp vụ của procedure/trigger không trả 422 mà nằm trong `loi` (kèm bảng sau khi chạy) để trình bày; tham số sai trả 400.
+         *
+         *     **Quyền:** `ADMIN`, `THU_THU`
+         */
+        post: operations["Demo_chay"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1842,6 +1930,119 @@ export interface components {
             han_giu: string | null;
             /** @description Vị trí trong hàng chờ (chỉ lượt CHO_XU_LY của người còn đủ điều kiện), ngược lại null */
             thu_tu_cho: number | null;
+        };
+        DemoMucDto: {
+            /** @example sp-tra-sach */
+            id: string;
+            /** @enum {string} */
+            loai: "PROCEDURE" | "TRIGGER" | "FUNCTION" | "CURSOR";
+            tieuDe: string;
+            /** @description Bước 1: bài toán */
+            baiToan: string;
+            /** @description Tên routine/trigger liên quan */
+            doiTuong: string[];
+        };
+        DemoDinhNghiaDto: {
+            /** @example sp_tra_sach */
+            ten: string;
+            /** @description Bước 2: câu lệnh CREATE đọc từ CSDL (trigger: từ sql/05_triggers.sql) */
+            sql: string | null;
+            /** @enum {string} */
+            nguon: "CSDL" | "TEP_SQL";
+        };
+        DemoGoiYDto: {
+            giaTri: string;
+            moTa: string | null;
+        };
+        DemoThamSoMoTaDto: {
+            /** @example ma_ban_sach */
+            ten: string;
+            nhan: string;
+            /** @enum {string} */
+            kieu: "text" | "number" | "date";
+            macDinh: string | null;
+            /** @description true: được để trống (truyền NULL) */
+            tuyChon: boolean;
+            /** @description Giá trị gợi ý lấy từ dữ liệu hiện có */
+            goiY: components["schemas"]["DemoGoiYDto"][];
+        };
+        DemoTinhHuongDto: {
+            nhan: string;
+            thamSo: {
+                [key: string]: string;
+            };
+        };
+        DemoChiTietDto: {
+            /** @example sp-tra-sach */
+            id: string;
+            /** @enum {string} */
+            loai: "PROCEDURE" | "TRIGGER" | "FUNCTION" | "CURSOR";
+            tieuDe: string;
+            /** @description Bước 1: bài toán */
+            baiToan: string;
+            /** @description Tên routine/trigger liên quan */
+            doiTuong: string[];
+            dinhNghia: components["schemas"]["DemoDinhNghiaDto"][];
+            thamSo: components["schemas"]["DemoThamSoMoTaDto"][];
+            tinhHuong: components["schemas"]["DemoTinhHuongDto"][];
+            /** @description Bước 4: câu lệnh sẽ thực thi, tham số dạng `:ten` */
+            lenh: string;
+            /** @description Nhãn các bảng liên quan (bước 3 và 5) */
+            bang: string[];
+        };
+        DemoThamSoDto: {
+            /**
+             * @description Giá trị các tham số theo tên (`ten` ở `GET /demo/:id`); tham số tùy chọn để trống thì bỏ qua hoặc gửi chuỗi rỗng.
+             * @example {
+             *       "ma_ban_sach": "BS006",
+             *       "tinh_trang_tra": "BINH_THUONG"
+             *     }
+             */
+            thamSo: {
+                [key: string]: string;
+            };
+        };
+        DemoBangDto: {
+            nhan: string;
+            cot: string[];
+            dong: {
+                [key: string]: unknown;
+            }[];
+        };
+        DemoBangLienQuanDto: {
+            bang: components["schemas"]["DemoBangDto"][];
+        };
+        DemoChayDto: {
+            /**
+             * @description Giá trị các tham số theo tên (`ten` ở `GET /demo/:id`); tham số tùy chọn để trống thì bỏ qua hoặc gửi chuỗi rỗng.
+             * @example {
+             *       "ma_ban_sach": "BS006",
+             *       "tinh_trang_tra": "BINH_THUONG"
+             *     }
+             */
+            thamSo: {
+                [key: string]: string;
+            };
+            /**
+             * @description true (mặc định): chạy trong transaction rồi ROLLBACK, dữ liệu không đổi nhưng vẫn thấy kết quả "sau khi chạy".
+             * @default true
+             */
+            hoanTac: boolean;
+        };
+        DemoKetQuaDto: {
+            /** @description Câu lệnh đã thực thi, tham số đã thay giá trị */
+            lenh: string;
+            thanhCong: boolean;
+            /** @description Thông báo lỗi của CSDL (SIGNAL của procedure/trigger) */
+            loi: string | null;
+            /** @description true: đã ROLLBACK, dữ liệu không đổi */
+            daHoanTac: boolean;
+            /** @description Số dòng bị ảnh hưởng (câu DML) */
+            soDongAnhHuong: number | null;
+            /** @description Output của function/procedure có result set */
+            ketQua: components["schemas"]["DemoBangDto"] | null;
+            /** @description Bước 5: các bảng liên quan sau khi chạy (trước khi hoàn tác) */
+            bangSau: components["schemas"]["DemoBangDto"][];
         };
     };
     responses: never;
@@ -5543,6 +5744,240 @@ export interface operations {
             };
             /** @description Vai trò của tài khoản không được phép gọi endpoint này */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    Demo_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoMucDto"][];
+                };
+            };
+            /** @description Dữ liệu gửi lên không hợp lệ (message là mảng lỗi validate) hoặc vi phạm CHECK của CSDL */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Thiếu/sai/hết hạn JWT, hoặc tài khoản/người dùng đang bị khóa hay ngừng hoạt động */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vai trò của tài khoản không được phép gọi endpoint này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Không tìm thấy bản ghi */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    Demo_chiTiet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoChiTietDto"];
+                };
+            };
+            /** @description Dữ liệu gửi lên không hợp lệ (message là mảng lỗi validate) hoặc vi phạm CHECK của CSDL */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Thiếu/sai/hết hạn JWT, hoặc tài khoản/người dùng đang bị khóa hay ngừng hoạt động */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vai trò của tài khoản không được phép gọi endpoint này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Không tìm thấy bản ghi */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    Demo_bang: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DemoThamSoDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoBangLienQuanDto"];
+                };
+            };
+            /** @description Dữ liệu gửi lên không hợp lệ (message là mảng lỗi validate) hoặc vi phạm CHECK của CSDL */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Thiếu/sai/hết hạn JWT, hoặc tài khoản/người dùng đang bị khóa hay ngừng hoạt động */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vai trò của tài khoản không được phép gọi endpoint này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Không tìm thấy bản ghi */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    Demo_chay: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DemoChayDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DemoKetQuaDto"];
+                };
+            };
+            /** @description Dữ liệu gửi lên không hợp lệ (message là mảng lỗi validate) hoặc vi phạm CHECK của CSDL */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Thiếu/sai/hết hạn JWT, hoặc tài khoản/người dùng đang bị khóa hay ngừng hoạt động */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vai trò của tài khoản không được phép gọi endpoint này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Không tìm thấy bản ghi */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

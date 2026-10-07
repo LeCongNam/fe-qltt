@@ -1,6 +1,7 @@
 import {
   BookMarked,
   CircleDollarSign,
+  DatabaseZap,
   FileChartColumn,
   LayoutDashboard,
   LibraryBig,
@@ -74,6 +75,10 @@ export const navigationGroups: NavGroup[] = [
   {
     label: "BÁO CÁO",
     items: [{ label: "Báo cáo", icon: FileChartColumn, href: "/bao-cao", roles: STAFF }],
+  },
+  {
+    label: "DEMO",
+    items: [{ label: "Xử lý thông tin", icon: DatabaseZap, href: "/demo", roles: STAFF }],
   },
 ]
 
