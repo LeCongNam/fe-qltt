@@ -3,20 +3,21 @@
 import { useState } from "react"
 import Link from "next/link"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Ban, Banknote, Loader2 } from "lucide-react"
+import { Ban, Banknote } from "lucide-react"
 
-import { LOAI_PHAT, TRANG_THAI_PHAT } from "@/components/luu-thong/luu-thong-meta"
+import { LOAI_PHAT, TRANG_THAI_PHAT, type TrangThaiPhat } from "@/components/luu-thong/luu-thong-meta"
+import { HuyPhatDialog } from "@/components/luu-thong/huy-phat-dialog"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Field, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { phatApi } from "@/features/phat/api"
+import { phatKeys, phatQueries } from "@/features/phat/queries"
+import { phieuMuonKeys } from "@/features/phieu-muon/queries"
+import { getApiErrorMessage, type Schemas } from "@/lib/api"
 import { formatDate, formatVnd } from "@/lib/format"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
@@ -34,34 +35,28 @@ export default function PhatPage() {
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
   const [maNguoiDung, setMaNguoiDung] = useState("")
-  const [trangThai, setTrangThai] = useState(ALL)
+  const [trangThai, setTrangThai] = useState<TrangThaiPhat | typeof ALL>(ALL)
   const [thanhToan, setThanhToan] = useState<Phat | null>(null)
   const [huyRow, setHuyRow] = useState<Phat | null>(null)
 
   const list = useQuery({
-    queryKey: ["/phat", "list", page, maNguoiDung, trangThai],
-    queryFn: async () => {
-      const { data } = await apiClient.get<Paged<Phat>>("/phat", {
-        params: {
-          page,
-          limit: PAGE_SIZE,
-          ...(maNguoiDung && { maNguoiDung }),
-          ...(trangThai !== ALL && { trangThai }),
-        },
-      })
-      return data
-    },
+    ...phatQueries.list({
+      page,
+      limit: PAGE_SIZE,
+      ...(maNguoiDung && { maNguoiDung }),
+      ...(trangThai !== ALL && { trangThai }),
+    }),
     placeholderData: keepPreviousData,
     enabled: isStaff,
   })
 
   const pay = useMutation({
-    mutationFn: async (row: Phat) => (await apiClient.post(`/phat/${row.id}/thanh-toan`)).data,
+    mutationFn: (row: Phat) => phatApi.thanhToan(row.id),
     onSuccess: (_, row) => {
       toast.add({ type: "success", title: "Đã thanh toán phiếu phạt", description: `${row.ctPhieuMuon.phieuMuon.nguoiDung.hoTen} — ${formatVnd(row.soTien)}` })
       setThanhToan(null)
-      queryClient.invalidateQueries({ queryKey: ["/phat"] })
-      queryClient.invalidateQueries({ queryKey: ["/phieu-muon"] })
+      queryClient.invalidateQueries({ queryKey: phatKeys.all })
+      queryClient.invalidateQueries({ queryKey: phieuMuonKeys.all })
     },
     onError: (error) => {
       toast.add({ type: "error", title: "Không thể thanh toán", description: getApiErrorMessage(error) })
@@ -157,7 +152,7 @@ export default function PhatPage() {
             items={TRANG_THAI_FILTER}
             onValueChange={(v) => {
               if (!v) return
-              setTrangThai(v)
+              setTrangThai(v as TrangThaiPhat | typeof ALL)
               setPage(1)
             }}
           >
@@ -219,58 +214,5 @@ export default function PhatPage() {
 
       <HuyPhatDialog key={huyRow?.id ?? "closed"} row={huyRow} onClose={() => setHuyRow(null)} />
     </section>
-  )
-}
-
-function HuyPhatDialog({ row, onClose }: { row: Phat | null; onClose: () => void }) {
-  const queryClient = useQueryClient()
-  const [lyDo, setLyDo] = useState("")
-
-  const huy = useMutation({
-    mutationFn: async () => apiClient.post(`/phat/${row!.id}/huy`, { lyDo: lyDo.trim() }),
-    onSuccess: () => {
-      toast.add({ type: "success", title: "Đã hủy phiếu phạt", description: row ? formatVnd(row.soTien) : undefined })
-      queryClient.invalidateQueries({ queryKey: ["/phat"] })
-      onClose()
-    },
-    onError: (error) => {
-      toast.add({ type: "error", title: "Không thể hủy phiếu phạt", description: getApiErrorMessage(error) })
-    },
-  })
-
-  return (
-    <Dialog open={row !== null} onOpenChange={(o) => !o && !huy.isPending && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Hủy phiếu phạt</DialogTitle>
-          <DialogDescription>
-            {row ? `${row.ctPhieuMuon.phieuMuon.nguoiDung.hoTen} — ${formatVnd(row.soTien)}. ` : ""}Bắt buộc ghi lý do; chỉ quản trị được hủy.
-          </DialogDescription>
-        </DialogHeader>
-        <form
-          className="grid gap-4"
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (lyDo.trim()) huy.mutate()
-          }}
-        >
-          <Field>
-            <FieldLabel htmlFor="phat-ly-do">
-              Lý do <span aria-hidden="true" className="text-destructive">*</span>
-            </FieldLabel>
-            <Input id="phat-ly-do" value={lyDo} onChange={(e) => setLyDo(e.target.value)} maxLength={200} className="h-10 rounded-md border-input bg-white text-sm" />
-          </Field>
-          <DialogFooter>
-            <Button type="button" variant="outline" disabled={huy.isPending} onClick={onClose}>
-              Đóng
-            </Button>
-            <Button type="submit" variant="destructive" disabled={huy.isPending || !lyDo.trim()}>
-              {huy.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Hủy phiếu phạt
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
   )
 }

@@ -1,12 +1,14 @@
 "use client"
 
 import { DanhMucPage, type DanhMucConfig } from "@/components/danh-muc/danh-muc-page"
+import { nhaXuatBanApi } from "@/features/danh-muc/api"
 import type { Schemas } from "@/lib/api"
 
 type NhaXuatBan = Schemas["NhaXuatBanDto"]
 
-const config: DanhMucConfig<NhaXuatBan> = {
-  endpoint: "/nha-xuat-ban",
+const config: DanhMucConfig<NhaXuatBan, Schemas["CreateNhaXuatBanDto"]> = {
+  kind: "nha-xuat-ban",
+  api: nhaXuatBanApi,
   singular: "nhà xuất bản",
   title: "Nhà xuất bản",
   description: "Quản lý các nhà xuất bản có sách trong thư viện.",

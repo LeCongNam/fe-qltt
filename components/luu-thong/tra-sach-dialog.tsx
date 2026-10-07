@@ -11,7 +11,12 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
-import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { datTruocKeys } from "@/features/dat-truoc/queries"
+import { muonTraApi } from "@/features/muon-tra/api"
+import { phatKeys } from "@/features/phat/queries"
+import { phieuMuonKeys } from "@/features/phieu-muon/queries"
+import { sachKeys } from "@/features/sach/queries"
+import { getApiErrorMessage } from "@/lib/api"
 import { formatVnd } from "@/lib/format"
 
 /** Trả sách. `maBanSach` cố định khi mở từ phiếu mượn; bỏ trống thì cho nhập (trả nhanh). */
@@ -21,8 +26,7 @@ export function TraSachDialog({ open, onClose, maBanSach }: { open: boolean; onC
   const [tinhTrang, setTinhTrang] = useState<TinhTrangTra>("BINH_THUONG")
 
   const tra = useMutation({
-    mutationFn: async () =>
-      (await apiClient.post<Schemas["TraSachKetQuaDto"]>("/muon-tra/tra", { maBanSach: ma.trim(), tinhTrang })).data,
+    mutationFn: () => muonTraApi.tra({ maBanSach: ma.trim(), tinhTrang }),
     onSuccess: (data) => {
       const phat = data.phieuPhats.reduce((sum, p) => sum + Number(p.soTien), 0)
       toast.add({
@@ -33,10 +37,10 @@ export function TraSachDialog({ open, onClose, maBanSach }: { open: boolean; onC
             ? `Phiếu ${data.phieuMuon.maPhieu}: phát sinh ${data.phieuPhats.length} phiếu phạt, tổng ${formatVnd(phat)}.`
             : `Phiếu ${data.phieuMuon.maPhieu}.`,
       })
-      queryClient.invalidateQueries({ queryKey: ["/phieu-muon"] })
-      queryClient.invalidateQueries({ queryKey: ["/phat"] })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
-      queryClient.invalidateQueries({ queryKey: ["/dat-truoc"] })
+      queryClient.invalidateQueries({ queryKey: phieuMuonKeys.all })
+      queryClient.invalidateQueries({ queryKey: phatKeys.all })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
+      queryClient.invalidateQueries({ queryKey: datTruocKeys.all })
       onClose()
     },
     onError: (error) => {

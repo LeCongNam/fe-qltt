@@ -21,7 +21,11 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/toast"
-import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { nhaXuatBanApi, tacGiaApi, theLoaiApi } from "@/features/danh-muc/api"
+import { danhMucQueries } from "@/features/danh-muc/queries"
+import { sachApi } from "@/features/sach/api"
+import { sachKeys } from "@/features/sach/queries"
+import { getApiErrorMessage, type Schemas } from "@/lib/api"
 import { TextField } from "@/components/form/text-field"
 
 export type SachChiTiet = Schemas["SachChiTietDto"]
@@ -46,18 +50,6 @@ const schema = z.object({
 })
 
 type FormValues = z.infer<typeof schema>
-
-/** Danh sách thể loại / NXB / tác giả để chọn (BE giới hạn 100 dòng mỗi trang). */
-function useOptions<T>(endpoint: string) {
-  return useQuery({
-    queryKey: [endpoint, "options"],
-    queryFn: async () => {
-      const { data } = await apiClient.get<Paged<T>>(endpoint, { params: { page: 1, limit: 100 } })
-      return data.data
-    },
-    staleTime: 60_000,
-  })
-}
 
 function toFormValues(sach?: SachChiTiet): FormValues {
   if (!sach) {
@@ -117,9 +109,9 @@ export function SachForm({
   onCancel: () => void
 }) {
   const queryClient = useQueryClient()
-  const theLoais = useOptions<Schemas["TheLoaiDto"]>("/the-loai")
-  const nxbs = useOptions<Schemas["NhaXuatBanDto"]>("/nha-xuat-ban")
-  const tacGias = useOptions<Schemas["TacGiaDto"]>("/tac-gia")
+  const theLoais = useQuery(danhMucQueries.options("the-loai", theLoaiApi))
+  const nxbs = useQuery(danhMucQueries.options("nha-xuat-ban", nhaXuatBanApi))
+  const tacGias = useQuery(danhMucQueries.options("tac-gia", tacGiaApi))
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -131,11 +123,10 @@ export function SachForm({
     mutationFn: async (values: FormValues) => {
       const payload = toPayload(values)
       if (sach) {
-        await apiClient.patch(`/sach/${sach.id}`, payload)
+        await sachApi.update(sach.id, payload)
         return sach.id
       }
-      const { data } = await apiClient.post<Schemas["SachCoTacGiaDto"]>("/sach", payload)
-      return data.id
+      return (await sachApi.create(payload)).id
     },
     onSuccess: (id, values) => {
       toast.add({
@@ -143,7 +134,7 @@ export function SachForm({
         title: sach ? "Đã cập nhật sách" : "Đã thêm sách",
         description: values.tenSach,
       })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
       onSaved(id)
     },
     onError: (error) => {

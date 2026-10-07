@@ -30,13 +30,15 @@ import {
 } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Paged } from "@/lib/api"
+import { danhMucKeys, danhMucQueries, type DanhMucApi, type DanhMucKind } from "@/features/danh-muc/queries"
+import { getApiErrorMessage } from "@/lib/api"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 
-export type DanhMucField = {
-  name: string
+export type DanhMucField<K extends string = string> = {
+  /** Tên trường theo DTO tạo mới của BE. */
+  name: K
   label: string
   required?: boolean
   maxLength?: number
@@ -52,14 +54,15 @@ export type DanhMucColumn<T> = {
   className?: string
 }
 
-export type DanhMucConfig<T extends { id: string }> = {
-  /** Đường dẫn BE, ví dụ "/the-loai". */
-  endpoint: string
+export type DanhMucConfig<T extends { id: string }, TCreate> = {
+  /** Danh mục nào (khóa truy vấn) và hàm gọi BE tương ứng. */
+  kind: DanhMucKind
+  api: DanhMucApi<T, TCreate>
   /** Tên hiển thị của một bản ghi, ví dụ "thể loại". */
   singular: string
   title: string
   description: string
-  fields: DanhMucField[]
+  fields: DanhMucField<Extract<keyof TCreate, string>>[]
   columns: DanhMucColumn<T>[]
   /** Tên trường dùng làm nhãn khi xác nhận xóa. */
   labelOf: (row: T) => string
@@ -102,8 +105,8 @@ function emptyValues(fields: DanhMucField[]) {
   return Object.fromEntries(fields.map((f) => [f.name, ""]))
 }
 
-export function DanhMucPage<T extends { id: string }>({ config }: { config: DanhMucConfig<T> }) {
-  const { endpoint, singular } = config
+export function DanhMucPage<T extends { id: string }, TCreate>({ config }: { config: DanhMucConfig<T, TCreate> }) {
+  const { kind, api, singular } = config
   const { isStaff, isAdmin } = useAuth()
   const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
@@ -111,22 +114,18 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
   const [deleting, setDeleting] = useState<T | null>(null)
 
   const list = useQuery({
-    queryKey: [endpoint, page],
-    queryFn: async () => {
-      const { data } = await apiClient.get<Paged<T>>(endpoint, { params: { page, limit: PAGE_SIZE } })
-      return data
-    },
+    ...danhMucQueries.list(kind, api, page, PAGE_SIZE),
     placeholderData: keepPreviousData,
   })
 
   const remove = useMutation({
-    mutationFn: (row: T) => apiClient.delete(`${endpoint}/${row.id}`),
+    mutationFn: (row: T) => api.remove(row.id),
     onSuccess: (_, row) => {
       toast.add({ type: "success", title: `Đã xóa ${singular}`, description: config.labelOf(row) })
       setDeleting(null)
       // Xóa bản ghi cuối của trang cuối thì lùi một trang.
       if (list.data && list.data.data.length === 1 && page > 1) setPage(page - 1)
-      queryClient.invalidateQueries({ queryKey: [endpoint] })
+      queryClient.invalidateQueries({ queryKey: danhMucKeys.all(kind) })
     },
     onError: (error) => {
       toast.add({ type: "error", title: `Không thể xóa ${singular}`, description: getApiErrorMessage(error) })
@@ -239,7 +238,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
         config={config}
         editing={editing}
         onClose={() => setEditing(null)}
-        onSaved={() => queryClient.invalidateQueries({ queryKey: [endpoint] })}
+        onSaved={() => queryClient.invalidateQueries({ queryKey: danhMucKeys.all(kind) })}
       />
 
       <ConfirmDialog
@@ -264,18 +263,18 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
   )
 }
 
-function DanhMucFormDialog<T extends { id: string }>({
+function DanhMucFormDialog<T extends { id: string }, TCreate>({
   config,
   editing,
   onClose,
   onSaved,
 }: {
-  config: DanhMucConfig<T>
+  config: DanhMucConfig<T, TCreate>
   editing: T | "new" | null
   onClose: () => void
   onSaved: () => void
 }) {
-  const { endpoint, singular, fields } = config
+  const { api, singular, fields } = config
   const schema = useMemo(() => buildSchema(fields), [fields])
   const form = useForm<Record<string, string>>({
     resolver: zodResolver(schema),
@@ -285,11 +284,11 @@ function DanhMucFormDialog<T extends { id: string }>({
 
   const save = useMutation({
     mutationFn: async (values: Record<string, string>) => {
-      const payload = toPayload(fields, values)
+      const payload = toPayload(fields, values) as Partial<TCreate>
       if (editing && editing !== "new") {
-        await apiClient.patch(`${endpoint}/${editing.id}`, payload)
+        await api.update(editing.id, payload)
       } else {
-        await apiClient.post(endpoint, payload)
+        await api.create(payload)
       }
     },
     onSuccess: () => {

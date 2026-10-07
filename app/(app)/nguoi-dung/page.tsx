@@ -9,6 +9,8 @@ import {
   LOAI_NGUOI_DUNG,
   TRANG_THAI_NGUOI_DUNG,
   labelOf,
+  type LoaiNguoiDung,
+  type TrangThaiNguoiDung,
 } from "@/components/nguoi-dung/nguoi-dung-meta"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
@@ -17,7 +19,7 @@ import type { NguoiDung } from "@/components/nguoi-dung/nguoi-dung-form"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, type Paged } from "@/lib/api"
+import { nguoiDungQueries } from "@/features/nguoi-dung/queries"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { SearchForm } from "@/components/search-form"
@@ -50,23 +52,17 @@ export default function NguoiDungPage() {
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
   const [tuKhoa, setTuKhoa] = useState("")
-  const [loai, setLoai] = useState(ALL)
-  const [trangThai, setTrangThai] = useState(ALL)
+  const [loai, setLoai] = useState<LoaiNguoiDung | typeof ALL>(ALL)
+  const [trangThai, setTrangThai] = useState<TrangThaiNguoiDung | typeof ALL>(ALL)
 
   const list = useQuery({
-    queryKey: ["/docgia", "list", page, tuKhoa, loai, trangThai],
-    queryFn: async () => {
-      const { data } = await apiClient.get<Paged<NguoiDung>>("/docgia", {
-        params: {
-          page,
-          limit: PAGE_SIZE,
-          ...(tuKhoa && { tuKhoa }),
-          ...(loai !== ALL && { loaiNguoiDung: loai }),
-          ...(trangThai !== ALL && { trangThai }),
-        },
-      })
-      return data
-    },
+    ...nguoiDungQueries.list({
+      page,
+      limit: PAGE_SIZE,
+      ...(tuKhoa && { tuKhoa }),
+      ...(loai !== ALL && { loaiNguoiDung: loai }),
+      ...(trangThai !== ALL && { trangThai }),
+    }),
     placeholderData: keepPreviousData,
     enabled: isStaff,
   })
@@ -122,7 +118,7 @@ export default function NguoiDungPage() {
             items={LOAI_FILTER}
             onValueChange={(v) => {
               if (!v) return
-              setLoai(v)
+              setLoai(v as LoaiNguoiDung | typeof ALL)
               setPage(1)
             }}
           >
@@ -142,7 +138,7 @@ export default function NguoiDungPage() {
             items={TRANG_THAI_FILTER}
             onValueChange={(v) => {
               if (!v) return
-              setTrangThai(v)
+              setTrangThai(v as TrangThaiNguoiDung | typeof ALL)
               setPage(1)
             }}
           >

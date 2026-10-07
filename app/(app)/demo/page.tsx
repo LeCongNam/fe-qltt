@@ -6,7 +6,7 @@ import { DemoRunner } from "@/components/demo/demo-runner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getApiErrorMessage } from "@/lib/api"
-import { useDemoList, type DemoLoai, type DemoMuc } from "@/lib/demo"
+import { useDemoList, type DemoLoai, type DemoMuc } from "@/features/demo/queries"
 import { PageHeader } from "@/components/page-header"
 
 const LOAI: { value: DemoLoai; label: string; desc: string }[] = [

@@ -4,7 +4,6 @@ import { useState } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { CalendarPlus, RotateCcw, XCircle } from "lucide-react"
 
 import { GiaHanDialog } from "@/components/luu-thong/gia-han-dialog"
@@ -22,13 +21,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { phieuMuonApi } from "@/features/phieu-muon/api"
+import { phieuMuonKeys, phieuMuonQueries } from "@/features/phieu-muon/queries"
+import { sachKeys } from "@/features/sach/queries"
+import { getApiErrorMessage, isApiError } from "@/lib/api"
 import { formatDate, formatVnd } from "@/lib/format"
 import { InfoItem } from "@/components/info-item"
 import { PageHeader } from "@/components/page-header"
 import { ConfirmDialog } from "@/components/confirm-dialog"
-
-type Phieu = Schemas["PhieuMuonChiTietDto"]
 
 export default function PhieuMuonDetailPage() {
   const { maPhieu } = useParams<{ maPhieu: string }>()
@@ -38,19 +38,15 @@ export default function PhieuMuonDetailPage() {
   const [giaHan, setGiaHan] = useState<string | null>(null)
   const [confirmHuy, setConfirmHuy] = useState(false)
 
-  const query = useQuery({
-    queryKey: ["/phieu-muon", "detail", maPhieu],
-    queryFn: async () => (await apiClient.get<Phieu>(`/phieu-muon/${maPhieu}`)).data,
-    retry: false,
-  })
+  const query = useQuery({ ...phieuMuonQueries.detail(maPhieu), retry: false })
 
   const huy = useMutation({
-    mutationFn: async () => (await apiClient.post<Phieu>(`/phieu-muon/${maPhieu}/huy`)).data,
+    mutationFn: () => phieuMuonApi.huy(maPhieu),
     onSuccess: () => {
       toast.add({ type: "success", title: "Đã hủy phiếu mượn", description: maPhieu })
       setConfirmHuy(false)
-      queryClient.invalidateQueries({ queryKey: ["/phieu-muon"] })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
+      queryClient.invalidateQueries({ queryKey: phieuMuonKeys.all })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
     },
     onError: (error) => {
       toast.add({ type: "error", title: "Không thể hủy phiếu", description: getApiErrorMessage(error) })
@@ -68,7 +64,7 @@ export default function PhieuMuonDetailPage() {
   }
 
   if (query.isError) {
-    const status = axios.isAxiosError(query.error) ? query.error.response?.status : undefined
+    const status = isApiError(query.error) ? query.error.status : undefined
     return (
       <div className="mx-auto w-full max-w-5xl space-y-3 text-sm">
         <p role="alert" className="text-destructive">

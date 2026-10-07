@@ -1,12 +1,14 @@
 "use client"
 
 import { DanhMucPage, type DanhMucConfig } from "@/components/danh-muc/danh-muc-page"
+import { theLoaiApi } from "@/features/danh-muc/api"
 import type { Schemas } from "@/lib/api"
 
 type TheLoai = Schemas["TheLoaiDto"]
 
-const config: DanhMucConfig<TheLoai> = {
-  endpoint: "/the-loai",
+const config: DanhMucConfig<TheLoai, Schemas["CreateTheLoaiDto"]> = {
+  kind: "the-loai",
+  api: theLoaiApi,
   singular: "thể loại",
   title: "Thể loại",
   description: "Quản lý các thể loại sách trong thư viện.",

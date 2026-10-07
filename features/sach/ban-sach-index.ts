@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 
-import { apiClient, type Paged, type Schemas } from "@/lib/api"
+import { sachApi } from "@/features/sach/api"
+import { sachKeys } from "@/features/sach/queries"
+import type { Schemas } from "@/lib/api"
 
 type SachRow = Schemas["TraCuuSachDto"]
 type BanSach = Schemas["BanSachDto"]
@@ -17,24 +19,24 @@ const BATCH = 8
 /**
  * BE chưa có endpoint tra bản sách theo mã (`GET /ban-sach/{ma}`), nên ghép từ danh mục (`/sach` không `tuKhoa`,
  * không ghi nhật ký tra cứu) và `/sach/{id}/ban-sach` của từng đầu sách. Chỉ dùng cho trang lập phiếu (nhân viên).
- * Khóa bắt đầu bằng "/sach" để bị làm mới cùng danh mục khi lập phiếu / đổi tình trạng bản.
+ * Khóa nằm dưới `sachKeys.all` để bị làm mới cùng danh mục khi lập phiếu / đổi tình trạng bản.
  */
 export function useBanSachIndex(enabled = true) {
   return useQuery({
-    queryKey: ["/sach", "ban-sach-index"],
+    queryKey: sachKeys.banSachIndex(),
     enabled,
     staleTime: 30_000,
     queryFn: async () => {
       const sachs: SachRow[] = []
       for (let page = 1; ; page++) {
-        const { data } = await apiClient.get<Paged<SachRow>>("/sach", { params: { page, limit: 100 } })
-        sachs.push(...data.data)
-        if (sachs.length >= data.total || data.data.length === 0) break
+        const res = await sachApi.list({ page, limit: 100 })
+        sachs.push(...res.data)
+        if (sachs.length >= res.total || res.data.length === 0) break
       }
       const index = new Map<string, BanSachInfo>()
       for (let i = 0; i < sachs.length; i += BATCH) {
         const chunk = sachs.slice(i, i + BATCH)
-        const lists = await Promise.all(chunk.map((s) => apiClient.get<BanSach[]>(`/sach/${s.id}/ban-sach`).then((r) => r.data)))
+        const lists = await Promise.all(chunk.map((s) => sachApi.banSach(s.id)))
         lists.forEach((bans, j) => {
           const s = chunk[j]
           for (const ban of bans) {

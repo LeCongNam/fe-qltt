@@ -8,7 +8,7 @@ import { DatTruocPanel, LichSuMuonPanel, SachDangMuonPanel, TienPhatPanel } from
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/hooks/use-auth"
 import { formatVnd } from "@/lib/format"
-import { type DatTruocCuaToi, type SachDangMuonCuaToi, type TienPhatCuaToi, useMe } from "@/lib/me"
+import { useMe } from "@/features/me/queries"
 import { PageHeader } from "@/components/page-header"
 
 const SECTIONS = [
@@ -21,9 +21,9 @@ const SECTIONS = [
 export default function MePage() {
   const { user } = useAuth()
   const [tab, setTab] = useState(SECTIONS[0].value)
-  const dangMuon = useMe<SachDangMuonCuaToi>("sach-dang-muon")
-  const tienPhat = useMe<TienPhatCuaToi>("tien-phat")
-  const datTruoc = useMe<DatTruocCuaToi>("dat-truoc")
+  const dangMuon = useMe("sach-dang-muon")
+  const tienPhat = useMe("tien-phat")
+  const datTruoc = useMe("dat-truoc")
 
   const soQuaHan = dangMuon.data?.filter((r) => r.so_ngay_qua_han > 0).length
   const conNo = tienPhat.data?.filter((r) => r.trang_thai === "CHUA_THANH_TOAN").reduce((s, r) => s + r.so_tien, 0)

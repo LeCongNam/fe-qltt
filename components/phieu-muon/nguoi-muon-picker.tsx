@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { useDebounced } from "@/hooks/use-debounced"
-import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { nguoiDungQueries } from "@/features/nguoi-dung/queries"
+import { getApiErrorMessage, type Schemas } from "@/lib/api"
 
 export type NguoiMuon = Schemas["NguoiDungDto"]
 
@@ -21,11 +22,7 @@ export function NguoiMuonPicker({ value, onChange }: { value: NguoiMuon | null; 
   const q = useDebounced(text.trim(), 300)
   const searching = value === null && q.length >= MIN_CHARS
 
-  const results = useQuery({
-    queryKey: ["/docgia", "chon-nguoi-muon", q],
-    enabled: searching,
-    queryFn: async () => (await apiClient.get<Paged<NguoiMuon>>("/docgia", { params: { tuKhoa: q, limit: 6 } })).data,
-  })
+  const results = useQuery({ ...nguoiDungQueries.list({ tuKhoa: q, limit: 6 }), enabled: searching })
   const rows = searching && !results.isPending ? (results.data?.data ?? []) : []
   // Kết quả của từ khóa cũ không còn khớp với ô nhập (đang chờ debounce) thì không cho Enter chọn nhầm.
   const fresh = q === text.trim()

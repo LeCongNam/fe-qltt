@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
-import { type BanSachInfo, useBanSachIndex } from "@/lib/ban-sach-index"
+import { type BanSachInfo, useBanSachIndex } from "@/features/sach/ban-sach-index"
 
 export const MAX_BAN = 20
 const MAX_GOI_Y = 8

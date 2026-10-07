@@ -9,7 +9,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
-import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { meKeys } from "@/features/me/queries"
+import { muonTraApi } from "@/features/muon-tra/api"
+import { phieuMuonKeys } from "@/features/phieu-muon/queries"
+import { getApiErrorMessage } from "@/lib/api"
 import { formatDate } from "@/lib/format"
 
 export function GiaHanDialog({ maBanSach, onClose }: { maBanSach: string | null; onClose: () => void }) {
@@ -19,16 +22,15 @@ export function GiaHanDialog({ maBanSach, onClose }: { maBanSach: string | null;
   const hopLe = /^\d{1,3}$/.test(soNgay) && n >= 1 && n <= 365
 
   const giaHan = useMutation({
-    mutationFn: async () =>
-      (await apiClient.post<Schemas["GiaHanKetQuaDto"]>("/muon-tra/gia-han", { maBanSach, soNgay: n })).data,
+    mutationFn: () => muonTraApi.giaHan({ maBanSach: maBanSach!, soNgay: n }),
     onSuccess: (data) => {
       toast.add({
         type: "success",
         title: `Đã gia hạn ${maBanSach}`,
         description: `Hạn trả mới ${formatDate(data.hanTra)} (lần ${data.soLanGiaHan}).`,
       })
-      queryClient.invalidateQueries({ queryKey: ["/phieu-muon"] })
-      queryClient.invalidateQueries({ queryKey: ["/me"] })
+      queryClient.invalidateQueries({ queryKey: phieuMuonKeys.all })
+      queryClient.invalidateQueries({ queryKey: meKeys.all })
       onClose()
     },
     onError: (error) => {

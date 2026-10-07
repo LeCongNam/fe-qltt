@@ -18,7 +18,7 @@ import {
   type DemoChiTiet,
   type DemoKetQua,
   type DemoMuc,
-} from "@/lib/demo"
+} from "@/features/demo/queries"
 
 /** Câu lệnh để xem trước (bước 4): thay `:tham_so` bằng giá trị đang nhập. Chỉ để hiển thị, BE mới là nơi bind khi chạy. */
 function xemTruocLenh(lenh: string, thamSo: DemoChiTiet["thamSo"], values: Record<string, string>) {

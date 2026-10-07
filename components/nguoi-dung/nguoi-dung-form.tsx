@@ -12,7 +12,9 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegen
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
-import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { nguoiDungApi } from "@/features/nguoi-dung/api"
+import { nguoiDungKeys } from "@/features/nguoi-dung/queries"
+import { getApiErrorMessage, type Schemas } from "@/lib/api"
 import { TextField } from "@/components/form/text-field"
 
 const schema = z.object({
@@ -63,10 +65,7 @@ export function NguoiDungForm({
       const payload = nguoiDung
         ? v
         : { ...v, email: v.email || undefined, sdt: v.sdt || undefined, khoaDonVi: v.khoaDonVi || undefined }
-      const { data } = nguoiDung
-        ? await apiClient.patch<NguoiDung>(`/docgia/${nguoiDung.id}`, payload)
-        : await apiClient.post<NguoiDung>("/docgia", payload)
-      return data
+      return nguoiDung ? nguoiDungApi.update(nguoiDung.id, payload) : nguoiDungApi.create(payload)
     },
     onSuccess: (saved) => {
       toast.add({
@@ -74,7 +73,7 @@ export function NguoiDungForm({
         title: nguoiDung ? "Đã cập nhật người dùng" : "Đã thêm người dùng",
         description: `${saved.hoTen} (${saved.maNguoiDung})`,
       })
-      queryClient.invalidateQueries({ queryKey: ["/docgia"] })
+      queryClient.invalidateQueries({ queryKey: nguoiDungKeys.all })
       onSaved(saved)
     },
     onError: (error) => {

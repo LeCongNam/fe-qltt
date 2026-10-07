@@ -9,12 +9,19 @@ import { Loader2, Search } from "lucide-react"
 import { LOAI_NGUOI_DUNG } from "@/components/nguoi-dung/nguoi-dung-meta"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { nguoiDungApi } from "@/features/nguoi-dung/api"
+import { phieuMuonApi } from "@/features/phieu-muon/api"
+import { sachApi } from "@/features/sach/api"
+import { getApiErrorMessage } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
-type SachRow = Schemas["TraCuuSachDto"]
-type NguoiDungRow = Schemas["NguoiDungDto"]
-type PhieuRow = Schemas["PhieuMuonChiTietDto"]
+// Khóa riêng (không nằm dưới khóa của sách): làm mới sách sau khi lập phiếu/trả sách không được tra cứu lại
+// từ khóa cũ, vì mỗi lượt tra cứu sách được BE ghi vào nhật ký hành vi.
+const searchKeys = {
+  sach: (q: string) => ["search", "sach", q] as const,
+  nguoiDung: (q: string) => ["search", "nguoi-dung", q] as const,
+  phieu: (ma: string) => ["search", "phieu", ma] as const,
+}
 
 const MIN_CHARS = 2
 const MAX_PER_GROUP = 6
@@ -83,20 +90,19 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
   const isMaPhieu = /^PM\d+$/i.test(q)
 
   const sach = useQuery({
-    queryKey: ["search", "sach", q],
-    queryFn: async () => (await apiClient.get<Paged<SachRow>>("/sach", { params: { tuKhoa: q } })).data,
+    queryKey: searchKeys.sach(q),
+    queryFn: () => sachApi.list({ tuKhoa: q }),
     enabled: ready,
   })
   const nguoiDung = useQuery({
-    queryKey: ["search", "nguoi-dung", q],
-    queryFn: async () =>
-      (await apiClient.get<Paged<NguoiDungRow>>("/docgia", { params: { tuKhoa: q, limit: MAX_PER_GROUP } })).data,
+    queryKey: searchKeys.nguoiDung(q),
+    queryFn: () => nguoiDungApi.list({ tuKhoa: q, limit: MAX_PER_GROUP }),
     enabled: ready && isStaff,
   })
   // Mã phiếu không có tìm theo từ khóa, nên chỉ tra thẳng khi gõ đúng dạng PM…; 404 = không có.
   const phieu = useQuery({
-    queryKey: ["search", "phieu", q.toUpperCase()],
-    queryFn: async () => (await apiClient.get<PhieuRow>(`/phieu-muon/${q.toUpperCase()}`)).data,
+    queryKey: searchKeys.phieu(q.toUpperCase()),
+    queryFn: () => phieuMuonApi.detail(q.toUpperCase()),
     enabled: ready && isStaff && isMaPhieu,
     retry: false,
   })

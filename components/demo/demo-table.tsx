@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { DemoBang } from "@/lib/demo"
+import type { DemoBang } from "@/features/demo/queries"
 
 const rowKey = (row: Record<string, unknown>) => JSON.stringify(row)
 

@@ -6,7 +6,7 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Search } from "lucide-react"
 
 import { type Column, ReportTable } from "@/components/report-table"
-import { LOAI_PHAT, TINH_TRANG_TRA, TRANG_THAI_DAT_TRUOC } from "@/components/luu-thong/luu-thong-meta"
+import { LOAI_PHAT, TINH_TRANG_TRA, TRANG_THAI_DAT_TRUOC, type TrangThaiDatTruoc } from "@/components/luu-thong/luu-thong-meta"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
@@ -22,7 +22,7 @@ import {
   type ThongKeTienPhatDong,
   type TopSachMuonNhieuDong,
   useBaoCao,
-} from "@/lib/bao-cao"
+} from "@/features/bao-cao/queries"
 import { formatDate, formatVnd } from "@/lib/format"
 
 const phieuLink = (maPhieu: string) => (
@@ -85,7 +85,7 @@ function MaNguoiDungFilter({ value, onChange }: { value: string; onChange: (v: s
 }
 
 export function DanhMucSachPanel() {
-  const query = useBaoCao<DanhMucSachDong>("danh-muc-sach")
+  const query = useBaoCao("danh-muc-sach")
   const columns: Column<DanhMucSachDong>[] = [
     { header: "Mã sách", value: (r) => r.ma_sach, className: "w-24" },
     { header: "Tên sách", title: true, value: (r) => r.ten_sach, className: "whitespace-normal" },
@@ -107,7 +107,7 @@ export function DanhMucSachPanel() {
 }
 
 export function SachDangMuonPanel() {
-  const query = useBaoCao<SachDangMuonDong>("sach-dang-muon")
+  const query = useBaoCao("sach-dang-muon")
   const columns: Column<SachDangMuonDong>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
     { header: "Người mượn", value: nguoiDung, className: "whitespace-normal" },
@@ -130,7 +130,7 @@ export function SachDangMuonPanel() {
 }
 
 export function MuonQuaHanPanel() {
-  const query = useBaoCao<MuonQuaHanDong>("muon-qua-han")
+  const query = useBaoCao("muon-qua-han")
   const columns: Column<MuonQuaHanDong>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
     { header: "Người mượn", value: nguoiDung, className: "whitespace-normal" },
@@ -153,7 +153,7 @@ export function MuonQuaHanPanel() {
 }
 
 export function NguoiDungViPhamPanel() {
-  const query = useBaoCao<NguoiDungViPhamDong>("nguoi-dung-vi-pham")
+  const query = useBaoCao("nguoi-dung-vi-pham")
   const columns: Column<NguoiDungViPhamDong>[] = [
     { header: "Người dùng", value: nguoiDung, className: "whitespace-normal" },
     { header: "Số lần phạt", value: (r) => r.so_lan_phat, align: "right", className: "w-28" },
@@ -185,7 +185,7 @@ const LIMITS = [5, 10, 20, 50].map((n) => ({ value: String(n), label: `Top ${n}`
 
 export function TopSachPanel() {
   const [limit, setLimit] = useState("10")
-  const query = useBaoCao<TopSachMuonNhieuDong>("top-sach-muon-nhieu", { limit: Number(limit) })
+  const query = useBaoCao("top-sach-muon-nhieu", { limit: Number(limit) })
   const columns: Column<TopSachMuonNhieuDong>[] = [
     { header: "Hạng", value: (r) => (query.data?.indexOf(r) ?? 0) + 1, className: "w-16" },
     { header: "Mã sách", value: (r) => r.ma_sach, className: "w-24" },
@@ -242,7 +242,7 @@ const phatChartConfig = {
 } satisfies ChartConfig
 
 export function ThongKeTienPhatPanel() {
-  const query = useBaoCao<ThongKeTienPhatDong>("thong-ke-tien-phat")
+  const query = useBaoCao("thong-ke-tien-phat")
   const columns: Column<ThongKeTienPhatDong>[] = [
     { header: "Tháng", value: (r) => thangLabel(r.thang), sortBy: (r) => r.thang, className: "w-24" },
     { header: "Loại phạt", value: (r) => LOAI_PHAT.find((l) => l.value === r.loai_phat)?.label ?? r.loai_phat },
@@ -299,7 +299,7 @@ export function ThongKeTienPhatPanel() {
 
 export function LichSuMuonPanel() {
   const [maNguoiDung, setMaNguoiDung] = useState("")
-  const query = useBaoCao<LichSuMuonDong>("lich-su-muon", { maNguoiDung })
+  const query = useBaoCao("lich-su-muon", { maNguoiDung })
   const columns: Column<LichSuMuonDong>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
     { header: "Người mượn", value: nguoiDung, className: "whitespace-normal" },
@@ -340,8 +340,8 @@ const DAT_TRUOC_FILTER = [{ value: ALL, label: "Mọi trạng thái" }, ...TRANG
 
 export function DatTruocPanel() {
   const [maNguoiDung, setMaNguoiDung] = useState("")
-  const [trangThai, setTrangThai] = useState(ALL)
-  const query = useBaoCao<DatTruocDong>("dat-truoc", { maNguoiDung, trangThai: trangThai === ALL ? undefined : trangThai })
+  const [trangThai, setTrangThai] = useState<TrangThaiDatTruoc | typeof ALL>(ALL)
+  const query = useBaoCao("dat-truoc", { maNguoiDung, trangThai: trangThai === ALL ? undefined : trangThai })
   const columns: Column<DatTruocDong>[] = [
     { header: "Người đặt", value: nguoiDung, className: "whitespace-normal" },
     { header: "Sách", value: (r) => `${r.ten_sach} (${r.ma_sach})`, className: "whitespace-normal" },
@@ -367,7 +367,7 @@ export function DatTruocPanel() {
       toolbar={
         <>
           <MaNguoiDungFilter value={maNguoiDung} onChange={setMaNguoiDung} />
-          <Select value={trangThai} items={DAT_TRUOC_FILTER} onValueChange={(v) => v && setTrangThai(v)}>
+          <Select value={trangThai} items={DAT_TRUOC_FILTER} onValueChange={(v) => v && setTrangThai(v as TrangThaiDatTruoc | typeof ALL)}>
             <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-44 border-input bg-white">
               <SelectValue />
             </SelectTrigger>

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { keepPreviousData, useQuery } from "@tanstack/react-query"
 import { Plus, RotateCcw } from "lucide-react"
 
-import { TRANG_THAI_PHIEU_MUON, isOverdue } from "@/components/luu-thong/luu-thong-meta"
+import { TRANG_THAI_PHIEU_MUON, isOverdue, type TrangThaiPhieuMuon } from "@/components/luu-thong/luu-thong-meta"
 import { TraSachDialog } from "@/components/luu-thong/tra-sach-dialog"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
@@ -13,7 +13,8 @@ import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, type Paged, type Schemas } from "@/lib/api"
+import { phieuMuonQueries } from "@/features/phieu-muon/queries"
+import type { Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
@@ -65,22 +66,16 @@ export default function PhieuMuonPage() {
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
   const [maNguoiDung, setMaNguoiDung] = useState("")
-  const [trangThai, setTrangThai] = useState(ALL)
+  const [trangThai, setTrangThai] = useState<TrangThaiPhieuMuon | typeof ALL>(ALL)
   const [traOpen, setTraOpen] = useState(false)
 
   const list = useQuery({
-    queryKey: ["/phieu-muon", "list", page, maNguoiDung, trangThai],
-    queryFn: async () => {
-      const { data } = await apiClient.get<Paged<Phieu>>("/phieu-muon", {
-        params: {
-          page,
-          limit: PAGE_SIZE,
-          ...(maNguoiDung && { maNguoiDung }),
-          ...(trangThai !== ALL && { trangThai }),
-        },
-      })
-      return data
-    },
+    ...phieuMuonQueries.list({
+      page,
+      limit: PAGE_SIZE,
+      ...(maNguoiDung && { maNguoiDung }),
+      ...(trangThai !== ALL && { trangThai }),
+    }),
     placeholderData: keepPreviousData,
     enabled: isStaff,
   })
@@ -133,7 +128,7 @@ export default function PhieuMuonPage() {
             items={TRANG_THAI_FILTER}
             onValueChange={(v) => {
               if (!v) return
-              setTrangThai(v)
+              setTrangThai(v as TrangThaiPhieuMuon | typeof ALL)
               setPage(1)
             }}
           >

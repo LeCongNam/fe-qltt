@@ -4,6 +4,8 @@ export type LoaiNguoiDung = Schemas["LoaiNguoiDung"]
 export type TrangThaiNguoiDung = Schemas["TrangThaiNguoiDung"]
 export type TrangThaiTaiKhoan = Schemas["TrangThaiTaiKhoan"]
 export type VaiTroTaiKhoan = Schemas["VaiTroTaiKhoan"]
+export type NguoiDungChiTiet = Schemas["NguoiDungChiTietDto"]
+export type TaiKhoanCongKhai = Schemas["TaiKhoanCongKhaiDto"]
 
 export const LOAI_NGUOI_DUNG: { value: LoaiNguoiDung; label: string }[] = [
   { value: "SINH_VIEN", label: "Sinh viên" },

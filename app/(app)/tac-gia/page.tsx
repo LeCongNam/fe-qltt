@@ -1,12 +1,14 @@
 "use client"
 
 import { DanhMucPage, type DanhMucConfig } from "@/components/danh-muc/danh-muc-page"
+import { tacGiaApi } from "@/features/danh-muc/api"
 import type { Schemas } from "@/lib/api"
 
 type TacGia = Schemas["TacGiaDto"]
 
-const config: DanhMucConfig<TacGia> = {
-  endpoint: "/tac-gia",
+const config: DanhMucConfig<TacGia, Schemas["CreateTacGiaDto"]> = {
+  kind: "tac-gia",
+  api: tacGiaApi,
   singular: "tác giả",
   title: "Tác giả",
   description: "Quản lý tác giả của các đầu sách.",

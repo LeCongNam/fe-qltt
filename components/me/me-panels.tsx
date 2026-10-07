@@ -11,9 +11,12 @@ import { type Column, ReportTable } from "@/components/report-table"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/toast"
-import { apiClient, getApiErrorMessage } from "@/lib/api"
+import { datTruocApi } from "@/features/dat-truoc/api"
+import { datTruocKeys } from "@/features/dat-truoc/queries"
+import { sachKeys } from "@/features/sach/queries"
+import { getApiErrorMessage } from "@/lib/api"
 import { formatDate, formatVnd } from "@/lib/format"
-import { type DatTruocCuaToi, type LichSuMuonCuaToi, type SachDangMuonCuaToi, type TienPhatCuaToi, useMe } from "@/lib/me"
+import { type DatTruocCuaToi, type LichSuMuonCuaToi, type SachDangMuonCuaToi, type TienPhatCuaToi, meKeys, useMe } from "@/features/me/queries"
 import { ConfirmDialog } from "@/components/confirm-dialog"
 
 const phieuLink = (maPhieu: string) => (
@@ -25,7 +28,7 @@ const phieuLink = (maPhieu: string) => (
 const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-destructive">{days} ngày</span> : "—")
 
 export function SachDangMuonPanel() {
-  const query = useMe<SachDangMuonCuaToi>("sach-dang-muon")
+  const query = useMe("sach-dang-muon")
   const [giaHan, setGiaHan] = useState<string | null>(null)
   const columns: Column<SachDangMuonCuaToi>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
@@ -66,16 +69,16 @@ const DANG_HOAT_DONG = ["CHO_XU_LY", "SAN_SANG_NHAN"]
 
 export function DatTruocPanel() {
   const queryClient = useQueryClient()
-  const query = useMe<DatTruocCuaToi>("dat-truoc")
+  const query = useMe("dat-truoc")
   const [huyRow, setHuyRow] = useState<DatTruocCuaToi | null>(null)
 
   const huy = useMutation({
-    mutationFn: async (row: DatTruocCuaToi) => apiClient.delete(`/dat-truoc/${row.ma_sach}`),
+    mutationFn: (row: DatTruocCuaToi) => datTruocApi.huy(row.ma_sach),
     onSuccess: (_, row) => {
       toast.add({ type: "success", title: "Đã hủy đặt trước", description: row.ten_sach })
-      queryClient.invalidateQueries({ queryKey: ["/me"] })
-      queryClient.invalidateQueries({ queryKey: ["/dat-truoc"] })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
+      queryClient.invalidateQueries({ queryKey: meKeys.all })
+      queryClient.invalidateQueries({ queryKey: datTruocKeys.all })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
     },
     onError: (error) => {
       toast.add({ type: "error", title: "Không thể hủy đặt trước", description: getApiErrorMessage(error) })
@@ -149,7 +152,7 @@ export function DatTruocPanel() {
 }
 
 export function TienPhatPanel() {
-  const query = useMe<TienPhatCuaToi>("tien-phat")
+  const query = useMe("tien-phat")
   const columns: Column<TienPhatCuaToi>[] = [
     { header: "Mã phạt", value: (r) => r.ma_phieu_phat, className: "w-24" },
     { header: "Loại phạt", value: (r) => LOAI_PHAT.find((l) => l.value === r.loai_phat)?.label ?? r.loai_phat, className: "w-32" },
@@ -177,7 +180,7 @@ export function TienPhatPanel() {
 }
 
 export function LichSuMuonPanel() {
-  const query = useMe<LichSuMuonCuaToi>("lich-su-muon")
+  const query = useMe("lich-su-muon")
   const columns: Column<LichSuMuonCuaToi>[] = [
     { header: "Phiếu", value: (r) => r.ma_phieu, cell: (r) => phieuLink(r.ma_phieu), className: "w-28" },
     { header: "Sách", title: true, value: (r) => `${r.ten_sach} (${r.ma_ban_sach})`, className: "whitespace-normal" },

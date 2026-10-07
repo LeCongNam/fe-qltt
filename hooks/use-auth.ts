@@ -2,7 +2,8 @@
 
 import { useSyncExternalStore } from "react"
 
-import { apiClient, type Schemas } from "@/lib/api"
+import { authApi } from "@/features/auth/api"
+import type { Schemas } from "@/lib/api"
 import {
   clearSession,
   getServerSnapshot,
@@ -13,7 +14,7 @@ import {
 } from "@/lib/auth-store"
 
 export async function login(body: Schemas["LoginDto"]) {
-  const { data } = await apiClient.post<Schemas["LoginResponseDto"]>("/auth/login", body)
+  const data = await authApi.login(body)
   saveSession({ accessToken: data.accessToken, user: data.user })
   return data.user
 }

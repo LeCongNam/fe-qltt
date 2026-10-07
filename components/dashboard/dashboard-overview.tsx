@@ -11,15 +11,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } f
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import {
-  type DanhMucSachDong,
-  type DatTruocDong,
-  type LichSuMuonDong,
-  type MuonQuaHanDong,
-  type SachDangMuonDong,
-  type ThongKeTienPhatDong,
-  useBaoCao,
-} from "@/lib/bao-cao"
+import { type LichSuMuonDong, useBaoCao } from "@/features/bao-cao/queries"
 import { formatDate, formatVnd } from "@/lib/format"
 
 const chartConfig = {
@@ -63,12 +55,12 @@ function loanStatus(r: LichSuMuonDong, today: string) {
 }
 
 export function DashboardOverview() {
-    const dangMuon = useBaoCao<SachDangMuonDong>("sach-dang-muon")
-  const quaHan = useBaoCao<MuonQuaHanDong>("muon-qua-han")
-  const datTruoc = useBaoCao<DatTruocDong>("dat-truoc")
-  const danhMuc = useBaoCao<DanhMucSachDong>("danh-muc-sach")
-  const tienPhat = useBaoCao<ThongKeTienPhatDong>("thong-ke-tien-phat")
-  const lichSu = useBaoCao<LichSuMuonDong>("lich-su-muon")
+    const dangMuon = useBaoCao("sach-dang-muon")
+  const quaHan = useBaoCao("muon-qua-han")
+  const datTruoc = useBaoCao("dat-truoc")
+  const danhMuc = useBaoCao("danh-muc-sach")
+  const tienPhat = useBaoCao("thong-ke-tien-phat")
+  const lichSu = useBaoCao("lich-su-muon")
 
   const [chartKind, setChartKind] = useState<ChartKind>("bar")
 

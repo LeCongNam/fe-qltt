@@ -4,16 +4,17 @@ import { useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { Pencil, Trash2 } from "lucide-react"
 
 import { BanSachPanel } from "@/components/sach/ban-sach-panel"
-import { SachForm, type SachChiTiet } from "@/components/sach/sach-form"
+import { SachForm } from "@/components/sach/sach-form"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage } from "@/lib/api"
+import { sachApi } from "@/features/sach/api"
+import { sachKeys, sachQueries } from "@/features/sach/queries"
+import { getApiErrorMessage, isApiError } from "@/lib/api"
 import { formatVnd } from "@/lib/format"
 import { InfoItem } from "@/components/info-item"
 import { PageHeader } from "@/components/page-header"
@@ -27,17 +28,13 @@ export default function SachDetailPage() {
   const [editing, setEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  const query = useQuery({
-    queryKey: ["/sach", "detail", id],
-    queryFn: async () => (await apiClient.get<SachChiTiet>(`/sach/${id}`)).data,
-    retry: false,
-  })
+  const query = useQuery({ ...sachQueries.detail(id), retry: false })
 
   const remove = useMutation({
-    mutationFn: () => apiClient.delete(`/sach/${id}`),
+    mutationFn: () => sachApi.remove(id),
     onSuccess: () => {
       toast.add({ type: "success", title: "Đã xóa sách", description: query.data?.tenSach })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
       router.replace("/sach")
     },
     onError: (error) => {
@@ -56,7 +53,7 @@ export default function SachDetailPage() {
   }
 
   if (query.isError) {
-    const notFound = axios.isAxiosError(query.error) && query.error.response?.status === 404
+    const notFound = isApiError(query.error, 404)
     return (
       <div className="mx-auto w-full max-w-4xl space-y-3 text-sm">
         <p role="alert" className="text-destructive">{notFound ? "Không tìm thấy sách." : getApiErrorMessage(query.error, "Không tải được sách.")}</p>

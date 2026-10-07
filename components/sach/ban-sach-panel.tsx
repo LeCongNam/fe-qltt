@@ -22,11 +22,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
-import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { sachApi } from "@/features/sach/api"
+import { sachKeys, sachQueries } from "@/features/sach/queries"
+import { getApiErrorMessage } from "@/lib/api"
 import { formatDate } from "@/lib/format"
 import { TextField } from "@/components/form/text-field"
 
-type BanSach = Schemas["BanSachDto"]
 
 const nhapSchema = z.object({
   soBan: z
@@ -43,14 +44,11 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
   const [nhapOpen, setNhapOpen] = useState(false)
   const [pendingMa, setPendingMa] = useState<string | null>(null)
 
-  const list = useQuery({
-    queryKey: ["/sach", sachId, "ban-sach"],
-    queryFn: async () => (await apiClient.get<BanSach[]>(`/sach/${sachId}/ban-sach`)).data,
-  })
+  const list = useQuery(sachQueries.banSach(sachId))
 
   const doiTinhTrang = useMutation({
     mutationFn: ({ ma, tinhTrang }: { ma: string; tinhTrang: TinhTrangBanSach }) =>
-      apiClient.patch(`/ban-sach/${ma}/tinh-trang`, { tinhTrang }),
+      sachApi.doiTinhTrangBan(ma, { tinhTrang }),
     onMutate: ({ ma }) => setPendingMa(ma),
     onSuccess: (_, { ma, tinhTrang }) => {
       const label = TINH_TRANG_BAN_SACH.find((t) => t.value === tinhTrang)?.label
@@ -62,7 +60,7 @@ export function BanSachPanel({ sachId }: { sachId: string }) {
     onSettled: () => {
       setPendingMa(null)
       // Tải lại cả khi lỗi để ô chọn quay về giá trị thật trong DB.
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
     },
   })
 
@@ -158,11 +156,7 @@ function NhapBanSachDialog({ sachId, open, onClose }: { sachId: string; open: bo
 
   const nhap = useMutation({
     mutationFn: async (v: NhapValues) => {
-      const { data } = await apiClient.post<Schemas["BanSachMoiDto"][]>(`/sach/${sachId}/ban-sach`, {
-        soBan: Number(v.soBan),
-        viTriKe: v.viTriKe,
-      })
-      return data
+      return sachApi.nhapBanSach(sachId, { soBan: Number(v.soBan), viTriKe: v.viTriKe })
     },
     onSuccess: (moi) => {
       const giu = moi.filter((b) => b.tinh_trang === "DANG_GIU").length
@@ -172,7 +166,7 @@ function NhapBanSachDialog({ sachId, open, onClose }: { sachId: string; open: bo
         description:
           moi.map((b) => b.ma_ban_sach).join(", ") + (giu ? ` (${giu} bản được giữ cho người đặt trước)` : ""),
       })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
       onClose()
     },
     onError: (error) => {

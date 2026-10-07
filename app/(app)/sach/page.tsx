@@ -9,7 +9,8 @@ import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, type Paged, type Schemas } from "@/lib/api"
+import { sachQueries } from "@/features/sach/queries"
+import type { Schemas } from "@/lib/api"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { SearchForm } from "@/components/search-form"
@@ -57,13 +58,7 @@ export default function SachPage() {
   const [tuKhoa, setTuKhoa] = useState("")
 
   const list = useQuery({
-    queryKey: ["/sach", "list", page, tuKhoa],
-    queryFn: async () => {
-      const { data } = await apiClient.get<Paged<SachRow>>("/sach", {
-        params: { page, limit: PAGE_SIZE, ...(tuKhoa && { tuKhoa }) },
-      })
-      return data
-    },
+    ...sachQueries.list({ page, limit: PAGE_SIZE, ...(tuKhoa && { tuKhoa }) }),
     placeholderData: keepPreviousData,
   })
 

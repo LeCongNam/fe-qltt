@@ -1,7 +1,7 @@
 # TASKS — Cải thiện UI/UX và cấu trúc code FE (qltv_nhom8)
 
 Nguồn: phân tích FE ngày 2026-10-07 (đọc code, chạy tsc/eslint, xem giao diện thật bằng ADMIN trên desktop và mobile).
-Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memory: `mem_muxxlkqc_9e79ed7ac087` (2026-10-07; thay bản cũ `mem_muxwwjwr_c4ef046b635b`, bản cũ không còn trong kho).
+Tóm tắt trạng thái và quy trình làm việc nằm trong agent memory (project `qltv_nhom8-fe`): `mem_muxyw9zn_1438417243a3` (trạng thái sau C4, 2026-10-07) và `mem_muxywa4r_5bb5a013aa87` (quy trình, quy tắc git). Bản cũ `mem_muxxlkqc_9e79ed7ac087` không còn trong kho.
 
 ## Cách dùng file này (cho session mới)
 
@@ -30,8 +30,8 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 | C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
 | C3 | Đưa màu hex cứng vào theme token | P2 | Đã hoàn thành (còn 19 màu lẻ) |
 | C4 | Tách component dùng chung (lặp code) | P2 | Đã hoàn thành (trừ `Avatar`) |
-| C5 | Tầng API có kiểu: `openapi-fetch`, key factory, `.gitattributes` | P2 | Chưa thực hiện |
-| C6 | Tách các trang quá lớn | P3 | Chưa thực hiện |
+| C5 | Tầng API có kiểu: `openapi-fetch`, key factory, `.gitattributes` | P2 | Đã hoàn thành (chưa dọn `api-types.ts`) |
+| C6 | Tách các trang quá lớn | P3 | Đã hoàn thành |
 | C7 | Select giới hạn 100 dòng: combobox tìm phía server | P3 | Chưa thực hiện |
 | C8 | Đổi route `/add-doc-gia` thành `/nguoi-dung/moi` | P3 | Chưa thực hiện |
 | C9 | Metadata/`<title>` theo từng trang | P3 | Chưa thực hiện |
@@ -40,6 +40,7 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 | C12 | Báo cáo chưa link được sang người dùng | P3 | Chưa thực hiện |
 | Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Đã hoàn thành (còn dialog Gia hạn) |
 | B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | Đã phân tích, chờ BE |
+| B2 | Spec sai body `POST /dat-truoc` (trùng tên class `DatTruocDto`) | P3 | Chờ BE |
 
 ---
 
@@ -166,17 +167,24 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 - **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU): `/nguoi-dung`, `/phieu-muon` (tiêu đề + 2 nút + ô lọc), `/sach/7` (nút quay lại, hộp xác nhận xóa, form sửa với `TextField`) hiển thị đúng. Chưa bấm xác nhận thật ở các hộp thoại, chưa thử lỗi validate của `TextField`, `/login`, `/dat-truoc`, `/phat` và mobile.
 
 ### C5 — Tầng API có kiểu (P2)
-- **Trạng thái:** Chưa thực hiện
-- `lib/api-types.ts` (~6000 dòng) chỉ `import type` nên không ảnh hưởng bundle; việc commit file này là đúng (FE và BE là hai repo riêng). Vấn đề thật: 30/40 lời gọi `apiClient.*` dùng generic viết tay, 10 lời gọi không có generic; **body request không được kiểm theo spec** (các DTO `Create*/Update*` không được tham chiếu). 66% file là `operations` mà FE không dùng.
-- Việc cần làm:
-  1. Thêm `.gitattributes` với `lib/api-types.ts linguist-generated=true`.
-  2. Dùng đúng thứ đã sinh: thêm `openapi-fetch` (gọi API có kiểm tra path, params, body, response theo spec) và đưa lời gọi vào `features/<domain>/{api,queries,schemas}` với key factory cho query. Hoặc, nếu không dùng, cắt `paths`/`operations` khỏi file sinh (còn ~1000 dòng; chỉ gọn hơn, không an toàn hơn).
-  3. Chuẩn hóa query key (hiện: `["/sach","list",page,tuKhoa]`, `[endpoint,page]`, `["/me",path]`…).
-- Làm dần theo module; bắt đầu từ một module nhỏ (ví dụ danh mục) để chốt mẫu.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt). Gỡ `axios`, thêm `openapi-fetch` (`^0.17`).
+- **Lõi** (`lib/api.ts`): `api = createClient<paths>({ baseUrl: "/backend" })` kiểm đường dẫn, tham số, body và kiểu trả về theo `lib/api-types.ts`. Middleware gắn `Authorization` và xóa phiên khi 401 (trừ `/auth/login`). `unwrap(result)` lấy `data` hoặc ném `ApiError { status, message }` (400 nối mảng thông báo, 422 giữ nguyên thông báo DB); `isApiError(error, status?)` thay `axios.isAxiosError`; `getApiErrorMessage` nhận `ApiError`, lỗi mạng (`TypeError` của fetch) cho thông báo "Không thể kết nối". `QueryOf<"/đường-dẫn">` lấy kiểu tham số query từ spec.
+- **Cấu trúc:** `features/<module>/api.ts` (hàm gọi BE có kiểu) và `features/<module>/queries.ts` (key factory + `queryOptions`). Module: `auth`, `sach` (kèm bản sách và `ban-sach-index.ts`), `nguoi-dung`, `danh-muc` (thể loại, NXB, tác giả), `phieu-muon`, `muon-tra`, `dat-truoc`, `phat`, `me`, `bao-cao`, `demo`. Đã chuyển `lib/me.ts`, `lib/bao-cao.ts`, `lib/demo.ts`, `lib/ban-sach-index.ts` vào đây. Thiếu thư mục `schemas`: schema zod của form vẫn nằm cạnh form.
+- **Key factory:** mỗi module có khóa gốc (`sachKeys.all = ["sach"]`, `phieuMuonKeys.all`, `datTruocKeys.all`, `phatKeys.all`, `nguoiDungKeys.all`, `meKeys.all`, `baoCaoKeys.all`, `danhMucKeys.all(kind)`, `demoKeys.all`). Làm mới sau mutation dùng `queryClient.invalidateQueries({ queryKey: xxxKeys.all })`. Khóa của sách bao cả bản sách và chỉ mục bản sách. **Tìm kiếm toàn cục dùng khóa riêng `["search", …]`** để làm mới sách không tra cứu lại từ khóa cũ (mỗi lượt tra cứu `/sach?tuKhoa` bị BE ghi `TRA_CUU`).
+- **Danh mục:** `DanhMucConfig<T, TCreate>` nhận `kind` và `api` thay cho `endpoint`; tên trường trong `fields` phải là khóa của DTO tạo mới. Nội dung gửi là `Partial<TCreate>` (form đã bắt buộc các trường bắt buộc) nên có một chỗ ép kiểu ở `features/danh-muc/api.ts`.
+- **Bắt được nhờ kiểu:** lọc theo trạng thái ở `/nguoi-dung`, `/phieu-muon`, `/dat-truoc`, `/phat`, báo cáo "Đặt trước" trước đây là `string` tự do, nay là `Enum | "ALL"` (ép kiểu một chỗ ở `onValueChange`, vì giá trị lấy từ mảng hằng có kiểu).
+- **Ngoại lệ có chủ ý:** `datTruocApi.create` ép body qua `unknown` vì spec sinh sai (xem **B2**).
+- **`.gitattributes`:** `lib/api-types.ts linguist-generated=true`.
+- **Chưa làm:** chưa cắt `paths`/`operations` thừa khỏi `api-types.ts` (vẫn ~6000 dòng, chỉ `import type` nên không vào bundle; `openapi-fetch` cần `paths` nên chỉ cắt được `operations`). Chưa viết test.
+- **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU `cb001`): danh sách `/sach`, `/nguoi-dung`, `/phieu-muon`, `/phat`, `/dat-truoc`, `/the-loai`, chi tiết `/sach/7`, `/nguoi-dung/12`, `/nguoi-dung/13`, `/phieu-muon/PM000015`, `/bao-cao` (tab Top có `?limit=10`), `/demo`, `/me`, `/sach/moi` (ba danh sách chọn) đều tải đúng; 404 ở `/sach/99999`, `/nguoi-dung/9999`, `/phieu-muon/PM999999` hiện "Không tìm thấy…" (qua `isApiError`); thêm thể loại trùng mã `TL01` trả 409 và hiện toast lỗi; đặt trước hộ mã `ZZ999` trả 422 với thông báo BE nguyên văn (xác nhận body đặt trước được BE chấp nhận). Không ghi dữ liệu thật.
+- **Chưa kiểm:** các mutation ghi thành công (lập phiếu, trả sách, gia hạn, thu/hủy phạt, đổi trạng thái/tạo tài khoản, nhập bản sách, sửa/xóa sách và danh mục, đổi tình trạng bản), tìm kiếm toàn cục (mỗi lần thử sẽ ghi `TRA_CUU`), đăng nhập/đăng xuất và 401 giữa phiên sau khi đổi middleware, chạy `npm run build`.
 
 ### C6 — Tách trang quá lớn (P3)
-- **Trạng thái:** Chưa thực hiện
-- `app/(app)/nguoi-dung/[id]/page.tsx` 424 dòng (chứa `TrangThaiCard`, `TaiKhoanCard`), `dat-truoc/page.tsx` 351, `phat/page.tsx` 321. Tách card/dialog sang `components/<domain>/`.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt). Chỉ di chuyển code, không đổi hành vi.
+- `app/(app)/nguoi-dung/[id]/page.tsx` 401 → 92 dòng; tách thành `components/nguoi-dung/trang-thai-card.tsx`, `tai-khoan-card.tsx`, `tao-tai-khoan-dialog.tsx`. Kiểu `NguoiDungChiTiet`, `TaiKhoanCongKhai` đưa vào `nguoi-dung-meta.ts`.
+- `app/(app)/dat-truoc/page.tsx` 313 → 213 dòng; hộp "Đặt trước" ra `components/luu-thong/dat-truoc-dialog.tsx`.
+- `app/(app)/phat/page.tsx` 276 → 218 dòng; hộp hủy phạt ra `components/luu-thong/huy-phat-dialog.tsx`.
+- Kiểm chứng: `tsc` + `eslint` sạch; `/nguoi-dung/12` hiển thị đủ thẻ trạng thái và tài khoản, hộp "Đặt trước hộ" mở và tải danh sách sách. Chưa mở hộp "Tạo tài khoản" và "Hủy phiếu phạt" (chỉ ADMIN).
 
 ### C7 — Select giới hạn 100 dòng (P3)
 - **Trạng thái:** Chưa thực hiện
@@ -251,6 +259,10 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 - **Việc FE sau khi BE đổi:** đổi `order` của `Pager` ở `phieu-muon` ("ngày mượn, mới nhất trước"), `dat-truoc` ("đang chờ trước, rồi mới nhất"), `phat` ("chưa thu trước, rồi mới nhất"); khai báo `defaultOrder` cho báo cáo "Người dùng vi phạm" (Còn nợ ↓).
 
 ---
+
+### B2 — Spec sai body `POST /dat-truoc` (P3)
+- **Trạng thái:** Chờ người phụ trách BE.
+- BE có hai class cùng tên `DatTruocDto` (`dat-truoc.dto.ts` là body `{ maSach, maNguoiDung? }`, `dat-truoc.response.dto.ts` là kết quả). `openapi.json` dùng kết quả làm body của `POST /dat-truoc`, nên `lib/api-types.ts` đòi mọi trường (`id`, `sach`, …). FE đang ép kiểu ở `features/dat-truoc/api.ts`. Đề xuất đổi tên class body thành `TaoDatTruocDto` rồi chạy lại `npm run api:types`, sau đó bỏ phần ép kiểu.
 
 ## Ghi chú kỹ thuật cần nhớ
 

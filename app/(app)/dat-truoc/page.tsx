@@ -2,20 +2,21 @@
 
 import { useState } from "react"
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Loader2, Plus, XCircle } from "lucide-react"
+import { Plus, XCircle } from "lucide-react"
 
-import { TRANG_THAI_DAT_TRUOC } from "@/components/luu-thong/luu-thong-meta"
+import { TRANG_THAI_DAT_TRUOC, type TrangThaiDatTruoc } from "@/components/luu-thong/luu-thong-meta"
+import { DatTruocDialog } from "@/components/luu-thong/dat-truoc-dialog"
 import { DataTable, type DataColumn } from "@/components/data-table"
 import { Pager } from "@/components/pager"
 import { StatusPill } from "@/components/status-pill"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
-import { apiClient, getApiErrorMessage, type Paged, type Schemas } from "@/lib/api"
+import { datTruocApi } from "@/features/dat-truoc/api"
+import { datTruocKeys, datTruocQueries } from "@/features/dat-truoc/queries"
+import { sachKeys } from "@/features/sach/queries"
+import { getApiErrorMessage, type Schemas } from "@/lib/api"
 import { formatDate } from "@/lib/format"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
@@ -34,37 +35,28 @@ export default function DatTruocPage() {
   const [page, setPage] = useState(1)
   const [input, setInput] = useState("")
   const [maNguoiDung, setMaNguoiDung] = useState("")
-  const [trangThai, setTrangThai] = useState(ALL)
+  const [trangThai, setTrangThai] = useState<TrangThaiDatTruoc | typeof ALL>(ALL)
   const [datOpen, setDatOpen] = useState(false)
   const [huyRow, setHuyRow] = useState<DatTruoc | null>(null)
 
   const list = useQuery({
-    queryKey: ["/dat-truoc", "list", page, maNguoiDung, trangThai],
-    queryFn: async () => {
-      const { data } = await apiClient.get<Paged<DatTruoc>>("/dat-truoc", {
-        params: {
-          page,
-          limit: PAGE_SIZE,
-          ...(isStaff && maNguoiDung && { maNguoiDung }),
-          ...(trangThai !== ALL && { trangThai }),
-        },
-      })
-      return data
-    },
+    ...datTruocQueries.list({
+      page,
+      limit: PAGE_SIZE,
+      ...(isStaff && maNguoiDung && { maNguoiDung }),
+      ...(trangThai !== ALL && { trangThai }),
+    }),
     placeholderData: keepPreviousData,
   })
 
   const huy = useMutation({
-    mutationFn: async (row: DatTruoc) =>
-      apiClient.delete(`/dat-truoc/${row.sach.maSach}`, {
-        // Cán bộ hủy hộ phải nêu người đặt; bạn đọc để BE lấy từ token.
-        params: isStaff ? { maNguoiDung: row.nguoiDung.maNguoiDung } : undefined,
-      }),
+    // Cán bộ hủy hộ phải nêu người đặt; bạn đọc để BE lấy từ token.
+    mutationFn: (row: DatTruoc) => datTruocApi.huy(row.sach.maSach, isStaff ? row.nguoiDung.maNguoiDung : undefined),
     onSuccess: (_, row) => {
       toast.add({ type: "success", title: "Đã hủy đặt trước", description: row.sach.tenSach })
       setHuyRow(null)
-      queryClient.invalidateQueries({ queryKey: ["/dat-truoc"] })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
+      queryClient.invalidateQueries({ queryKey: datTruocKeys.all })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
     },
     onError: (error) => {
       toast.add({ type: "error", title: "Không thể hủy đặt trước", description: getApiErrorMessage(error) })
@@ -155,7 +147,7 @@ export default function DatTruocPage() {
             items={TRANG_THAI_FILTER}
             onValueChange={(v) => {
               if (!v) return
-              setTrangThai(v)
+              setTrangThai(v as TrangThaiDatTruoc | typeof ALL)
               setPage(1)
             }}
           >
@@ -217,97 +209,5 @@ export default function DatTruocPage() {
         onConfirm={() => huyRow && huy.mutate(huyRow)}
       />
     </section>
-  )
-}
-
-function DatTruocDialog({ open, isStaff, onClose }: { open: boolean; isStaff: boolean; onClose: () => void }) {
-  const queryClient = useQueryClient()
-  const [maSach, setMaSach] = useState<string | null>(null)
-  const [maNguoiDung, setMaNguoiDung] = useState("")
-
-  // Chọn từ danh sách sách (BE giới hạn 100 dòng mỗi trang).
-  const sachs = useQuery({
-    queryKey: ["/sach", "chon-dat-truoc"],
-    queryFn: async () => (await apiClient.get<Paged<Schemas["TraCuuSachDto"]>>("/sach", { params: { page: 1, limit: 100 } })).data.data,
-    enabled: open,
-  })
-
-  const dat = useMutation({
-    mutationFn: async () =>
-      (
-        await apiClient.post<DatTruoc>("/dat-truoc", {
-          maSach,
-          ...(isStaff && { maNguoiDung: maNguoiDung.trim() }),
-        })
-      ).data,
-    onSuccess: (d) => {
-      toast.add({ type: "success", title: "Đã đặt trước", description: d?.sach.tenSach })
-      queryClient.invalidateQueries({ queryKey: ["/dat-truoc"] })
-      onClose()
-    },
-    // 422: còn bản sẵn sàng, đang mượn đầu sách này, còn nợ phạt, đã đặt rồi...
-    onError: (error) => {
-      toast.add({ type: "error", title: "Không thể đặt trước", description: getApiErrorMessage(error) })
-    },
-  })
-
-  const items = (sachs.data ?? []).map((s) => ({
-    value: s.ma_sach,
-    label: `${s.ten_sach} (${s.so_ban_san_sang > 0 ? `còn ${s.so_ban_san_sang} bản` : "hết bản"})`,
-  }))
-  const hopLe = maSach !== null && (!isStaff || maNguoiDung.trim() !== "")
-
-  return (
-    <Dialog open={open} onOpenChange={(o) => !o && !dat.isPending && onClose()}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{isStaff ? "Đặt trước hộ bạn đọc" : "Đặt trước sách"}</DialogTitle>
-          <DialogDescription>Chỉ đặt được khi đầu sách hết bản sẵn sàng.</DialogDescription>
-        </DialogHeader>
-        <form
-          className="grid gap-4"
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (hopLe) dat.mutate()
-          }}
-        >
-          {isStaff && (
-            <Field>
-              <FieldLabel htmlFor="dt-nguoi-dung">
-                Mã người đặt <span aria-hidden="true" className="text-destructive">*</span>
-              </FieldLabel>
-              <Input id="dt-nguoi-dung" value={maNguoiDung} onChange={(e) => setMaNguoiDung(e.target.value)} maxLength={20} placeholder="Ví dụ: SV001" className="h-10 rounded-md border-input bg-white text-sm" />
-            </Field>
-          )}
-          <Field>
-            <FieldLabel htmlFor="dt-sach">
-              Sách <span aria-hidden="true" className="text-destructive">*</span>
-            </FieldLabel>
-            <Select value={maSach} items={items} onValueChange={(v) => setMaSach(v)}>
-              <SelectTrigger id="dt-sach" className="h-10 w-full rounded-md border-input bg-white">
-                <SelectValue placeholder={sachs.isPending ? "Đang tải..." : "Chọn sách"} />
-              </SelectTrigger>
-              <SelectContent>
-                {items.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {sachs.isError && <FieldDescription>Không tải được danh sách sách.</FieldDescription>}
-          </Field>
-          <DialogFooter>
-            <Button type="button" variant="outline" disabled={dat.isPending} onClick={onClose}>
-              Hủy
-            </Button>
-            <Button type="submit" disabled={!hopLe || dat.isPending}>
-              {dat.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
-              Đặt trước
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
   )
 }

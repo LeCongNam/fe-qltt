@@ -10,7 +10,11 @@ import { Button } from "@/components/ui/button"
 import { BanSachPicker } from "@/components/phieu-muon/ban-sach-picker"
 import { type NguoiMuon, NguoiMuonPicker } from "@/components/phieu-muon/nguoi-muon-picker"
 import { toast } from "@/components/ui/toast"
-import { apiClient, getApiErrorMessage, type Schemas } from "@/lib/api"
+import { datTruocKeys } from "@/features/dat-truoc/queries"
+import { phieuMuonApi } from "@/features/phieu-muon/api"
+import { phieuMuonKeys } from "@/features/phieu-muon/queries"
+import { sachKeys } from "@/features/sach/queries"
+import { getApiErrorMessage } from "@/lib/api"
 import { PageHeader } from "@/components/page-header"
 
 export default function LapPhieuMuonPage() {
@@ -20,18 +24,12 @@ export default function LapPhieuMuonPage() {
   const [danhSach, setDanhSach] = useState<string[]>([])
 
   const lap = useMutation({
-    mutationFn: async () =>
-      (
-        await apiClient.post<Schemas["PhieuMuonChiTietDto"]>("/phieu-muon", {
-          maNguoiDung: nguoiMuon!.maNguoiDung,
-          maBanSachs: danhSach,
-        })
-      ).data,
+    mutationFn: () => phieuMuonApi.create({ maNguoiDung: nguoiMuon!.maNguoiDung, maBanSachs: danhSach }),
     onSuccess: (phieu) => {
       toast.add({ type: "success", title: "Đã lập phiếu mượn", description: `${phieu.maPhieu} — ${phieu.nguoiDung.hoTen}` })
-      queryClient.invalidateQueries({ queryKey: ["/phieu-muon"] })
-      queryClient.invalidateQueries({ queryKey: ["/sach"] })
-      queryClient.invalidateQueries({ queryKey: ["/dat-truoc"] })
+      queryClient.invalidateQueries({ queryKey: phieuMuonKeys.all })
+      queryClient.invalidateQueries({ queryKey: sachKeys.all })
+      queryClient.invalidateQueries({ queryKey: datTruocKeys.all })
       router.replace(`/phieu-muon/${phieu.maPhieu}`)
     },
     // 422: một cuốn bị từ chối thì không có phiếu nào được tạo; BE nêu rõ lý do.
