@@ -30,14 +30,14 @@ const COLUMNS: DataColumn<NguoiDung>[] = [
     title: true,
     className: "whitespace-normal",
     cell: (u) => (
-      <Link href={`/nguoi-dung/${u.id}`} className="font-medium text-[#147d64] hover:underline">
+      <Link href={`/nguoi-dung/${u.id}`} className="font-medium text-primary hover:underline">
         {u.hoTen}
       </Link>
     ),
   },
   { header: "Loại", className: "w-28", cell: (u) => labelOf(LOAI_NGUOI_DUNG, u.loaiNguoiDung) },
-  { header: "Email", className: "whitespace-normal text-[#5f6b64]", cell: (u) => u.email || "—" },
-  { header: "Khoa / đơn vị", className: "whitespace-normal text-[#5f6b64]", cell: (u) => u.khoaDonVi || "—" },
+  { header: "Email", className: "whitespace-normal text-muted-foreground", cell: (u) => u.email || "—" },
+  { header: "Khoa / đơn vị", className: "whitespace-normal text-muted-foreground", cell: (u) => u.khoaDonVi || "—" },
   { header: "Trạng thái", className: "w-28", cell: (u) => <StatusPill list={TRANG_THAI_NGUOI_DUNG} value={u.trangThai} /> },
 ]
 
@@ -91,15 +91,15 @@ export default function NguoiDungPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#5f6b64]">Người dùng</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Người dùng &amp; tài khoản</h2>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">Quản lý hồ sơ bạn đọc, cán bộ và tài khoản đăng nhập.</p>
+          <p className="text-xs font-medium text-muted-foreground">Người dùng</p>
+          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Người dùng &amp; tài khoản</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">Quản lý hồ sơ bạn đọc, cán bộ và tài khoản đăng nhập.</p>
         </div>
         <Link
           href="/add-doc-gia"
-          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#147d64] px-2.5 text-sm font-medium text-white transition-colors hover:bg-[#106a55]"
+          className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
         >
           <Plus className="size-4" aria-hidden="true" />
           Thêm người dùng
@@ -109,14 +109,14 @@ export default function NguoiDungPage() {
       <div className="mb-4 flex flex-col gap-2 lg:flex-row">
         <form onSubmit={search} className="flex flex-1 gap-2" role="search">
           <label className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
             <Input
               aria-label="Tìm theo mã, họ tên hoặc email"
               placeholder="Tìm theo mã, họ tên hoặc email..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               maxLength={160}
-              className="h-9 rounded-md border-[#dfe5df] bg-white pl-9 text-sm"
+              className="h-9 rounded-md border-input bg-white pl-9 text-sm"
             />
           </label>
           <Button type="submit" variant="outline">
@@ -133,7 +133,7 @@ export default function NguoiDungPage() {
               setPage(1)
             }}
           >
-            <SelectTrigger aria-label="Lọc theo loại" className="h-9 w-36 border-[#dfe5df] bg-white">
+            <SelectTrigger aria-label="Lọc theo loại" className="h-9 w-36 border-input bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -153,7 +153,7 @@ export default function NguoiDungPage() {
               setPage(1)
             }}
           >
-            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-40 border-[#dfe5df] bg-white">
+            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-40 border-input bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

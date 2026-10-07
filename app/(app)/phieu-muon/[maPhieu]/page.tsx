@@ -39,8 +39,8 @@ type Phieu = Schemas["PhieuMuonChiTietDto"]
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium text-[#5f6b64]">{label}</dt>
-      <dd className="mt-1 text-sm text-[#1c2c26]">{children || "—"}</dd>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+      <dd className="mt-1 text-sm text-foreground">{children || "—"}</dd>
     </div>
   )
 }
@@ -86,14 +86,14 @@ export default function PhieuMuonDetailPage() {
     const status = axios.isAxiosError(query.error) ? query.error.response?.status : undefined
     return (
       <div className="mx-auto w-full max-w-5xl space-y-3 text-sm">
-        <p role="alert" className="text-[#a35143]">
+        <p role="alert" className="text-destructive">
           {status === 404
             ? "Không tìm thấy phiếu mượn."
             : status === 403
               ? "Bạn chỉ xem được phiếu mượn của mình."
               : getApiErrorMessage(query.error, "Không tải được phiếu mượn.")}
         </p>
-        <Link href={isStaff ? "/phieu-muon" : "/"} className="text-[#147d64] hover:underline">
+        <Link href={isStaff ? "/phieu-muon" : "/"} className="text-primary hover:underline">
           ← Quay lại
         </Link>
       </div>
@@ -105,16 +105,16 @@ export default function PhieuMuonDetailPage() {
 
   return (
     <section className="mx-auto w-full max-w-5xl space-y-6">
-      <div className="flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
           {isStaff && (
-            <Link href="/phieu-muon" className="inline-flex items-center gap-1 text-xs font-medium text-[#5f6b64] hover:text-[#147d64]">
+            <Link href="/phieu-muon" className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary">
               <ArrowLeft className="size-3.5" aria-hidden="true" />
               Mượn - trả
             </Link>
           )}
-          <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Phiếu mượn {p.maPhieu}</h2>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">
+          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Phiếu mượn {p.maPhieu}</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">
             {p.nguoiDung.hoTen} ({p.nguoiDung.maNguoiDung})
           </p>
         </div>
@@ -126,7 +126,7 @@ export default function PhieuMuonDetailPage() {
         )}
       </div>
 
-      <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-[#e4e8e2] bg-white p-5 sm:grid-cols-4">
+      <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-border bg-white p-5 sm:grid-cols-4">
         <Info label="Trạng thái">
           <StatusPill list={TRANG_THAI_PHIEU_MUON} value={p.trangThai} />
         </Info>
@@ -135,9 +135,9 @@ export default function PhieuMuonDetailPage() {
         <Info label="Cán bộ lập phiếu">{p.nhanVien.hoTen}</Info>
       </dl>
 
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
-        <div className="border-b border-[#e4e8e2] px-4 py-3">
-          <h3 className="text-sm font-semibold text-[#1c2c26]">Sách trong phiếu</h3>
+      <div className="rounded-lg border border-border bg-white">
+        <div className="border-b border-border px-4 py-3">
+          <h3 className="text-sm font-semibold text-foreground">Sách trong phiếu</h3>
         </div>
         <Table>
           <TableHeader>
@@ -154,7 +154,7 @@ export default function PhieuMuonDetailPage() {
           <TableBody>
             {p.ctPhieuMuons.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="py-8 text-center text-sm text-[#5f6b64]">
+                <TableCell colSpan={7} className="py-8 text-center text-sm text-muted-foreground">
                   Phiếu chưa có sách.
                 </TableCell>
               </TableRow>
@@ -166,11 +166,11 @@ export default function PhieuMuonDetailPage() {
                 <TableRow key={c.id}>
                   <TableCell className="font-medium">{c.banSach.maBanSach}</TableCell>
                   <TableCell className="whitespace-normal">{c.banSach.sach.tenSach}</TableCell>
-                  <TableCell className={quaHan ? "font-medium text-[#b34a38]" : "text-[#5f6b64]"}>
+                  <TableCell className={quaHan ? "font-medium text-destructive" : "text-muted-foreground"}>
                     {formatDate(c.hanTra)}
                     {quaHan && <span className="ml-1 text-xs">(quá hạn)</span>}
                   </TableCell>
-                  <TableCell className="text-[#5f6b64]">
+                  <TableCell className="text-muted-foreground">
                     {c.ngayTra ? (
                       <>
                         {formatDate(c.ngayTra)}
@@ -205,7 +205,7 @@ export default function PhieuMuonDetailPage() {
                           Gia hạn
                         </Button>
                         {isStaff && (
-                          <Button size="sm" className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setTra(c.banSach.maBanSach)}>
+                          <Button size="sm" onClick={() => setTra(c.banSach.maBanSach)}>
                             <RotateCcw aria-hidden="true" />
                             Trả
                           </Button>

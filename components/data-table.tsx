@@ -35,10 +35,10 @@ function HeadContent<T>({ column: c }: { column: DataColumn<T> }) {
       type="button"
       onClick={onToggle}
       title={isDefault ? "Thứ tự mặc định, bấm để đổi chiều" : "Sắp xếp theo cột này"}
-      className="inline-flex items-center gap-1 rounded-sm whitespace-nowrap hover:text-[#147d64] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#147d64]"
+      className="inline-flex items-center gap-1 rounded-sm whitespace-nowrap hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
       {c.header}
-      <Icon aria-hidden="true" className={`size-3.5 ${dir === null ? "text-[#8b9690]" : isDefault ? "text-[#66736c]" : "text-[#147d64]"}`} />
+      <Icon aria-hidden="true" className={`size-3.5 ${dir === null ? "text-icon" : isDefault ? "text-faint" : "text-primary"}`} />
     </button>
   )
 }
@@ -89,7 +89,7 @@ export function DataTable<T>({
       <p role={query.isError ? "alert" : "status"} className="sr-only">
         {liveText}
       </p>
-      <div aria-busy={query.isPending} className="hidden rounded-lg border border-[#e4e8e2] bg-white md:block">
+      <div aria-busy={query.isPending} className="hidden rounded-lg border border-border bg-white md:block">
         <Table>
           <TableHeader>
             <TableRow>
@@ -115,14 +115,14 @@ export function DataTable<T>({
               ))}
             {query.isError && (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#a35143]">
+                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-destructive">
                   {getApiErrorMessage(query.error, errorText)} {retry}
                 </TableCell>
               </TableRow>
             )}
             {query.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-[#5f6b64]">
+                <TableCell colSpan={columns.length} className="py-10 text-center text-sm text-muted-foreground">
                   {emptyText}
                 </TableCell>
               </TableRow>
@@ -149,22 +149,22 @@ export function DataTable<T>({
           </div>
         )}
         {query.isError && (
-          <p className="rounded-lg border border-[#e4e8e2] bg-white px-4 py-8 text-center text-sm text-[#a35143]">
+          <p className="rounded-lg border border-border bg-white px-4 py-8 text-center text-sm text-destructive">
             {getApiErrorMessage(query.error, errorText)} {retry}
           </p>
         )}
         {query.isSuccess && rows.length === 0 && (
-          <p className="rounded-lg border border-[#e4e8e2] bg-white px-4 py-8 text-center text-sm text-[#5f6b64]">{emptyText}</p>
+          <p className="rounded-lg border border-border bg-white px-4 py-8 text-center text-sm text-muted-foreground">{emptyText}</p>
         )}
         {showRows && (
           <ul className="grid gap-2">
             {rows.map((row, i) => (
-              <li key={rowKey(row, i)} className="rounded-lg border border-[#e4e8e2] bg-white p-3">
-                {titleCol && <div className="text-sm font-medium text-[#1c2c26] [&_a]:text-[#147d64]">{titleCol.cell(row)}</div>}
+              <li key={rowKey(row, i)} className="rounded-lg border border-border bg-white p-3">
+                {titleCol && <div className="text-sm font-medium text-foreground [&_a]:text-primary">{titleCol.cell(row)}</div>}
                 <dl className={`grid gap-1.5 text-sm ${titleCol ? "mt-2" : ""}`}>
                   {fieldCols.map((c) => (
                     <div key={c.header} className="flex items-baseline justify-between gap-4">
-                      <dt className="shrink-0 text-xs text-[#5f6b64]">{c.header}</dt>
+                      <dt className="shrink-0 text-xs text-muted-foreground">{c.header}</dt>
                       <dd className="min-w-0 text-right break-words">{c.cell(row)}</dd>
                     </div>
                   ))}

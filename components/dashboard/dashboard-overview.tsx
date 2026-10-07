@@ -23,8 +23,8 @@ import {
 import { formatDate, formatVnd } from "@/lib/format"
 
 const chartConfig = {
-  borrowed: { label: "Lượt mượn", color: "#147d64" },
-  returned: { label: "Lượt trả", color: "#e99a68" },
+  borrowed: { label: "Lượt mượn", color: "var(--chart-1)" },
+  returned: { label: "Lượt trả", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 const DAYS = 14
@@ -56,10 +56,10 @@ function buildChartData(history: LichSuMuonDong[]) {
 }
 
 function loanStatus(r: LichSuMuonDong, today: string) {
-  if (r.ngay_tra) return { label: "Đã trả", tone: "bg-[#e8f3ed] text-[#35755f]", Icon: Check }
-  if (isOverdue(r.han_tra, r.ngay_tra)) return { label: "Quá hạn", tone: "bg-[#f8e9e6] text-[#a35143]", Icon: AlertCircle }
-  if (r.han_tra.slice(0, 10) === today) return { label: "Đến hạn", tone: "bg-[#fbefe3] text-[#975e34]", Icon: Clock3 }
-  return { label: "Đang mượn", tone: "bg-[#fff3df] text-[#9a6412]", Icon: Clock3 }
+  if (r.ngay_tra) return { label: "Đã trả", tone: "bg-primary-soft text-[#35755f]", Icon: Check }
+  if (isOverdue(r.han_tra, r.ngay_tra)) return { label: "Quá hạn", tone: "bg-destructive-soft text-destructive", Icon: AlertCircle }
+  if (r.han_tra.slice(0, 10) === today) return { label: "Đến hạn", tone: "bg-clay-soft text-clay", Icon: Clock3 }
+  return { label: "Đang mượn", tone: "bg-warning-soft text-warning", Icon: Clock3 }
 }
 
 export function DashboardOverview() {
@@ -91,11 +91,11 @@ export function DashboardOverview() {
     <>
       <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <p className="text-xs font-medium capitalize text-[#5f6b64]">{todayLabel}</p>
-          <h1 className="mt-1.5 text-[26px] font-semibold leading-tight text-[#1c2c26]">Tổng quan</h1>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">Tình hình hoạt động và các đầu việc trong thư viện.</p>
+          <p className="text-xs font-medium capitalize text-muted-foreground">{todayLabel}</p>
+          <h1 className="mt-1.5 text-[26px] font-semibold leading-tight text-foreground">Tổng quan</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">Tình hình hoạt động và các đầu việc trong thư viện.</p>
         </div>
-        <Link href="/bao-cao" className="inline-flex h-9 items-center justify-center gap-2 self-start rounded-md border border-[#dfe5df] bg-white px-3 text-xs font-medium text-[#45554c] shadow-sm transition-colors hover:bg-[#f9faf8] sm:self-auto">
+        <Link href="/bao-cao" className="inline-flex h-9 items-center justify-center gap-2 self-start rounded-md border border-input bg-white px-3 text-xs font-medium text-ink shadow-sm transition-colors hover:bg-surface sm:self-auto">
           Xem báo cáo
           <ArrowUpRight className="size-4" aria-hidden="true" />
         </Link>
@@ -109,16 +109,16 @@ export function DashboardOverview() {
       </section>
 
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(290px,0.8fr)]">
-        <div className="rounded-lg border border-[#e7e9e4] bg-white p-4 sm:p-5">
+        <div className="rounded-lg border border-border bg-white p-4 sm:p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold text-[#293a32]">Lưu thông {DAYS} ngày qua</h2>
-              <p className="mt-1 text-xs text-[#66736c]">So sánh lượt mượn và lượt trả theo ngày</p>
+              <h2 className="text-sm font-semibold text-heading">Lưu thông {DAYS} ngày qua</h2>
+              <p className="mt-1 text-xs text-faint">So sánh lượt mượn và lượt trả theo ngày</p>
             </div>
             <Tabs value={chartKind} onValueChange={(v) => v && setChartKind(v as ChartKind)} className="shrink-0">
               <TabsList aria-label="Loại biểu đồ">
                 {CHART_KINDS.map(({ value, label, Icon }) => (
-                  <TabsTrigger key={value} value={value} className="gap-1.5 px-2.5 text-xs data-active:text-[#147d64]">
+                  <TabsTrigger key={value} value={value} className="gap-1.5 px-2.5 text-xs data-active:text-primary">
                     <Icon className="size-3.5" aria-hidden="true" />
                     {label}
                   </TabsTrigger>
@@ -130,15 +130,15 @@ export function DashboardOverview() {
             {lichSu.isPending ? (
               <Skeleton className="h-[230px] w-full" role="status" aria-label="Đang tải biểu đồ" />
             ) : lichSu.isError ? (
-              <p role="alert" className="py-16 text-center text-sm text-[#a35143]">Không tải được dữ liệu lưu thông.</p>
+              <p role="alert" className="py-16 text-center text-sm text-destructive">Không tải được dữ liệu lưu thông.</p>
             ) : (
               <ChartContainer config={chartConfig} className="h-[230px] w-full" aria-label="Biểu đồ lượt mượn và trả theo ngày">
                 {chartKind === "bar" ? (
                   <BarChart accessibilityLayer data={chartData} barGap={2} margin={CHART_MARGIN}>
-                    <CartesianGrid vertical={false} stroke="#edf0eb" />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tickMargin={10} interval="equidistantPreserveStart" minTickGap={12} tick={{ fill: "#66736c", fontSize: 11 }} />
-                    <YAxis allowDecimals={false} domain={[0, (max: number) => Math.max(max, 2)]} axisLine={false} tickLine={false} tick={{ fill: "#66736c", fontSize: 11 }} />
-                    <ChartTooltip cursor={{ fill: "#f1f4ef" }} content={<ChartTooltipContent indicator="dot" />} />
+                    <CartesianGrid vertical={false} stroke="var(--line)" />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tickMargin={10} interval="equidistantPreserveStart" minTickGap={12} tick={{ fill: "var(--faint)", fontSize: 11 }} />
+                    <YAxis allowDecimals={false} domain={[0, (max: number) => Math.max(max, 2)]} axisLine={false} tickLine={false} tick={{ fill: "var(--faint)", fontSize: 11 }} />
+                    <ChartTooltip cursor={{ fill: "var(--muted)" }} content={<ChartTooltipContent indicator="dot" />} />
                     <Bar dataKey="borrowed" fill="var(--color-borrowed)" radius={[3, 3, 0, 0]} maxBarSize={14} />
                     <Bar dataKey="returned" fill="var(--color-returned)" radius={[3, 3, 0, 0]} maxBarSize={14} />
                   </BarChart>
@@ -154,9 +154,9 @@ export function DashboardOverview() {
                         <stop offset="95%" stopColor="var(--color-returned)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid vertical={false} stroke="#edf0eb" />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tickMargin={10} interval="equidistantPreserveStart" minTickGap={12} tick={{ fill: "#66736c", fontSize: 11 }} />
-                    <YAxis allowDecimals={false} domain={[0, (max: number) => Math.max(max, 2)]} axisLine={false} tickLine={false} tick={{ fill: "#66736c", fontSize: 11 }} />
+                    <CartesianGrid vertical={false} stroke="var(--line)" />
+                    <XAxis dataKey="day" axisLine={false} tickLine={false} tickMargin={10} interval="equidistantPreserveStart" minTickGap={12} tick={{ fill: "var(--faint)", fontSize: 11 }} />
+                    <YAxis allowDecimals={false} domain={[0, (max: number) => Math.max(max, 2)]} axisLine={false} tickLine={false} tick={{ fill: "var(--faint)", fontSize: 11 }} />
                     <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
                     <Area type="monotone" dataKey="borrowed" stroke="var(--color-borrowed)" strokeWidth={2.5} fill="url(#fillBorrowed)" />
                     <Area type="monotone" dataKey="returned" stroke="var(--color-returned)" strokeWidth={2} fill="url(#fillReturned)" />
@@ -165,59 +165,59 @@ export function DashboardOverview() {
               </ChartContainer>
             )}
           </div>
-          <div className="mt-3 flex items-center justify-center gap-5 text-xs text-[#5f6b64]">
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-[2px] bg-[#147d64]" />Lượt mượn</span>
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-[2px] bg-[#e99a68]" />Lượt trả</span>
+          <div className="mt-3 flex items-center justify-center gap-5 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-[2px] bg-primary" />Lượt mượn</span>
+            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-[2px] bg-chart-2" />Lượt trả</span>
           </div>
         </div>
 
-        <div className="rounded-lg border border-[#e7e9e4] bg-white p-4 sm:p-5">
+        <div className="rounded-lg border border-border bg-white p-4 sm:p-5">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-[#293a32]">Cần chú ý</h2>
-              <p className="mt-1 text-xs text-[#66736c]">Các việc cần ưu tiên hôm nay</p>
+              <h2 className="text-sm font-semibold text-heading">Cần chú ý</h2>
+              <p className="mt-1 text-xs text-faint">Các việc cần ưu tiên hôm nay</p>
             </div>
-            <span className="flex size-8 items-center justify-center rounded-md bg-[#fbefe3] text-[#975e34]"><AlertCircle className="size-4" aria-hidden="true" /></span>
+            <span className="flex size-8 items-center justify-center rounded-md bg-clay-soft text-clay"><AlertCircle className="size-4" aria-hidden="true" /></span>
           </div>
-          <div className="mt-4 divide-y divide-[#eef0ec]">
-            <Link href="/phieu-muon" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
-              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#fbefe3] text-[#975e34]"><Clock3 className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Phiếu mượn quá hạn</span><span className="mt-0.5 block text-xs text-[#66736c]">Cần nhắc người mượn trả sách</span></span></span>
-              <span className="text-sm font-semibold tabular-nums text-[#975e34]">{num(quaHan.data?.length)}</span>
+          <div className="mt-4 divide-y divide-line">
+            <Link href="/phieu-muon" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-surface">
+              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-clay-soft text-clay"><Clock3 className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-ink">Phiếu mượn quá hạn</span><span className="mt-0.5 block text-xs text-faint">Cần nhắc người mượn trả sách</span></span></span>
+              <span className="text-sm font-semibold tabular-nums text-clay">{num(quaHan.data?.length)}</span>
             </Link>
-            <Link href="/phat" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
-              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#f8e9e6] text-[#a35143]"><WalletCards className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Khoản phạt chưa thu</span><span className="mt-0.5 block text-xs text-[#66736c]">Tổng các phiếu phạt chưa thanh toán</span></span></span>
-              <span className="text-sm font-semibold tabular-nums text-[#a35143]">{chuaThu === undefined ? "—" : formatVnd(chuaThu)}</span>
+            <Link href="/phat" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-surface">
+              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-destructive-soft text-destructive"><WalletCards className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-ink">Khoản phạt chưa thu</span><span className="mt-0.5 block text-xs text-faint">Tổng các phiếu phạt chưa thanh toán</span></span></span>
+              <span className="text-sm font-semibold tabular-nums text-destructive">{chuaThu === undefined ? "—" : formatVnd(chuaThu)}</span>
             </Link>
-            <Link href="/dat-truoc" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-[#fafbf9]">
-              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#e9f0f3] text-[#456a7c]"><BookMarked className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-[#37483f]">Yêu cầu đặt trước</span><span className="mt-0.5 block text-xs text-[#66736c]">Đang chờ có bản sách</span></span></span>
-              <span className="text-sm font-semibold tabular-nums text-[#456a7c]">{num(choXuLy)}</span>
+            <Link href="/dat-truoc" className="flex w-full items-center justify-between gap-3 py-3 text-left hover:bg-surface">
+              <span className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-info-soft text-info"><BookMarked className="size-4" /></span><span className="min-w-0"><span className="block text-xs font-medium text-ink">Yêu cầu đặt trước</span><span className="mt-0.5 block text-xs text-faint">Đang chờ có bản sách</span></span></span>
+              <span className="text-sm font-semibold tabular-nums text-info">{num(choXuLy)}</span>
             </Link>
           </div>
-          <Link href="/bao-cao" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-[#147d64] hover:text-[#0e634f]">
+          <Link href="/bao-cao" className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-[#0e634f]">
             Xem báo cáo <ArrowUpRight className="size-3.5" aria-hidden="true" />
           </Link>
         </div>
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-[#e7e9e4] bg-white">
+      <section className="overflow-hidden rounded-lg border border-border bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-5">
           <div>
-            <h2 className="text-sm font-semibold text-[#293a32]">Lượt mượn gần đây</h2>
-            <p className="mt-1 text-xs text-[#66736c]">Theo dõi tình trạng các giao dịch mới nhất</p>
+            <h2 className="text-sm font-semibold text-heading">Lượt mượn gần đây</h2>
+            <p className="mt-1 text-xs text-faint">Theo dõi tình trạng các giao dịch mới nhất</p>
           </div>
-          <Link href="/phieu-muon" className="inline-flex h-8 items-center gap-1.5 rounded-md border border-[#e5e9e4] px-2.5 text-xs font-medium text-[#58665e] hover:bg-[#f8f9f7]">
+          <Link href="/phieu-muon" className="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-2.5 text-xs font-medium text-muted-foreground hover:bg-surface">
             <ListFilter className="size-3.5" aria-hidden="true" />
             Tất cả phiếu
           </Link>
         </div>
         <Table>
           <TableHeader>
-            <TableRow className="bg-[#fafbf9] hover:bg-[#fafbf9]">
-              <TableHead className="pl-5 text-xs font-semibold uppercase tracking-wide text-[#66736c]">Mã phiếu</TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wide text-[#66736c]">Người mượn</TableHead>
-              <TableHead className="hidden text-xs font-semibold uppercase tracking-wide text-[#66736c] md:table-cell">Tên sách</TableHead>
-              <TableHead className="text-xs font-semibold uppercase tracking-wide text-[#66736c]">Hạn trả</TableHead>
-              <TableHead className="pr-5 text-xs font-semibold uppercase tracking-wide text-[#66736c]">Trạng thái</TableHead>
+            <TableRow className="bg-surface hover:bg-surface">
+              <TableHead className="pl-5 text-xs font-semibold uppercase tracking-wide text-faint">Mã phiếu</TableHead>
+              <TableHead className="text-xs font-semibold uppercase tracking-wide text-faint">Người mượn</TableHead>
+              <TableHead className="hidden text-xs font-semibold uppercase tracking-wide text-faint md:table-cell">Tên sách</TableHead>
+              <TableHead className="text-xs font-semibold uppercase tracking-wide text-faint">Hạn trả</TableHead>
+              <TableHead className="pr-5 text-xs font-semibold uppercase tracking-wide text-faint">Trạng thái</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -231,14 +231,14 @@ export function DashboardOverview() {
               ))}
             {lichSu.isError && (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-sm text-[#a35143]">
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-destructive">
                   <span role="alert">Không tải được lượt mượn gần đây.</span>
                 </TableCell>
               </TableRow>
             )}
             {lichSu.isSuccess && recent.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="py-8 text-center text-sm text-[#5f6b64]">
+                <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
                   Chưa có lượt mượn nào.
                 </TableCell>
               </TableRow>
@@ -246,15 +246,15 @@ export function DashboardOverview() {
             {recent.map((loan) => {
               const status = loanStatus(loan, today)
               return (
-                <TableRow key={`${loan.ma_phieu}-${loan.ma_ban_sach}`} className="border-[#eef0ec]">
+                <TableRow key={`${loan.ma_phieu}-${loan.ma_ban_sach}`} className="border-line">
                   <TableCell className="pl-5 text-xs font-semibold">
-                    <Link href={`/phieu-muon/${loan.ma_phieu}`} className="text-[#43534a] hover:text-[#147d64] hover:underline">
+                    <Link href={`/phieu-muon/${loan.ma_phieu}`} className="text-ink hover:text-primary hover:underline">
                       {loan.ma_phieu}
                     </Link>
                   </TableCell>
-                  <TableCell className="text-xs text-[#59675f]">{loan.ho_ten}</TableCell>
-                  <TableCell className="hidden max-w-[260px] truncate text-xs text-[#5f6b64] md:table-cell">{loan.ten_sach}</TableCell>
-                  <TableCell className={`text-xs ${status.label === "Quá hạn" ? "font-medium text-[#a35143]" : "text-[#5f6b64]"}`}>
+                  <TableCell className="text-xs text-muted-foreground">{loan.ho_ten}</TableCell>
+                  <TableCell className="hidden max-w-[260px] truncate text-xs text-muted-foreground md:table-cell">{loan.ten_sach}</TableCell>
+                  <TableCell className={`text-xs ${status.label === "Quá hạn" ? "font-medium text-destructive" : "text-muted-foreground"}`}>
                     {status.label === "Quá hạn" ? `Quá hạn ${loan.so_ngay_qua_han} ngày` : formatDate(loan.han_tra)}
                   </TableCell>
                   <TableCell className="pr-5">
@@ -269,7 +269,7 @@ export function DashboardOverview() {
           </TableBody>
         </Table>
       </section>
-      <div className="flex items-center justify-between border-t border-[#e7e9e4] pt-4 text-xs text-[#66736c]">
+      <div className="flex items-center justify-between border-t border-border pt-4 text-xs text-faint">
         <span>Thư viện số · Bảng điều khiển</span>
         <span className="inline-flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-[#668f7c]" /> Số liệu đọc trực tiếp từ cơ sở dữ liệu</span>
       </div>

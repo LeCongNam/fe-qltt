@@ -33,7 +33,7 @@ There is no test runner configured. Both `package-lock.json` and an untracked `y
 - **Global search**: `components/dashboard/global-search.tsx` (header, Ctrl/⌘+K) searches books (`/sach?tuKhoa`), users (`/docgia?tuKhoa`, staff) and loan slips (`/phieu-muon/{ma}` for `PM…`, staff). It only searches on Enter, never per keystroke: `sp_tra_cuu_sach` writes every book lookup to `nhat_ky_hanh_vi` (`TRA_CUU`).
 - **Forms**: follow `app/(app)/add-doc-gia/page.tsx` / `app/(auth)/login/page.tsx` — zod schema + `useForm` with `zodResolver`, `Controller` fields composed from `components/ui/field.tsx`, feedback via the global `toast.add({ type, title, description })` from `components/ui/toast.tsx`. Field names are the backend's Vietnamese camelCase with enum values like `SINH_VIEN`; empty optional strings are converted to `undefined` before sending.
 - **UI primitives**: `components/ui/*` are shadcn-generated (see `components.json`; aliases `@/components`, `@/lib/utils`, `@/hooks`). Add more with `npx shadcn add <component>`. Domain components live in `components/dashboard/`. Path alias `@/*` maps to the repo root.
-- **Styling**: pages use hard-coded hex colors (green `#147d64` primary, off-white `#f6f7f4` background, `#e4e8e2` borders) via Tailwind arbitrary values rather than theme tokens; match that when editing existing dashboard pages.
+- **Styling**: màu lấy từ token trong `app/globals.css` (`bg-primary`, `text-muted-foreground`, `border-border`, `bg-canvas`, `text-faint`, `bg-primary-soft`…; xem danh sách ở đầu `:root`), không gõ hex trong component. Nút xanh chính là `<Button>` mặc định. Cần màu mới thì thêm token (kiểm tương phản ≥ 4,5:1 cho chữ) rồi mới dùng; khối `.dark` chưa được cập nhật.
 
 ## Git safety — hard rules
 

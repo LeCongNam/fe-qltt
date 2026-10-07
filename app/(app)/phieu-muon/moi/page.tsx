@@ -43,10 +43,10 @@ export default function LapPhieuMuonPage() {
 
   return (
     <section className="mx-auto w-full max-w-3xl">
-      <div className="mb-7 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#5f6b64]">Mượn - trả</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Lập phiếu mượn</h2>
-        <p className="mt-1.5 text-sm text-[#5f6b64]">
+      <div className="mb-7 border-b border-border pb-5">
+        <p className="text-xs font-medium text-muted-foreground">Mượn - trả</p>
+        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Lập phiếu mượn</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
           Hệ thống kiểm tra điều kiện mượn (số sách tối đa, nợ phạt, quá hạn...) khi lập phiếu; một cuốn bị từ chối thì cả phiếu không được tạo.
         </p>
       </div>
@@ -62,11 +62,11 @@ export default function LapPhieuMuonPage() {
 
         <BanSachPicker value={danhSach} onChange={setDanhSach} />
 
-        <div className="flex flex-col-reverse gap-2 border-t border-[#e4e8e2] pt-5 sm:flex-row sm:justify-end">
-          <Link href="/phieu-muon" className="inline-flex h-9 items-center justify-center rounded-md border border-[#dfe5df] bg-white px-4 text-xs font-medium text-[#526159] transition-colors hover:bg-[#f8f9f7]">
+        <div className="flex flex-col-reverse gap-2 border-t border-border pt-5 sm:flex-row sm:justify-end">
+          <Link href="/phieu-muon" className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-white px-4 text-xs font-medium text-ink transition-colors hover:bg-surface">
             Hủy
           </Link>
-          <Button type="submit" disabled={!hopLe || lap.isPending} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+          <Button type="submit" disabled={!hopLe || lap.isPending}>
             {lap.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
             Lập phiếu ({danhSach.length} cuốn)
           </Button>

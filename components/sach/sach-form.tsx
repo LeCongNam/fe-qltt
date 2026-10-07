@@ -103,7 +103,7 @@ function toPayload(v: FormValues) {
   }
 }
 
-const inputClass = "h-10 rounded-md border-[#dfe5df] bg-white text-sm"
+const inputClass = "h-10 rounded-md border-input bg-white text-sm"
 
 export function SachForm({
   sach,
@@ -156,7 +156,7 @@ export function SachForm({
 
   return (
     <form className="space-y-7" onSubmit={form.handleSubmit((v) => save.mutate(v))} noValidate>
-      <FieldSet className="border-b border-[#e4e8e2] pb-7">
+      <FieldSet className="border-b border-border pb-7">
         <FieldDescription>Các trường có dấu * là bắt buộc.</FieldDescription>
         <FieldGroup className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
           <Controller
@@ -165,7 +165,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Mã sách <span aria-hidden="true" className="text-[#a35143]">*</span>
+                  Mã sách <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
                 <Input {...field} id={field.name} aria-invalid={fieldState.invalid} maxLength={20} placeholder="Ví dụ: S016" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -189,7 +189,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="sm:col-span-2">
                 <FieldLabel htmlFor={field.name}>
-                  Tên sách <span aria-hidden="true" className="text-[#a35143]">*</span>
+                  Tên sách <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
                 <Input {...field} id={field.name} aria-invalid={fieldState.invalid} maxLength={255} placeholder="Nhập tên sách" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -202,7 +202,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Thể loại <span aria-hidden="true" className="text-[#a35143]">*</span>
+                  Thể loại <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
                   name={field.name}
@@ -210,7 +210,7 @@ export function SachForm({
                   onValueChange={(v) => field.onChange(v ?? "")}
                   items={(theLoais.data ?? []).map((t) => ({ value: t.maTheLoai, label: t.tenTheLoai }))}
                 >
-                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-[#dfe5df] bg-white">
+                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-input bg-white">
                     <SelectValue placeholder={theLoais.isPending ? "Đang tải..." : "Chọn thể loại"} />
                   </SelectTrigger>
                   <SelectContent>
@@ -231,7 +231,7 @@ export function SachForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>
-                  Nhà xuất bản <span aria-hidden="true" className="text-[#a35143]">*</span>
+                  Nhà xuất bản <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
                   name={field.name}
@@ -239,7 +239,7 @@ export function SachForm({
                   onValueChange={(v) => field.onChange(v ?? "")}
                   items={(nxbs.data ?? []).map((n) => ({ value: n.maNxb, label: n.tenNxb }))}
                 >
-                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-[#dfe5df] bg-white">
+                  <SelectTrigger id={field.name} aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-input bg-white">
                     <SelectValue placeholder={nxbs.isPending ? "Đang tải..." : "Chọn nhà xuất bản"} />
                   </SelectTrigger>
                   <SelectContent>
@@ -272,7 +272,7 @@ export function SachForm({
               <Field>
                 <FieldLabel htmlFor={field.name}>Ngôn ngữ</FieldLabel>
                 <Select name={field.name} value={field.value} onValueChange={(v) => v && field.onChange(v)}>
-                  <SelectTrigger id={field.name} className="h-10 w-full rounded-md border-[#dfe5df] bg-white">
+                  <SelectTrigger id={field.name} className="h-10 w-full rounded-md border-input bg-white">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -303,7 +303,7 @@ export function SachForm({
             render={({ field }) => (
               <Field className="sm:col-span-2">
                 <FieldLabel htmlFor={field.name}>Mô tả</FieldLabel>
-                <Textarea {...field} id={field.name} rows={3} className="rounded-md border-[#dfe5df] bg-white text-sm" />
+                <Textarea {...field} id={field.name} rows={3} className="rounded-md border-input bg-white text-sm" />
               </Field>
             )}
           />
@@ -317,20 +317,20 @@ export function SachForm({
           name="maTacGias"
           control={form.control}
           render={({ field }) => (
-            <div className="grid max-h-56 grid-cols-1 gap-x-5 gap-y-2 overflow-y-auto rounded-md border border-[#dfe5df] bg-white p-3 sm:grid-cols-2">
-              {tacGias.isPending && <p role="status" className="text-sm text-[#5f6b64]">Đang tải...</p>}
-              {tacGias.isError && <p role="alert" className="text-sm text-[#a35143]">Không tải được danh sách tác giả.</p>}
+            <div className="grid max-h-56 grid-cols-1 gap-x-5 gap-y-2 overflow-y-auto rounded-md border border-input bg-white p-3 sm:grid-cols-2">
+              {tacGias.isPending && <p role="status" className="text-sm text-muted-foreground">Đang tải...</p>}
+              {tacGias.isError && <p role="alert" className="text-sm text-destructive">Không tải được danh sách tác giả.</p>}
               {(tacGias.data ?? []).map((t) => {
                 const checked = field.value.includes(t.maTacGia)
                 return (
-                  <label key={t.id} className="flex cursor-pointer items-center gap-2 text-sm text-[#34463d]">
+                  <label key={t.id} className="flex cursor-pointer items-center gap-2 text-sm text-ink">
                     <Checkbox
                       checked={checked}
                       onCheckedChange={(next) =>
                         field.onChange(next ? [...field.value, t.maTacGia] : field.value.filter((m) => m !== t.maTacGia))
                       }
                     />
-                    {t.tenTacGia} <span className="text-xs text-[#66736c]">({t.maTacGia})</span>
+                    {t.tenTacGia} <span className="text-xs text-faint">({t.maTacGia})</span>
                   </label>
                 )
               })}
@@ -339,11 +339,11 @@ export function SachForm({
         />
       </FieldSet>
 
-      <div className="flex flex-col-reverse gap-2 border-t border-[#e4e8e2] pt-5 sm:flex-row sm:justify-end">
+      <div className="flex flex-col-reverse gap-2 border-t border-border pt-5 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" disabled={save.isPending} onClick={onCancel}>
           Hủy
         </Button>
-        <Button type="submit" disabled={save.isPending} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+        <Button type="submit" disabled={save.isPending}>
           {save.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
           {sach ? "Lưu thay đổi" : "Thêm sách"}
         </Button>

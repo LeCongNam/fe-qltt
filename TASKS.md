@@ -28,7 +28,7 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 | U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Đã hoàn thành |
 | C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
 | C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
-| C3 | Đưa màu hex cứng vào theme token | P2 | Chưa thực hiện |
+| C3 | Đưa màu hex cứng vào theme token | P2 | Đã hoàn thành (còn 19 màu lẻ) |
 | C4 | Tách component dùng chung (lặp code) | P2 | Chưa thực hiện |
 | C5 | Tầng API có kiểu: `openapi-fetch`, key factory, `.gitattributes` | P2 | Chưa thực hiện |
 | C6 | Tách các trang quá lớn | P3 | Chưa thực hiện |
@@ -145,9 +145,13 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 - Token ở localStorage (key `qltt.session`), guard chỉ ở client, chưa kiểm tra hạn token, 401 giữa phiên đá về `/login` mà không nhớ trang cũ. Cân nhắc: kiểm hạn token, tham số quay lại trang cũ, ghi rõ rủi ro lưu localStorage trong tài liệu. Cần test 401 giữa phiên (đăng nhập, khóa tài khoản từ ADMIN, thao tác tiếp).
 
 ### C3 — Theme token màu (P2)
-- **Trạng thái:** Chưa thực hiện
-- 559 chỗ hex cứng ngoài `components/ui`, class nút xanh `bg-[#147d64] text-white hover:bg-[#106a55]` lặp 19 lần ở 13 file; `app/globals.css` vẫn là theme neutral mặc định của shadcn, token không được dùng, dark mode không dùng được.
-- Việc cần làm: định nghĩa token (`--primary`, `--muted-foreground`, `--destructive`, `--warning`, nền trang, viền…) bằng các màu đã kiểm chứng ở T03, rồi thay dần. Cân nhắc biến thể `Button` cho nút xanh chính. Kiểm tra lại tương phản sau khi thay.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt). Hex trong `app`/`components`/`lib` giảm từ 559 xuống 19.
+- `app/globals.css`: `:root` đổi từ theme neutral của shadcn sang bảng màu của app, dùng đúng các giá trị đã kiểm tương phản ở T03. Token shadcn: `primary` `#147d64` (+ `ring`, `chart-1`, `sidebar-primary`), `foreground` `#1c2c26`, `muted-foreground` `#5f6b64`, `border` `#e4e8e2`, `input` `#dfe5df`, `destructive` `#a35143`, `muted`/`secondary`/`accent` `#f2f4f1`, `chart-1..5`. Token riêng (có class Tailwind): nền `canvas` `#f6f7f4`, `surface`, `surface-hover`, `line`, `neutral-soft`; chữ `heading`, `ink`, `faint` `#66736c`, `icon` `#8b9690` (chỉ icon trang trí); trạng thái `primary-hover`/`primary-strong`/`primary-soft`, `destructive-soft`, `warning`/`warning-soft`, `clay`/`clay-soft`, `info`/`info-soft`. Khối `.dark` giữ nguyên mặc định shadcn (app chưa có chế độ tối).
+- **Thay thế bằng script** (`bg|text|border*|ring|divide|outline|fill|stroke|from|via|to…-[#hex]` → token, giữ nguyên hậu tố độ trong suốt): 544 chỗ ở 44 file. Các hex gần nhau được gộp (ví dụ 5 màu viền `#e4e8e2/#e7e9e4/…` → `border`, 4 nền nhạt → `surface`, 3 chữ đậm → `ink`; chênh lệch ≤ vài đơn vị RGB và chỉ gộp về màu đậm hơn hoặc bằng khi là chữ).
+- **Button:** biến thể `default` giờ là `bg-primary text-primary-foreground hover:bg-primary-hover` nên bỏ lớp `bg-… text-white hover:bg-…` lặp ở 19 nút. Vòng focus (`ring`) của mọi input/nút chuyển từ xám sang xanh lá.
+- **Biểu đồ:** màu cột/đường dùng `var(--chart-1)` (xanh) và `var(--chart-2)` (cam `#e99a68`), lưới `var(--line)`, nhãn trục `var(--faint)`; tiện thể sửa nhãn trục `#87918b` (dưới 4,5:1) ở `/bao-cao` lên `#66736c`.
+- **Còn 19 hex lẻ** trong class (pill màu đơn lẻ ở `*-meta.ts`/trang: `#f3e8d8`, `#f1e6e6`, `#e8eefb`/`#3a5fb0` cho "Đang giữ", `#8c3b3b`, `#845c35`, `#efc9c2`, `#d16b53`, `#bfe0d2`, `#b2bab5`, `#668f7c`, `#35755f`, `#0e634f`); chỉ dùng 1–2 lần nên chưa đặt token.
+- **Kiểm chứng:** `tsc` + `eslint` sạch; xem trên trình duyệt `/`, `/phat`, `/bao-cao`, dialog đặt trước: bố cục và màu giữ như cũ, vòng focus ô nhập đổi sang xanh. Chưa xem lại toàn bộ trang (login, `/me`, `/demo`, mobile) và chưa đo lại tương phản bằng công cụ sau khi gộp màu.
 
 ### C4 — Component dùng chung (P2)
 - **Trạng thái:** Chưa thực hiện

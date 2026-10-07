@@ -52,14 +52,14 @@ export function GiaHanDialog({ maBanSach, onClose }: { maBanSach: string | null;
         >
           <Field data-invalid={!hopLe}>
             <FieldLabel htmlFor="gh-so-ngay">Số ngày gia hạn</FieldLabel>
-            <Input id="gh-so-ngay" value={soNgay} onChange={(e) => setSoNgay(e.target.value)} inputMode="numeric" maxLength={3} aria-invalid={!hopLe} className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
+            <Input id="gh-so-ngay" value={soNgay} onChange={(e) => setSoNgay(e.target.value)} inputMode="numeric" maxLength={3} aria-invalid={!hopLe} className="h-10 rounded-md border-input bg-white text-sm" />
             {hopLe ? <FieldDescription>Từ 1 đến 365 ngày.</FieldDescription> : <FieldError>Số ngày phải từ 1 đến 365.</FieldError>}
           </Field>
           <DialogFooter>
             <Button type="button" variant="outline" disabled={giaHan.isPending} onClick={onClose}>
               Hủy
             </Button>
-            <Button type="submit" disabled={giaHan.isPending || !hopLe} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+            <Button type="submit" disabled={giaHan.isPending || !hopLe}>
               {giaHan.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               Gia hạn
             </Button>

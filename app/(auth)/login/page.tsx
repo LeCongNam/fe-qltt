@@ -55,15 +55,15 @@ export default function LoginPage() {
   if (!ready || user) return <FullPageSpinner />
 
   return (
-    <main className="flex min-h-svh items-center justify-center bg-[#f6f7f4] px-4 py-10">
-      <div className="w-full max-w-sm rounded-lg border border-[#e7e9e4] bg-white p-6 shadow-sm sm:p-8">
+    <main className="flex min-h-svh items-center justify-center bg-canvas px-4 py-10">
+      <div className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-sm sm:p-8">
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#147d64] text-white">
+          <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
             <BookOpen className="size-5" aria-hidden="true" />
           </div>
           <div>
-            <h1 className="text-base font-semibold text-[#1b2c27]">Quản lý thư viện</h1>
-            <p className="text-xs text-[#5f6b64]">Đăng nhập để tiếp tục</p>
+            <h1 className="text-base font-semibold text-foreground">Quản lý thư viện</h1>
+            <p className="text-xs text-muted-foreground">Đăng nhập để tiếp tục</p>
           </div>
         </div>
 
@@ -75,7 +75,7 @@ export default function LoginPage() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Tên đăng nhập</FieldLabel>
-                  <Input {...field} id={field.name} aria-invalid={fieldState.invalid} autoComplete="username" autoFocus maxLength={80} className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
+                  <Input {...field} id={field.name} aria-invalid={fieldState.invalid} autoComplete="username" autoFocus maxLength={80} className="h-10 rounded-md border-input bg-white text-sm" />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -86,12 +86,12 @@ export default function LoginPage() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor={field.name}>Mật khẩu</FieldLabel>
-                  <Input {...field} id={field.name} type="password" aria-invalid={fieldState.invalid} autoComplete="current-password" maxLength={72} className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
+                  <Input {...field} id={field.name} type="password" aria-invalid={fieldState.invalid} autoComplete="current-password" maxLength={72} className="h-10 rounded-md border-input bg-white text-sm" />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
             />
-            <Button type="submit" disabled={form.formState.isSubmitting} className="h-10 w-full bg-[#147d64] text-white hover:bg-[#106a55]">
+            <Button type="submit" disabled={form.formState.isSubmitting} className="h-10 w-full">
               {form.formState.isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
             </Button>
           </FieldGroup>

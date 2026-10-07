@@ -44,17 +44,17 @@ export function GlobalSearch() {
         onClick={() => setOpen(true)}
         aria-label="Tìm kiếm"
         aria-keyshortcuts="Control+K Meta+K"
-        className="hidden h-9 w-56 items-center gap-2 rounded-md border border-[#e7e9e4] bg-[#fafbf9] px-3 text-left text-xs text-[#66736c] transition-colors hover:bg-[#f2f4f1] md:flex"
+        className="hidden h-9 w-56 items-center gap-2 rounded-md border border-border bg-surface px-3 text-left text-xs text-faint transition-colors hover:bg-muted md:flex"
       >
-        <Search className="size-4 shrink-0 text-[#8b9690]" aria-hidden="true" />
+        <Search className="size-4 shrink-0 text-icon" aria-hidden="true" />
         <span className="flex-1">Tìm kiếm...</span>
-        <kbd className="rounded border border-[#e0e4de] bg-white px-1.5 text-[11px] text-[#66736c]">Ctrl K</kbd>
+        <kbd className="rounded border border-input bg-white px-1.5 text-[11px] text-faint">Ctrl K</kbd>
       </button>
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Tìm kiếm"
-        className="flex size-9 items-center justify-center rounded-md text-[#5f6b64] transition-colors hover:bg-[#f2f4f1] md:hidden"
+        className="flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted md:hidden"
       >
         <Search className="size-[18px]" aria-hidden="true" />
       </button>
@@ -179,11 +179,11 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div>
-      <div className="flex items-center gap-2 border-b border-[#e4e8e2] px-3">
+      <div className="flex items-center gap-2 border-b border-border px-3">
         {loading ? (
-          <Loader2 className="size-4 shrink-0 animate-spin text-[#147d64]" aria-hidden="true" />
+          <Loader2 className="size-4 shrink-0 animate-spin text-primary" aria-hidden="true" />
         ) : (
-          <Search className="size-4 shrink-0 text-[#8b9690]" aria-hidden="true" />
+          <Search className="size-4 shrink-0 text-icon" aria-hidden="true" />
         )}
         <input
           autoFocus
@@ -197,14 +197,14 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
           aria-autocomplete="list"
           aria-label="Từ khóa tìm kiếm"
           placeholder={isStaff ? "Tìm sách, người dùng, mã phiếu mượn..." : "Tìm sách theo tên, tác giả, mã..."}
-          className="h-12 flex-1 bg-transparent text-sm text-[#1c2c26] outline-none placeholder:text-[#66736c]"
+          className="h-12 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-faint"
         />
       </div>
 
       <div id={listId} role="listbox" aria-label="Kết quả tìm kiếm" className={cn("max-h-[min(60vh,28rem)] overflow-y-auto p-2", dirty && "opacity-50")}>
         {groups.map((group) => (
           <div key={group.label} role="group" aria-label={group.label} className="mb-1 last:mb-0">
-            <p className="px-2 pb-1 pt-2 text-[11px] font-semibold tracking-[0.08em] text-[#66736c]">{group.label.toUpperCase()}</p>
+            <p className="px-2 pb-1 pt-2 text-[11px] font-semibold tracking-[0.08em] text-faint">{group.label.toUpperCase()}</p>
             {group.items.map((item) => {
               const isActive = items[current]?.key === item.key
               return (
@@ -217,18 +217,18 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
                   tabIndex={-1}
                   onClick={onClose}
                   onMouseMove={() => setActive(items.findIndex((i) => i.key === item.key))}
-                  className={cn("flex items-center justify-between gap-3 rounded-md px-2 py-2", isActive && "bg-[#e7f3ee]")}
+                  className={cn("flex items-center justify-between gap-3 rounded-md px-2 py-2", isActive && "bg-primary-soft")}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-[#1c2c26]">{item.title}</span>
-                    <span className="block truncate text-xs text-[#5f6b64]">{item.sub}</span>
+                    <span className="block truncate text-sm font-medium text-foreground">{item.title}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{item.sub}</span>
                   </span>
-                  {item.aside && <span className="shrink-0 text-xs text-[#5f6b64]">{item.aside}</span>}
+                  {item.aside && <span className="shrink-0 text-xs text-muted-foreground">{item.aside}</span>}
                 </Link>
               )
             })}
             {group.more && (
-              <Link href={group.more.href} onClick={onClose} className="block rounded-md px-2 py-1.5 text-xs text-[#147d64] hover:underline">
+              <Link href={group.more.href} onClick={onClose} className="block rounded-md px-2 py-1.5 text-xs text-primary hover:underline">
                 Còn {group.more.count} kết quả nữa. {group.more.label}
               </Link>
             )}
@@ -236,7 +236,7 @@ function SearchPanel({ onClose }: { onClose: () => void }) {
         ))}
       </div>
 
-      {status && <p className="px-4 pb-4 pt-2 text-sm text-[#5f6b64]">{status}</p>}
+      {status && <p className="px-4 pb-4 pt-2 text-sm text-muted-foreground">{status}</p>}
       <p className="sr-only" aria-live="polite">
         {ready && !dirty && !loading ? (items.length > 0 ? `${items.length} kết quả` : "Không có kết quả") : ""}
       </p>

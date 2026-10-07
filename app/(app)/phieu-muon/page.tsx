@@ -26,7 +26,7 @@ const COLUMNS: DataColumn<Phieu>[] = [
     header: "Mã phiếu",
     className: "w-28",
     cell: (p) => (
-      <Link href={`/phieu-muon/${p.maPhieu}`} className="font-medium text-[#147d64] hover:underline">
+      <Link href={`/phieu-muon/${p.maPhieu}`} className="font-medium text-primary hover:underline">
         {p.maPhieu}
       </Link>
     ),
@@ -36,11 +36,11 @@ const COLUMNS: DataColumn<Phieu>[] = [
     className: "whitespace-normal",
     cell: (p) => (
       <>
-        {p.nguoiDung.hoTen} <span className="text-[#5f6b64]">({p.nguoiDung.maNguoiDung})</span>
+        {p.nguoiDung.hoTen} <span className="text-muted-foreground">({p.nguoiDung.maNguoiDung})</span>
       </>
     ),
   },
-  { header: "Ngày mượn", className: "w-28 text-[#5f6b64]", cell: (p) => formatDate(p.ngayMuon) },
+  { header: "Ngày mượn", className: "w-28 text-muted-foreground", cell: (p) => formatDate(p.ngayMuon) },
   { header: "Số sách", align: "right", className: "w-24", cell: (p) => p.ctPhieuMuons.length },
   {
     header: "Quá hạn",
@@ -48,7 +48,7 @@ const COLUMNS: DataColumn<Phieu>[] = [
     cell: (p) => {
       const quaHan = p.ctPhieuMuons.filter((c) => isOverdue(c.hanTra, c.ngayTra)).length
       return quaHan > 0 ? (
-        <span className="rounded-full bg-[#fbe9e5] px-2 py-0.5 text-xs font-medium text-[#b34a38]">{quaHan} cuốn</span>
+        <span className="rounded-full bg-destructive-soft px-2 py-0.5 text-xs font-medium text-destructive">{quaHan} cuốn</span>
       ) : (
         "—"
       )
@@ -90,11 +90,11 @@ export default function PhieuMuonPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#5f6b64]">Lưu thông</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Mượn - trả</h2>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">Lập phiếu mượn, gia hạn và nhận trả sách.</p>
+          <p className="text-xs font-medium text-muted-foreground">Lưu thông</p>
+          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Mượn - trả</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">Lập phiếu mượn, gia hạn và nhận trả sách.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => setTraOpen(true)}>
@@ -103,7 +103,7 @@ export default function PhieuMuonPage() {
           </Button>
           <Link
             href="/phieu-muon/moi"
-            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#147d64] px-2.5 text-sm font-medium text-white transition-colors hover:bg-[#106a55]"
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             <Plus className="size-4" aria-hidden="true" />
             Lập phiếu mượn
@@ -122,14 +122,14 @@ export default function PhieuMuonPage() {
           }}
         >
           <label className="relative w-full max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
             <Input
               aria-label="Lọc theo mã người mượn"
               placeholder="Mã người mượn, ví dụ SV001"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               maxLength={20}
-              className="h-9 rounded-md border-[#dfe5df] bg-white pl-9 text-sm"
+              className="h-9 rounded-md border-input bg-white pl-9 text-sm"
             />
           </label>
           <Button type="submit" variant="outline">
@@ -146,7 +146,7 @@ export default function PhieuMuonPage() {
               setPage(1)
             }}
           >
-            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-40 border-[#dfe5df] bg-white">
+            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-40 border-input bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

@@ -26,14 +26,14 @@ import {
 import { formatDate, formatVnd } from "@/lib/format"
 
 const phieuLink = (maPhieu: string) => (
-  <Link href={`/phieu-muon/${maPhieu}`} className="font-medium text-[#147d64] hover:underline">
+  <Link href={`/phieu-muon/${maPhieu}`} className="font-medium text-primary hover:underline">
     {maPhieu}
   </Link>
 )
 
 const nguoiDung = (r: { ma_nguoi_dung: string; ho_ten: string }) => `${r.ho_ten} (${r.ma_nguoi_dung})`
 
-const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-[#a35143]">{days} ngày</span> : "—")
+const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-destructive">{days} ngày</span> : "—")
 
 function thangLabel(thang: string) {
   const [y, m] = thang.split("-")
@@ -53,14 +53,14 @@ function MaNguoiDungFilter({ value, onChange }: { value: string; onChange: (v: s
       }}
     >
       <label className="relative w-64">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
         <Input
           aria-label="Lọc theo mã người dùng"
           placeholder="Mã người dùng, ví dụ SV001"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           maxLength={20}
-          className="h-9 rounded-md border-[#dfe5df] bg-white pl-9 text-sm"
+          className="h-9 rounded-md border-input bg-white pl-9 text-sm"
         />
       </label>
       <Button type="submit" variant="outline" size="sm" className="h-9">
@@ -99,7 +99,7 @@ export function DanhMucSachPanel() {
       align: "right",
       className: "w-24",
       cell: (r) => (
-        <span className={r.so_ban_san_sang === 0 ? "font-medium text-[#a35143]" : ""}>{r.so_ban_san_sang}</span>
+        <span className={r.so_ban_san_sang === 0 ? "font-medium text-destructive" : ""}>{r.so_ban_san_sang}</span>
       ),
     },
   ]
@@ -161,7 +161,7 @@ export function NguoiDungViPhamPanel() {
     {
       header: "Còn nợ",
       value: (r) => r.con_no,
-      cell: (r) => <span className={r.con_no > 0 ? "font-medium text-[#a35143]" : ""}>{formatVnd(r.con_no)}</span>,
+      cell: (r) => <span className={r.con_no > 0 ? "font-medium text-destructive" : ""}>{formatVnd(r.con_no)}</span>,
       align: "right",
       className: "w-32",
     },
@@ -180,7 +180,7 @@ export function NguoiDungViPhamPanel() {
   )
 }
 
-const topChartConfig = { so_luot_muon: { label: "Lượt mượn", color: "#147d64" } } satisfies ChartConfig
+const topChartConfig = { so_luot_muon: { label: "Lượt mượn", color: "var(--chart-1)" } } satisfies ChartConfig
 const LIMITS = [5, 10, 20, 50].map((n) => ({ value: String(n), label: `Top ${n}` }))
 
 export function TopSachPanel() {
@@ -196,13 +196,13 @@ export function TopSachPanel() {
   return (
     <div className="grid gap-4">
       {chartData.length > 0 && (
-        <div className="rounded-lg border border-[#e4e8e2] bg-white p-4">
-          <h3 className="text-sm font-semibold text-[#293a32]">Sách được mượn nhiều nhất</h3>
+        <div className="rounded-lg border border-border bg-white p-4">
+          <h3 className="text-sm font-semibold text-heading">Sách được mượn nhiều nhất</h3>
           <ChartContainer config={topChartConfig} className="mt-3 w-full" style={{ height: 36 * chartData.length + 24 }} aria-label="Biểu đồ lượt mượn theo sách">
             <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 0, right: 16, top: 0, bottom: 0 }}>
-              <CartesianGrid horizontal={false} stroke="#edf0eb" />
-              <YAxis dataKey="ten_sach" type="category" width={170} axisLine={false} tickLine={false} tick={{ fill: "#58665e", fontSize: 11 }} />
-              <XAxis type="number" allowDecimals={false} domain={[0, (max: number) => Math.max(max, 1)]} axisLine={false} tickLine={false} tick={{ fill: "#87918b", fontSize: 11 }} />
+              <CartesianGrid horizontal={false} stroke="var(--line)" />
+              <YAxis dataKey="ten_sach" type="category" width={170} axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
+              <XAxis type="number" allowDecimals={false} domain={[0, (max: number) => Math.max(max, 1)]} axisLine={false} tickLine={false} tick={{ fill: "var(--faint)", fontSize: 11 }} />
               <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
               <Bar dataKey="so_luot_muon" fill="var(--color-so_luot_muon)" radius={3} barSize={18} />
             </BarChart>
@@ -219,7 +219,7 @@ export function TopSachPanel() {
         emptyText="Chưa có lượt mượn nào."
         toolbar={
           <Select value={limit} items={LIMITS} onValueChange={(v) => v && setLimit(v)}>
-            <SelectTrigger aria-label="Số sách hiển thị" className="h-9 w-32 border-[#dfe5df] bg-white">
+            <SelectTrigger aria-label="Số sách hiển thị" className="h-9 w-32 border-input bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -237,8 +237,8 @@ export function TopSachPanel() {
 }
 
 const phatChartConfig = {
-  da_thanh_toan: { label: "Đã thu", color: "#147d64" },
-  chua_thanh_toan: { label: "Chưa thu", color: "#e99a68" },
+  da_thanh_toan: { label: "Đã thu", color: "var(--chart-1)" },
+  chua_thanh_toan: { label: "Chưa thu", color: "var(--chart-2)" },
 } satisfies ChartConfig
 
 export function ThongKeTienPhatPanel() {
@@ -266,21 +266,21 @@ export function ThongKeTienPhatPanel() {
   return (
     <div className="grid gap-4">
       {chartData.length > 0 && (
-        <div className="rounded-lg border border-[#e4e8e2] bg-white p-4">
-          <h3 className="text-sm font-semibold text-[#293a32]">Tiền phạt theo tháng</h3>
+        <div className="rounded-lg border border-border bg-white p-4">
+          <h3 className="text-sm font-semibold text-heading">Tiền phạt theo tháng</h3>
           <ChartContainer config={phatChartConfig} className="mt-3 h-[220px] w-full" aria-label="Biểu đồ tiền phạt theo tháng">
             <BarChart accessibilityLayer data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-              <CartesianGrid vertical={false} stroke="#edf0eb" />
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tickMargin={8} tick={{ fill: "#87918b", fontSize: 11 }} />
-              <YAxis axisLine={false} tickLine={false} width={64} tick={{ fill: "#87918b", fontSize: 11 }} tickFormatter={(v: number) => new Intl.NumberFormat("vi-VN").format(v)} />
+              <CartesianGrid vertical={false} stroke="var(--line)" />
+              <XAxis dataKey="label" axisLine={false} tickLine={false} tickMargin={8} tick={{ fill: "var(--faint)", fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} width={64} tick={{ fill: "var(--faint)", fontSize: 11 }} tickFormatter={(v: number) => new Intl.NumberFormat("vi-VN").format(v)} />
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
               <Bar dataKey="da_thanh_toan" stackId="phat" fill="var(--color-da_thanh_toan)" />
               <Bar dataKey="chua_thanh_toan" stackId="phat" fill="var(--color-chua_thanh_toan)" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ChartContainer>
-          <div className="mt-2 flex items-center justify-center gap-5 text-xs text-[#5f6b64]">
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#147d64]" />Đã thu</span>
-            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-[#e99a68]" />Chưa thu</span>
+          <div className="mt-2 flex items-center justify-center gap-5 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-primary" />Đã thu</span>
+            <span className="inline-flex items-center gap-2"><span className="size-2 rounded-full bg-chart-2" />Chưa thu</span>
           </div>
         </div>
       )}
@@ -313,7 +313,7 @@ export function LichSuMuonPanel() {
       value: (r) => (r.ngay_tra === null ? "Đang mượn" : (TINH_TRANG_TRA.find((t) => t.value === r.tinh_trang_tra)?.label ?? "")),
       cell: (r) =>
         r.ngay_tra === null ? (
-          <span className="rounded-full bg-[#fff3df] px-2 py-0.5 text-xs font-medium text-[#9a6412]">Đang mượn</span>
+          <span className="rounded-full bg-warning-soft px-2 py-0.5 text-xs font-medium text-warning">Đang mượn</span>
         ) : (
           <StatusPill list={TINH_TRANG_TRA} value={r.tinh_trang_tra ?? "BINH_THUONG"} />
         ),
@@ -368,7 +368,7 @@ export function DatTruocPanel() {
         <>
           <MaNguoiDungFilter value={maNguoiDung} onChange={setMaNguoiDung} />
           <Select value={trangThai} items={DAT_TRUOC_FILTER} onValueChange={(v) => v && setTrangThai(v)}>
-            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-44 border-[#dfe5df] bg-white">
+            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-44 border-input bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

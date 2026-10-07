@@ -19,8 +19,8 @@ const config: DanhMucConfig<TacGia> = {
   columns: [
     { header: "Mã", cell: (r) => r.maTacGia, className: "w-28 font-medium" },
     { header: "Tên tác giả", cell: (r) => r.tenTacGia },
-    { header: "Quốc tịch", cell: (r) => r.quocTich ?? "—", className: "text-[#5f6b64]" },
-    { header: "Năm sinh", cell: (r) => r.namSinh ?? "—", className: "w-28 text-[#5f6b64]" },
+    { header: "Quốc tịch", cell: (r) => r.quocTich ?? "—", className: "text-muted-foreground" },
+    { header: "Năm sinh", cell: (r) => r.namSinh ?? "—", className: "w-28 text-muted-foreground" },
   ],
   labelOf: (r) => r.tenTacGia,
   toFormValues: (r) => ({

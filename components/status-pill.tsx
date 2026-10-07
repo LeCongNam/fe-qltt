@@ -7,7 +7,7 @@ export function StatusPill({
 }) {
   const item = list.find((x) => x.value === value)
   return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item?.tone ?? "bg-[#eceeeb] text-[#5f6b64]"}`}>
+    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${item?.tone ?? "bg-neutral-soft text-muted-foreground"}`}>
       {item?.label ?? value}
     </span>
   )

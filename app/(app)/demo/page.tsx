@@ -18,7 +18,7 @@ const LOAI: { value: DemoLoai; label: string; desc: string }[] = [
 function MucList({ items }: { items: DemoMuc[] }) {
   const [chon, setChon] = useState(items[0]?.id)
   const muc = items.find((m) => m.id === chon) ?? items[0]
-  if (!muc) return <p className="text-sm text-[#5f6b64]">Chưa có mục demo.</p>
+  if (!muc) return <p className="text-sm text-muted-foreground">Chưa có mục demo.</p>
 
   return (
     <div className="grid gap-5 lg:grid-cols-[16rem_minmax(0,1fr)]">
@@ -30,11 +30,11 @@ function MucList({ items }: { items: DemoMuc[] }) {
               onClick={() => setChon(m.id)}
               aria-current={m.id === muc.id}
               className={`w-full rounded-md border px-3 py-2 text-left text-sm transition-colors ${
-                m.id === muc.id ? "border-[#147d64] bg-[#eef8f3] text-[#0f6a52]" : "border-[#e4e8e2] bg-white text-[#32433b] hover:bg-[#f6f7f4]"
+                m.id === muc.id ? "border-primary bg-primary-soft text-primary-strong" : "border-border bg-white text-ink hover:bg-canvas"
               }`}
             >
               <span className="block font-medium">{m.tieuDe}</span>
-              <span className="block truncate font-mono text-xs text-[#5f6b64]">{m.doiTuong[0]}</span>
+              <span className="block truncate font-mono text-xs text-muted-foreground">{m.doiTuong[0]}</span>
             </button>
           </li>
         ))}
@@ -52,24 +52,24 @@ export default function DemoPage() {
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
-      <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#5f6b64]">Demo</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Demo xử lý thông tin</h2>
-        <p className="mt-1.5 text-sm text-[#5f6b64]">
+      <div className="mb-6 border-b border-border pb-5">
+        <p className="text-xs font-medium text-muted-foreground">Demo</p>
+        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Demo xử lý thông tin</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
           Mỗi mục đi qua 5 bước: bài toán, câu SQL, bảng liên quan, thực thi, xem lại bảng/output. Mọi dữ liệu đều đọc trực tiếp từ cơ sở dữ liệu.
         </p>
       </div>
 
       {list.isError ? (
-        <p role="alert" className="text-sm text-[#a35143]">{getApiErrorMessage(list.error, "Không tải được danh sách demo.")}</p>
+        <p role="alert" className="text-sm text-destructive">{getApiErrorMessage(list.error, "Không tải được danh sách demo.")}</p>
       ) : !list.data ? (
         <Skeleton className="h-64 w-full" />
       ) : (
         <Tabs value={tab} onValueChange={(v) => v && setTab(v as DemoLoai)} className="min-w-0">
           <div className="overflow-x-auto">
-            <TabsList variant="line" className="h-auto min-w-max border-b border-[#e4e8e2] pb-1">
+            <TabsList variant="line" className="h-auto min-w-max border-b border-border pb-1">
               {LOAI.map((l) => (
-                <TabsTrigger key={l.value} value={l.value} className="flex-none px-3 py-1.5 data-active:text-[#147d64]">
+                <TabsTrigger key={l.value} value={l.value} className="flex-none px-3 py-1.5 data-active:text-primary">
                   {l.label} ({list.data.filter((m) => m.loai === l.value).length})
                 </TabsTrigger>
               ))}
@@ -77,7 +77,7 @@ export default function DemoPage() {
           </div>
           {LOAI.map((l) => (
             <TabsContent key={l.value} value={l.value} className="pt-4">
-              <p className="mb-4 text-sm text-[#5f6b64]">{l.desc}</p>
+              <p className="mb-4 text-sm text-muted-foreground">{l.desc}</p>
               <MucList items={list.data.filter((m) => m.loai === l.value)} />
             </TabsContent>
           ))}

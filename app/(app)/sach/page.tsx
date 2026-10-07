@@ -22,16 +22,16 @@ const COLUMNS: DataColumn<SachRow>[] = [
     title: true,
     className: "whitespace-normal",
     cell: (s) => (
-      <Link href={`/sach/${s.id}`} className="font-medium text-[#147d64] hover:underline">
+      <Link href={`/sach/${s.id}`} className="font-medium text-primary hover:underline">
         {s.ten_sach}
       </Link>
     ),
   },
   { header: "Mã", className: "w-24", cell: (s) => <span className="font-medium">{s.ma_sach}</span> },
-  { header: "Tác giả", className: "whitespace-normal text-[#5f6b64]", cell: (s) => s.ds_tac_gia ?? "—" },
+  { header: "Tác giả", className: "whitespace-normal text-muted-foreground", cell: (s) => s.ds_tac_gia ?? "—" },
   { header: "Thể loại", className: "whitespace-normal", cell: (s) => s.ten_the_loai },
-  { header: "NXB", className: "whitespace-normal text-[#5f6b64]", cell: (s) => s.ten_nxb },
-  { header: "Năm", className: "w-20 text-[#5f6b64]", cell: (s) => s.nam_xuat_ban ?? "—" },
+  { header: "NXB", className: "whitespace-normal text-muted-foreground", cell: (s) => s.ten_nxb },
+  { header: "Năm", className: "w-20 text-muted-foreground", cell: (s) => s.nam_xuat_ban ?? "—" },
   {
     header: "Có thể mượn",
     align: "right",
@@ -40,8 +40,8 @@ const COLUMNS: DataColumn<SachRow>[] = [
       <span
         className={
           s.so_ban_san_sang > 0
-            ? "rounded-full bg-[#e6f3ee] px-2 py-0.5 text-xs font-medium text-[#0f6a52]"
-            : "rounded-full bg-[#eceeeb] px-2 py-0.5 text-xs font-medium text-[#5f6b64]"
+            ? "rounded-full bg-primary-soft px-2 py-0.5 text-xs font-medium text-primary-strong"
+            : "rounded-full bg-neutral-soft px-2 py-0.5 text-xs font-medium text-muted-foreground"
         }
       >
         {s.so_ban_san_sang > 0 ? `${s.so_ban_san_sang} bản` : "Hết"}
@@ -80,16 +80,16 @@ export default function SachPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#5f6b64]">Danh mục</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Sách</h2>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">Tra cứu đầu sách, tác giả và số bản có thể mượn.</p>
+          <p className="text-xs font-medium text-muted-foreground">Danh mục</p>
+          <h2 className="mt-1.5 text-xl font-semibold text-foreground">Sách</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">Tra cứu đầu sách, tác giả và số bản có thể mượn.</p>
         </div>
         {isStaff && (
           <Link
             href="/sach/moi"
-            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-[#147d64] px-2.5 text-sm font-medium text-white transition-colors hover:bg-[#106a55]"
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             <Plus className="size-4" aria-hidden="true" />
             Thêm sách
@@ -99,14 +99,14 @@ export default function SachPage() {
 
       <form onSubmit={search} className="mb-4 flex gap-2" role="search">
         <label className="relative w-full max-w-md">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
           <Input
             aria-label="Tìm theo tên hoặc mô tả sách"
             placeholder="Tìm theo tên hoặc mô tả sách..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             maxLength={255}
-            className="h-9 rounded-md border-[#dfe5df] bg-white pl-9 text-sm"
+            className="h-9 rounded-md border-input bg-white pl-9 text-sm"
           />
         </label>
         <Button type="submit" variant="outline">

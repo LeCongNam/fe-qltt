@@ -67,7 +67,7 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
   return (
     <Field>
       <FieldLabel htmlFor="pm-ban-sach">
-        Bản sách <span aria-hidden="true" className="text-[#a35143]">*</span>
+        Bản sách <span aria-hidden="true" className="text-destructive">*</span>
       </FieldLabel>
       <div className="flex max-w-sm gap-2">
         <Input
@@ -86,7 +86,7 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
           maxLength={60}
           autoComplete="off"
           placeholder="Mã bản (BS001) hoặc tên sách"
-          className="h-10 rounded-md border-[#dfe5df] bg-white text-sm"
+          className="h-10 rounded-md border-input bg-white text-sm"
         />
         <Button type="button" variant="outline" className="h-10" onClick={onEnter}>
           <Plus aria-hidden="true" />
@@ -108,7 +108,7 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
       </p>
 
       {goiY.length > 0 && (
-        <ul aria-label="Gợi ý bản sách" className="max-w-sm divide-y divide-[#eef0ec] overflow-hidden rounded-lg border border-[#dfe5df] bg-white">
+        <ul aria-label="Gợi ý bản sách" className="max-w-sm divide-y divide-line overflow-hidden rounded-lg border border-input bg-white">
           {goiY.map((i) => {
             const tt = tinhTrangOf(i.ban.tinhTrang)
             return (
@@ -116,11 +116,11 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
                 <button
                   type="button"
                   onClick={() => them(i.ban.maBanSach.toUpperCase())}
-                  className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-[#f6f8f5] focus-visible:bg-[#f6f8f5] focus-visible:outline-none"
+                  className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-surface-hover focus-visible:bg-surface-hover focus-visible:outline-none"
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-medium text-[#293a32]">{i.tenSach}</span>
-                    <span className="block text-xs text-[#5f6b64]">{i.ban.maBanSach} · kệ {i.ban.viTriKe}</span>
+                    <span className="block truncate text-sm font-medium text-heading">{i.tenSach}</span>
+                    <span className="block text-xs text-muted-foreground">{i.ban.maBanSach} · kệ {i.ban.viTriKe}</span>
                   </span>
                   {tt && <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${tt.tone}`}>{tt.label}</span>}
                 </button>
@@ -131,21 +131,21 @@ export function BanSachPicker({ value, onChange }: { value: string[]; onChange: 
       )}
 
       {value.length > 0 && (
-        <ul aria-label="Bản sách đã chọn" className="mt-2 divide-y divide-[#eef0ec] overflow-hidden rounded-lg border border-[#dfe5df] bg-white">
+        <ul aria-label="Bản sách đã chọn" className="mt-2 divide-y divide-line overflow-hidden rounded-lg border border-input bg-white">
           {value.map((ma) => {
             const info = map?.get(ma)
             const tt = info ? tinhTrangOf(info.ban.tinhTrang) : undefined
             return (
               <li key={ma} className="flex items-center justify-between gap-3 px-3 py-2">
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium text-[#293a32]">{info ? info.tenSach : ma}</span>
-                  <span className="block text-xs text-[#5f6b64]">
+                  <span className="block truncate text-sm font-medium text-heading">{info ? info.tenSach : ma}</span>
+                  <span className="block text-xs text-muted-foreground">
                     {info ? `${ma} · kệ ${info.ban.viTriKe}${info.tacGia ? ` · ${info.tacGia}` : ""}` : index.isPending ? "Đang tải thông tin sách..." : "Không có thông tin sách"}
                   </span>
                 </span>
                 <span className="flex shrink-0 items-center gap-2">
                   {tt && info?.ban.tinhTrang !== "SAN_SANG" && <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${tt.tone}`}>{tt.label}</span>}
-                  <button type="button" aria-label={`Bỏ ${ma}`} className="rounded-full p-1 text-[#5f6b64] hover:bg-[#eef0ec]" onClick={() => {
+                  <button type="button" aria-label={`Bỏ ${ma}`} className="rounded-full p-1 text-muted-foreground hover:bg-line" onClick={() => {
                       onChange(value.filter((x) => x !== ma))
                       setNote(`Đã bỏ ${ma}. Phiếu có ${value.length - 1} cuốn`)
                     }}>

@@ -30,17 +30,17 @@ export default function BaoCaoPage() {
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
-      <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#5f6b64]">Báo cáo</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Báo cáo thư viện</h2>
-        <p className="mt-1.5 text-sm text-[#5f6b64]">Số liệu đọc trực tiếp từ các view của cơ sở dữ liệu; có thể xuất từng báo cáo ra CSV.</p>
+      <div className="mb-6 border-b border-border pb-5">
+        <p className="text-xs font-medium text-muted-foreground">Báo cáo</p>
+        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Báo cáo thư viện</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">Số liệu đọc trực tiếp từ các view của cơ sở dữ liệu; có thể xuất từng báo cáo ra CSV.</p>
       </div>
 
       <Tabs value={tab} onValueChange={(v) => v && setTab(String(v))} className="min-w-0">
         <div className="overflow-x-auto">
-          <TabsList variant="line" className="h-auto min-w-max border-b border-[#e4e8e2] pb-1">
+          <TabsList variant="line" className="h-auto min-w-max border-b border-border pb-1">
             {REPORTS.map((r) => (
-              <TabsTrigger key={r.value} value={r.value} className="flex-none px-3 py-1.5 data-active:text-[#147d64]">
+              <TabsTrigger key={r.value} value={r.value} className="flex-none px-3 py-1.5 data-active:text-primary">
                 {r.label}
               </TabsTrigger>
             ))}
@@ -48,7 +48,7 @@ export default function BaoCaoPage() {
         </div>
         {REPORTS.map(({ value, desc, Panel }) => (
           <TabsContent key={value} value={value} className="pt-4">
-            <p className="mb-4 text-sm text-[#5f6b64]">{desc}</p>
+            <p className="mb-4 text-sm text-muted-foreground">{desc}</p>
             <Panel />
           </TabsContent>
         ))}

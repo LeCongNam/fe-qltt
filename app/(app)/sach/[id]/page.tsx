@@ -28,8 +28,8 @@ import { formatVnd } from "@/lib/format"
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium text-[#5f6b64]">{label}</dt>
-      <dd className="mt-1 text-sm text-[#1c2c26]">{children || "—"}</dd>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+      <dd className="mt-1 text-sm text-foreground">{children || "—"}</dd>
     </div>
   )
 }
@@ -74,8 +74,8 @@ export default function SachDetailPage() {
     const notFound = axios.isAxiosError(query.error) && query.error.response?.status === 404
     return (
       <div className="mx-auto w-full max-w-4xl space-y-3 text-sm">
-        <p role="alert" className="text-[#a35143]">{notFound ? "Không tìm thấy sách." : getApiErrorMessage(query.error, "Không tải được sách.")}</p>
-        <Link href="/sach" className="text-[#147d64] hover:underline">
+        <p role="alert" className="text-destructive">{notFound ? "Không tìm thấy sách." : getApiErrorMessage(query.error, "Không tải được sách.")}</p>
+        <Link href="/sach" className="text-primary hover:underline">
           ← Quay lại danh sách
         </Link>
       </div>
@@ -86,14 +86,14 @@ export default function SachDetailPage() {
 
   return (
     <section className="mx-auto w-full max-w-4xl space-y-6">
-      <div className="flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Link href="/sach" className="inline-flex items-center gap-1 text-xs font-medium text-[#5f6b64] hover:text-[#147d64]">
+          <Link href="/sach" className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary">
             <ArrowLeft className="size-3.5" aria-hidden="true" />
             Sách
           </Link>
-          <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">{s.tenSach}</h2>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">Mã sách {s.maSach}</p>
+          <h2 className="mt-1.5 text-xl font-semibold text-foreground">{s.tenSach}</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">Mã sách {s.maSach}</p>
         </div>
         {isStaff && !editing && (
           <div className="flex gap-2">
@@ -112,7 +112,7 @@ export default function SachDetailPage() {
       {editing ? (
         <SachForm sach={s} onSaved={() => setEditing(false)} onCancel={() => setEditing(false)} />
       ) : (
-        <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-[#e4e8e2] bg-white p-5 sm:grid-cols-2">
+        <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-border bg-white p-5 sm:grid-cols-2">
           <Info label="ISBN">{s.isbn}</Info>
           <Info label="Thể loại">{s.theLoai.tenTheLoai}</Info>
           <Info label="Nhà xuất bản">{s.nhaXuatBan.tenNxb}</Info>

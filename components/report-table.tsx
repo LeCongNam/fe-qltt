@@ -151,7 +151,7 @@ export function ReportTable<T>({
                   setSort(v === DEFAULT_ORDER ? null : { header: v, dir: "asc" })
                 }}
               >
-                <SelectTrigger aria-label="Sắp xếp theo" className="h-9 w-44 border-[#dfe5df] bg-white">
+                <SelectTrigger aria-label="Sắp xếp theo" className="h-9 w-44 border-input bg-white">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

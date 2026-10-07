@@ -88,7 +88,7 @@ export default function PhatPage() {
         const nd = f.ctPhieuMuon.phieuMuon.nguoiDung
         return (
           <>
-            {nd.hoTen} <span className="text-[#5f6b64]">({nd.maNguoiDung})</span>
+            {nd.hoTen} <span className="text-muted-foreground">({nd.maNguoiDung})</span>
           </>
         )
       },
@@ -98,9 +98,9 @@ export default function PhatPage() {
       className: "whitespace-normal",
       cell: (f) => (
         <>
-          {f.ctPhieuMuon.banSach.sach.tenSach} <span className="text-[#5f6b64]">({f.ctPhieuMuon.banSach.maBanSach})</span>
+          {f.ctPhieuMuon.banSach.sach.tenSach} <span className="text-muted-foreground">({f.ctPhieuMuon.banSach.maBanSach})</span>
           <div className="mt-0.5 text-xs">
-            <Link href={`/phieu-muon/${f.ctPhieuMuon.phieuMuon.maPhieu}`} className="text-[#147d64] hover:underline">
+            <Link href={`/phieu-muon/${f.ctPhieuMuon.phieuMuon.maPhieu}`} className="text-primary hover:underline">
               {f.ctPhieuMuon.phieuMuon.maPhieu}
             </Link>
           </div>
@@ -109,7 +109,7 @@ export default function PhatPage() {
     },
     { header: "Loại phạt", className: "w-28", cell: (f) => LOAI_PHAT.find((l) => l.value === f.loaiPhat)?.label },
     { header: "Số tiền", align: "right", className: "w-28 font-medium", cell: (f) => formatVnd(f.soTien) },
-    { header: "Ngày tạo", className: "w-28 text-[#5f6b64]", cell: (f) => formatDate(f.ngayTao) },
+    { header: "Ngày tạo", className: "w-28 text-muted-foreground", cell: (f) => formatDate(f.ngayTao) },
     { header: "Trạng thái", className: "w-36", cell: (f) => <StatusPill list={TRANG_THAI_PHAT} value={f.trangThai} /> },
     {
       header: "Thao tác",
@@ -119,12 +119,12 @@ export default function PhatPage() {
       cell: (f) =>
         f.trangThai === "CHUA_THANH_TOAN" && (
           <div className="flex justify-end gap-1">
-            <Button size="sm" className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setThanhToan(f)}>
+            <Button size="sm" onClick={() => setThanhToan(f)}>
               <Banknote aria-hidden="true" />
               Thu tiền
             </Button>
             {isAdmin && (
-              <Button size="sm" variant="ghost" className="text-[#a35143]" onClick={() => setHuyRow(f)}>
+              <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setHuyRow(f)}>
                 <Ban aria-hidden="true" />
                 Hủy
               </Button>
@@ -136,10 +136,10 @@ export default function PhatPage() {
 
   return (
     <section className="mx-auto w-full max-w-6xl">
-      <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#5f6b64]">Lưu thông</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Tiền phạt</h2>
-        <p className="mt-1.5 text-sm text-[#5f6b64]">Phiếu phạt do hệ thống tự lập khi trả sách quá hạn, hư hỏng hoặc mất.</p>
+      <div className="mb-6 border-b border-border pb-5">
+        <p className="text-xs font-medium text-muted-foreground">Lưu thông</p>
+        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Tiền phạt</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">Phiếu phạt do hệ thống tự lập khi trả sách quá hạn, hư hỏng hoặc mất.</p>
       </div>
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row">
@@ -153,14 +153,14 @@ export default function PhatPage() {
           }}
         >
           <label className="relative w-full max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
             <Input
               aria-label="Lọc theo mã người bị phạt"
               placeholder="Mã người bị phạt, ví dụ SV001"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               maxLength={20}
-              className="h-9 rounded-md border-[#dfe5df] bg-white pl-9 text-sm"
+              className="h-9 rounded-md border-input bg-white pl-9 text-sm"
             />
           </label>
           <Button type="submit" variant="outline">
@@ -177,7 +177,7 @@ export default function PhatPage() {
               setPage(1)
             }}
           >
-            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-44 border-[#dfe5df] bg-white">
+            <SelectTrigger aria-label="Lọc theo trạng thái" className="h-9 w-44 border-input bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -228,7 +228,7 @@ export default function PhatPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={pay.isPending}>Chưa</AlertDialogCancel>
-            <Button disabled={pay.isPending} className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => thanhToan && pay.mutate(thanhToan)}>
+            <Button disabled={pay.isPending} onClick={() => thanhToan && pay.mutate(thanhToan)}>
               {pay.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               Đã thu
             </Button>
@@ -275,9 +275,9 @@ function HuyPhatDialog({ row, onClose }: { row: Phat | null; onClose: () => void
         >
           <Field>
             <FieldLabel htmlFor="phat-ly-do">
-              Lý do <span aria-hidden="true" className="text-[#a35143]">*</span>
+              Lý do <span aria-hidden="true" className="text-destructive">*</span>
             </FieldLabel>
-            <Input id="phat-ly-do" value={lyDo} onChange={(e) => setLyDo(e.target.value)} maxLength={200} className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
+            <Input id="phat-ly-do" value={lyDo} onChange={(e) => setLyDo(e.target.value)} maxLength={200} className="h-10 rounded-md border-input bg-white text-sm" />
           </Field>
           <DialogFooter>
             <Button type="button" variant="outline" disabled={huy.isPending} onClick={onClose}>

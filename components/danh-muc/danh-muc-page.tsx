@@ -149,21 +149,21 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
 
   return (
     <section className="mx-auto w-full max-w-5xl">
-      <div className="mb-6 flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mb-6 flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium text-[#5f6b64]">Danh mục</p>
-          <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">{config.title}</h2>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">{config.description}</p>
+          <p className="text-xs font-medium text-muted-foreground">Danh mục</p>
+          <h2 className="mt-1.5 text-xl font-semibold text-foreground">{config.title}</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">{config.description}</p>
         </div>
         {isStaff && (
-          <Button className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setEditing("new")}>
+          <Button onClick={() => setEditing("new")}>
             <Plus aria-hidden="true" />
             Thêm {singular}
           </Button>
         )}
       </div>
 
-      <div className="rounded-lg border border-[#e4e8e2] bg-white">
+      <div className="rounded-lg border border-border bg-white">
         <Table>
           <TableHeader>
             <TableRow>
@@ -186,7 +186,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
               ))}
             {list.isError && (
               <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#a35143]">
+                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-destructive">
                   <span role="alert">{getApiErrorMessage(list.error, `Không tải được danh sách ${singular}.`)}</span>{" "}
                   <button type="button" className="underline" onClick={() => list.refetch()}>
                     Thử lại
@@ -196,7 +196,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
             )}
             {list.isSuccess && rows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-[#5f6b64]">
+                <TableCell colSpan={colCount} className="py-10 text-center text-sm text-muted-foreground">
                   Chưa có {singular} nào.
                 </TableCell>
               </TableRow>
@@ -223,7 +223,7 @@ export function DanhMucPage<T extends { id: string }>({ config }: { config: Danh
                         <Button
                           variant="ghost"
                           size="icon-sm"
-                          className="text-[#a35143]"
+                          className="text-destructive"
                           aria-label={`Xóa ${config.labelOf(row)}`}
                           onClick={() => setDeleting(row)}
                         >
@@ -341,7 +341,7 @@ function DanhMucFormDialog<T extends { id: string }>({
                       {f.required && (
                         <>
                           {" "}
-                          <span aria-hidden="true" className="text-[#a35143]">*</span>
+                          <span aria-hidden="true" className="text-destructive">*</span>
                         </>
                       )}
                     </FieldLabel>
@@ -353,7 +353,7 @@ function DanhMucFormDialog<T extends { id: string }>({
                       aria-invalid={fieldState.invalid}
                       maxLength={f.kind === "number" ? 4 : f.maxLength}
                       placeholder={f.placeholder}
-                      className="h-10 rounded-md border-[#dfe5df] bg-white text-sm"
+                      className="h-10 rounded-md border-input bg-white text-sm"
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
@@ -365,7 +365,7 @@ function DanhMucFormDialog<T extends { id: string }>({
             <Button type="button" variant="outline" disabled={save.isPending} onClick={onClose}>
               Hủy
             </Button>
-            <Button type="submit" disabled={save.isPending} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+            <Button type="submit" disabled={save.isPending}>
               {save.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               Lưu
             </Button>

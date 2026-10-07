@@ -61,15 +61,15 @@ export function TraSachDialog({ open, onClose, maBanSach }: { open: boolean; onC
           {!maBanSach && (
             <Field>
               <FieldLabel htmlFor="tra-ma">
-                Mã bản sách <span aria-hidden="true" className="text-[#a35143]">*</span>
+                Mã bản sách <span aria-hidden="true" className="text-destructive">*</span>
               </FieldLabel>
-              <Input id="tra-ma" value={ma} onChange={(e) => setMa(e.target.value)} maxLength={30} placeholder="Ví dụ: BS001" className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
+              <Input id="tra-ma" value={ma} onChange={(e) => setMa(e.target.value)} maxLength={30} placeholder="Ví dụ: BS001" className="h-10 rounded-md border-input bg-white text-sm" />
             </Field>
           )}
           <Field>
             <FieldLabel htmlFor="tra-tinh-trang">Tình trạng sách khi trả</FieldLabel>
             <Select value={tinhTrang} items={TINH_TRANG_TRA} onValueChange={(v) => v && setTinhTrang(v)}>
-              <SelectTrigger id="tra-tinh-trang" className="h-10 w-full rounded-md border-[#dfe5df] bg-white">
+              <SelectTrigger id="tra-tinh-trang" className="h-10 w-full rounded-md border-input bg-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -86,7 +86,7 @@ export function TraSachDialog({ open, onClose, maBanSach }: { open: boolean; onC
             <Button type="button" variant="outline" disabled={tra.isPending} onClick={onClose}>
               Hủy
             </Button>
-            <Button type="submit" disabled={tra.isPending || !ma.trim()} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+            <Button type="submit" disabled={tra.isPending || !ma.trim()}>
               {tra.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               Xác nhận trả
             </Button>

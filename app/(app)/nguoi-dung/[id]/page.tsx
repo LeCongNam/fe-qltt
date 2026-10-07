@@ -55,8 +55,8 @@ type TaiKhoan = Schemas["TaiKhoanCongKhaiDto"]
 function Info({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <dt className="text-xs font-medium text-[#5f6b64]">{label}</dt>
-      <dd className="mt-1 text-sm text-[#1c2c26]">{children || "—"}</dd>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+      <dd className="mt-1 text-sm text-foreground">{children || "—"}</dd>
     </div>
   )
 }
@@ -86,10 +86,10 @@ export default function NguoiDungDetailPage() {
     const notFound = axios.isAxiosError(query.error) && query.error.response?.status === 404
     return (
       <div className="mx-auto w-full max-w-4xl space-y-3 text-sm">
-        <p role="alert" className="text-[#a35143]">
+        <p role="alert" className="text-destructive">
           {notFound ? "Không tìm thấy người dùng." : getApiErrorMessage(query.error, "Không tải được người dùng.")}
         </p>
-        <Link href="/nguoi-dung" className="text-[#147d64] hover:underline">
+        <Link href="/nguoi-dung" className="text-primary hover:underline">
           ← Quay lại danh sách
         </Link>
       </div>
@@ -100,14 +100,14 @@ export default function NguoiDungDetailPage() {
 
   return (
     <section className="mx-auto w-full max-w-4xl space-y-6">
-      <div className="flex flex-col gap-4 border-b border-[#e4e8e2] pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Link href="/nguoi-dung" className="inline-flex items-center gap-1 text-xs font-medium text-[#5f6b64] hover:text-[#147d64]">
+          <Link href="/nguoi-dung" className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary">
             <ArrowLeft className="size-3.5" aria-hidden="true" />
             Người dùng
           </Link>
-          <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">{u.hoTen}</h2>
-          <p className="mt-1.5 text-sm text-[#5f6b64]">Mã người dùng {u.maNguoiDung}</p>
+          <h2 className="mt-1.5 text-xl font-semibold text-foreground">{u.hoTen}</h2>
+          <p className="mt-1.5 text-sm text-muted-foreground">Mã người dùng {u.maNguoiDung}</p>
         </div>
         {!editing && (
           <Button variant="outline" onClick={() => setEditing(true)}>
@@ -120,7 +120,7 @@ export default function NguoiDungDetailPage() {
       {editing ? (
         <NguoiDungForm nguoiDung={u} onSaved={() => setEditing(false)} onCancel={() => setEditing(false)} />
       ) : (
-        <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-[#e4e8e2] bg-white p-5 sm:grid-cols-2">
+        <dl className="grid grid-cols-1 gap-x-6 gap-y-5 rounded-lg border border-border bg-white p-5 sm:grid-cols-2">
           <Info label="Loại người dùng">{labelOf(LOAI_NGUOI_DUNG, u.loaiNguoiDung)}</Info>
           <Info label="Ngày tạo">{formatDate(u.createdAt)}</Info>
           <Info label="Email">{u.email}</Info>
@@ -166,11 +166,11 @@ function TrangThaiCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin:
   })
 
   return (
-    <div className="rounded-lg border border-[#e4e8e2] bg-white p-5">
+    <div className="rounded-lg border border-border bg-white p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-[#1c2c26]">Trạng thái người dùng</h3>
-          <p className="mt-1 text-xs text-[#5f6b64]">
+          <h3 className="text-sm font-semibold text-foreground">Trạng thái người dùng</h3>
+          <p className="mt-1 text-xs text-muted-foreground">
             {locked
               ? "Chỉ quản trị được đổi trạng thái của cán bộ."
               : "Rời trạng thái hoạt động sẽ tự khóa tài khoản đăng nhập."}
@@ -184,7 +184,7 @@ function TrangThaiCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin:
             disabled={locked || doi.isPending}
             onValueChange={(v) => v && v !== u.trangThai && setTarget(v)}
           >
-            <SelectTrigger size="sm" aria-label="Đổi trạng thái người dùng" className="w-40 border-[#dfe5df] bg-white">
+            <SelectTrigger size="sm" aria-label="Đổi trạng thái người dùng" className="w-40 border-input bg-white">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -216,7 +216,7 @@ function TrangThaiCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin:
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={doi.isPending}>Hủy</AlertDialogCancel>
-            <Button disabled={doi.isPending} onClick={() => target && doi.mutate(target)} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+            <Button disabled={doi.isPending} onClick={() => target && doi.mutate(target)}>
               {doi.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               Xác nhận
             </Button>
@@ -251,14 +251,14 @@ function TaiKhoanCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin: 
   const moBiChan = tk?.trangThai === "KHOA" && u.trangThai !== "HOAT_DONG"
 
   return (
-    <div className="rounded-lg border border-[#e4e8e2] bg-white p-5">
+    <div className="rounded-lg border border-border bg-white p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-[#1c2c26]">Tài khoản đăng nhập</h3>
-          {!isAdmin && <p className="mt-1 text-xs text-[#5f6b64]">Chỉ quản trị được tạo hoặc khóa/mở tài khoản.</p>}
+          <h3 className="text-sm font-semibold text-foreground">Tài khoản đăng nhập</h3>
+          {!isAdmin && <p className="mt-1 text-xs text-muted-foreground">Chỉ quản trị được tạo hoặc khóa/mở tài khoản.</p>}
         </div>
         {isAdmin && !tk && (
-          <Button size="sm" className="bg-[#147d64] text-white hover:bg-[#106a55]" onClick={() => setCreating(true)}>
+          <Button size="sm" onClick={() => setCreating(true)}>
             <KeyRound aria-hidden="true" />
             Tạo tài khoản
           </Button>
@@ -292,13 +292,13 @@ function TaiKhoanCard({ nguoiDung: u, isAdmin }: { nguoiDung: ChiTiet; isAdmin: 
             </Info>
           </dl>
           {moBiChan && (
-            <p className="mt-3 text-xs text-[#9a6412]">
+            <p className="mt-3 text-xs text-warning">
               Chưa thể mở tài khoản: người dùng chưa ở trạng thái hoạt động. Hãy đổi trạng thái người dùng trước.
             </p>
           )}
         </>
       ) : (
-        <p className="mt-4 text-sm text-[#5f6b64]">Người dùng này chưa có tài khoản đăng nhập.</p>
+        <p className="mt-4 text-sm text-muted-foreground">Người dùng này chưa có tài khoản đăng nhập.</p>
       )}
 
       <TaoTaiKhoanDialog key={creating ? "open" : "closed"} nguoiDung={u} open={creating} onClose={() => setCreating(false)} />
@@ -363,7 +363,7 @@ function TaoTaiKhoanDialog({ nguoiDung: u, open, onClose }: { nguoiDung: ChiTiet
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="tk-tenDangNhap">Tên đăng nhập</FieldLabel>
-                  <Input {...field} id="tk-tenDangNhap" maxLength={80} autoComplete="off" aria-invalid={fieldState.invalid} placeholder={macDinh} className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
+                  <Input {...field} id="tk-tenDangNhap" maxLength={80} autoComplete="off" aria-invalid={fieldState.invalid} placeholder={macDinh} className="h-10 rounded-md border-input bg-white text-sm" />
                   <FieldDescription>Bỏ trống để dùng “{macDinh}”.</FieldDescription>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
@@ -375,9 +375,9 @@ function TaoTaiKhoanDialog({ nguoiDung: u, open, onClose }: { nguoiDung: ChiTiet
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="tk-matKhau">
-                    Mật khẩu <span aria-hidden="true" className="text-[#a35143]">*</span>
+                    Mật khẩu <span aria-hidden="true" className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input {...field} id="tk-matKhau" type="password" maxLength={72} autoComplete="new-password" aria-invalid={fieldState.invalid} placeholder="Tối thiểu 8 ký tự" className="h-10 rounded-md border-[#dfe5df] bg-white text-sm" />
+                  <Input {...field} id="tk-matKhau" type="password" maxLength={72} autoComplete="new-password" aria-invalid={fieldState.invalid} placeholder="Tối thiểu 8 ký tự" className="h-10 rounded-md border-input bg-white text-sm" />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -389,7 +389,7 @@ function TaoTaiKhoanDialog({ nguoiDung: u, open, onClose }: { nguoiDung: ChiTiet
                 <Field>
                   <FieldLabel htmlFor="tk-vaiTro">Vai trò</FieldLabel>
                   <Select value={field.value} items={items} onValueChange={(v) => v && field.onChange(v)} disabled={items.length === 1}>
-                    <SelectTrigger id="tk-vaiTro" className="h-10 w-full rounded-md border-[#dfe5df] bg-white">
+                    <SelectTrigger id="tk-vaiTro" className="h-10 w-full rounded-md border-input bg-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -408,7 +408,7 @@ function TaoTaiKhoanDialog({ nguoiDung: u, open, onClose }: { nguoiDung: ChiTiet
             <Button type="button" variant="outline" disabled={tao.isPending} onClick={onClose}>
               Hủy
             </Button>
-            <Button type="submit" disabled={tao.isPending} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+            <Button type="submit" disabled={tao.isPending}>
               {tao.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
               Tạo tài khoản
             </Button>

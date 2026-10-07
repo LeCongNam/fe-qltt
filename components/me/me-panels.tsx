@@ -25,12 +25,12 @@ import { formatDate, formatVnd } from "@/lib/format"
 import { type DatTruocCuaToi, type LichSuMuonCuaToi, type SachDangMuonCuaToi, type TienPhatCuaToi, useMe } from "@/lib/me"
 
 const phieuLink = (maPhieu: string) => (
-  <Link href={`/phieu-muon/${maPhieu}`} className="font-medium text-[#147d64] hover:underline">
+  <Link href={`/phieu-muon/${maPhieu}`} className="font-medium text-primary hover:underline">
     {maPhieu}
   </Link>
 )
 
-const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-[#a35143]">{days} ngày</span> : "—")
+const quaHan = (days: number) => (days > 0 ? <span className="font-medium text-destructive">{days} ngày</span> : "—")
 
 export function SachDangMuonPanel() {
   const query = useMe<SachDangMuonCuaToi>("sach-dang-muon")
@@ -111,7 +111,7 @@ export function DatTruocPanel() {
       className: "w-24",
       cell: (r) =>
         DANG_HOAT_DONG.includes(r.trang_thai) && (
-          <Button size="sm" variant="ghost" className="text-[#a35143]" onClick={() => setHuyRow(r)}>
+          <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setHuyRow(r)}>
             <XCircle aria-hidden="true" />
             Hủy
           </Button>
@@ -130,7 +130,7 @@ export function DatTruocPanel() {
         toolbar={
           <Link
             href="/dat-truoc"
-            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#147d64] px-3 text-sm font-medium text-white transition-colors hover:bg-[#106a55]"
+            className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             <Plus className="size-4" aria-hidden="true" />
             Đặt trước sách
@@ -198,7 +198,7 @@ export function LichSuMuonPanel() {
       value: (r) => (r.ngay_tra === null ? "Đang mượn" : (TINH_TRANG_TRA.find((t) => t.value === r.tinh_trang_tra)?.label ?? "")),
       cell: (r) =>
         r.ngay_tra === null ? (
-          <span className="rounded-full bg-[#fff3df] px-2 py-0.5 text-xs font-medium text-[#9a6412]">Đang mượn</span>
+          <span className="rounded-full bg-warning-soft px-2 py-0.5 text-xs font-medium text-warning">Đang mượn</span>
         ) : (
           <StatusPill list={TINH_TRANG_TRA} value={r.tinh_trang_tra ?? "BINH_THUONG"} />
         ),

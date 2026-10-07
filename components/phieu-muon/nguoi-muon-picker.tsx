@@ -49,11 +49,11 @@ export function NguoiMuonPicker({ value, onChange }: { value: NguoiMuon | null; 
       <Field>
         <FieldLabel>Người mượn</FieldLabel>
         <p role="status" className="sr-only">Đã chọn người mượn {value.hoTen}, {value.maNguoiDung}</p>
-        <div className="rounded-lg border border-[#dfe5df] bg-white p-3">
+        <div className="rounded-lg border border-input bg-white p-3">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-[#293a32]">{value.hoTen}</p>
-              <p className="mt-0.5 text-xs text-[#5f6b64]">
+              <p className="truncate text-sm font-semibold text-heading">{value.hoTen}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {value.maNguoiDung} · {labelOf(LOAI_NGUOI_DUNG, value.loaiNguoiDung)}
                 {value.khoaDonVi ? ` · ${value.khoaDonVi}` : ""}
               </p>
@@ -67,7 +67,7 @@ export function NguoiMuonPicker({ value, onChange }: { value: NguoiMuon | null; 
             </div>
           </div>
           {khongMuonDuoc && (
-            <p role="alert" className="mt-2 flex items-center gap-1.5 text-xs text-[#a35143]">
+            <p role="alert" className="mt-2 flex items-center gap-1.5 text-xs text-destructive">
               <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
               Tài khoản này đang {trangThai?.label.toLowerCase() ?? "không hoạt động"}, không thể lập phiếu mượn.
             </p>
@@ -80,10 +80,10 @@ export function NguoiMuonPicker({ value, onChange }: { value: NguoiMuon | null; 
   return (
     <Field>
       <FieldLabel htmlFor="pm-nguoi-dung">
-        Người mượn <span aria-hidden="true" className="text-[#a35143]">*</span>
+        Người mượn <span aria-hidden="true" className="text-destructive">*</span>
       </FieldLabel>
       <div className="relative max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-icon" aria-hidden="true" />
         <Input
           id="pm-nguoi-dung"
           value={text}
@@ -97,30 +97,30 @@ export function NguoiMuonPicker({ value, onChange }: { value: NguoiMuon | null; 
           maxLength={50}
           autoComplete="off"
           placeholder="Mã, họ tên hoặc email, ví dụ SV001"
-          className="h-10 rounded-md border-[#dfe5df] bg-white pl-9 text-sm"
+          className="h-10 rounded-md border-input bg-white pl-9 text-sm"
         />
-        {searching && results.isFetching && <Loader2 className="absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-[#8b9690]" aria-hidden="true" />}
+        {searching && results.isFetching && <Loader2 className="absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-icon" aria-hidden="true" />}
       </div>
       <FieldDescription>Nhập từ {MIN_CHARS} ký tự rồi chọn người mượn từ danh sách (hoặc nhấn Enter nếu mã khớp).</FieldDescription>
       {searching && results.isError && (
-        <p role="alert" className="text-xs text-[#a35143]">{getApiErrorMessage(results.error)}</p>
+        <p role="alert" className="text-xs text-destructive">{getApiErrorMessage(results.error)}</p>
       )}
       <p role="status" className="sr-only">
         {searching && fresh && !results.isPending && !results.isError ? (rows.length === 0 ? `Không tìm thấy người dùng nào khớp ${q}` : `${rows.length} người phù hợp`) : ""}
       </p>
       {searching && !results.isPending && !results.isError && (
         rows.length === 0 ? (
-          <p className="text-xs text-[#5f6b64]">Không tìm thấy người dùng nào khớp “{q}”.</p>
+          <p className="text-xs text-muted-foreground">Không tìm thấy người dùng nào khớp “{q}”.</p>
         ) : (
-          <ul aria-label="Kết quả tìm người mượn" className="max-w-sm divide-y divide-[#eef0ec] overflow-hidden rounded-lg border border-[#dfe5df] bg-white">
+          <ul aria-label="Kết quả tìm người mượn" className="max-w-sm divide-y divide-line overflow-hidden rounded-lg border border-input bg-white">
             {rows.map((r) => {
               const trangThai = TRANG_THAI_NGUOI_DUNG.find((t) => t.value === r.trangThai)
               return (
                 <li key={r.id}>
-                  <button type="button" onClick={() => pick(r)} className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-[#f6f8f5] focus-visible:bg-[#f6f8f5] focus-visible:outline-none">
+                  <button type="button" onClick={() => pick(r)} className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-surface-hover focus-visible:bg-surface-hover focus-visible:outline-none">
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-[#293a32]">{r.hoTen}</span>
-                      <span className="block text-xs text-[#5f6b64]">{r.maNguoiDung} · {labelOf(LOAI_NGUOI_DUNG, r.loaiNguoiDung)}</span>
+                      <span className="block truncate text-sm font-medium text-heading">{r.hoTen}</span>
+                      <span className="block text-xs text-muted-foreground">{r.maNguoiDung} · {labelOf(LOAI_NGUOI_DUNG, r.loaiNguoiDung)}</span>
                     </span>
                     {trangThai && r.trangThai !== "HOAT_DONG" && <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${trangThai.tone}`}>{trangThai.label}</span>}
                   </button>

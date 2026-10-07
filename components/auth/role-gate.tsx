@@ -19,10 +19,10 @@ export function RoleGate({ children }: { children: React.ReactNode }) {
 
   return (
     <section role="alert" className="mx-auto flex w-full max-w-md flex-col items-center py-16 text-center">
-      <ShieldAlertIcon className="size-8 text-[#a35143]" aria-hidden="true" />
-      <h2 className="mt-3 text-lg font-semibold text-[#1c2c26]">Bạn không có quyền truy cập trang này</h2>
-      <p className="mt-1.5 text-sm text-[#5f6b64]">Trang này chỉ dành cho tài khoản có vai trò phù hợp. Liên hệ quản trị nếu bạn cần quyền.</p>
-      <Link href="/me" className="mt-4 text-sm font-medium text-[#147d64] hover:underline">
+      <ShieldAlertIcon className="size-8 text-destructive" aria-hidden="true" />
+      <h2 className="mt-3 text-lg font-semibold text-foreground">Bạn không có quyền truy cập trang này</h2>
+      <p className="mt-1.5 text-sm text-muted-foreground">Trang này chỉ dành cho tài khoản có vai trò phù hợp. Liên hệ quản trị nếu bạn cần quyền.</p>
+      <Link href="/me" className="mt-4 text-sm font-medium text-primary hover:underline">
         Về trang của tôi
       </Link>
     </section>

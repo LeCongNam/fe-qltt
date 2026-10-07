@@ -8,8 +8,8 @@ import { useAuth } from "@/hooks/use-auth"
 
 export function FullPageSpinner() {
   return (
-    <div role="status" aria-busy="true" className="flex min-h-svh items-center justify-center bg-[#f6f7f4]">
-      <Loader2Icon className="size-6 animate-spin text-[#147d64]" aria-label="Đang tải" />
+    <div role="status" aria-busy="true" className="flex min-h-svh items-center justify-center bg-canvas">
+      <Loader2Icon className="size-6 animate-spin text-primary" aria-label="Đang tải" />
     </div>
   )
 }

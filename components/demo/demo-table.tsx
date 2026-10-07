@@ -5,7 +5,7 @@ import type { DemoBang } from "@/lib/demo"
 const rowKey = (row: Record<string, unknown>) => JSON.stringify(row)
 
 function Cell({ value }: { value: unknown }) {
-  if (value === null || value === undefined) return <span className="text-xs italic text-[#66736c]">NULL</span>
+  if (value === null || value === undefined) return <span className="text-xs italic text-faint">NULL</span>
   if (typeof value === "object") return <>{JSON.stringify(value)}</>
   return <>{String(value)}</>
 }
@@ -30,20 +30,20 @@ export function DemoTable({
   return (
     <div className="min-w-0">
       <div className="mb-1.5 flex flex-wrap items-baseline justify-between gap-2">
-        <h4 className="font-mono text-xs font-semibold text-[#32433b]">{bang.nhan}</h4>
-        <span className="text-xs text-[#5f6b64]">
+        <h4 className="font-mono text-xs font-semibold text-ink">{bang.nhan}</h4>
+        <span className="text-xs text-muted-foreground">
           {bang.dong.length} dòng
           {truoc && (soDongDoi > 0 || soDongMat > 0) && (
-            <span className="ml-2 font-medium text-[#147d64]">
+            <span className="ml-2 font-medium text-primary">
               {soDongDoi} dòng mới/đã đổi{soDongMat > 0 ? `, ${soDongMat} dòng bị mất/đổi` : ""}
             </span>
           )}
           {truoc && soDongDoi === 0 && soDongMat === 0 && <span className="ml-2">không đổi</span>}
         </span>
       </div>
-      <div className={`overflow-x-auto rounded-lg border border-[#e4e8e2] bg-white ${loading ? "opacity-60" : ""}`}>
+      <div className={`overflow-x-auto rounded-lg border border-border bg-white ${loading ? "opacity-60" : ""}`}>
         {bang.cot.length === 0 ? (
-          <p className="px-3 py-4 text-center text-sm text-[#5f6b64]">Không có dòng nào.</p>
+          <p className="px-3 py-4 text-center text-sm text-muted-foreground">Không có dòng nào.</p>
         ) : (
           <Table>
             <TableHeader>
@@ -58,13 +58,13 @@ export function DemoTable({
             <TableBody>
               {bang.dong.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={bang.cot.length} className="py-4 text-center text-sm text-[#5f6b64]">
+                  <TableCell colSpan={bang.cot.length} className="py-4 text-center text-sm text-muted-foreground">
                     Không có dòng nào.
                   </TableCell>
                 </TableRow>
               )}
               {bang.dong.map((row, i) => (
-                <TableRow key={`${rowKey(row)}-${i}`} className={before && !before.has(rowKey(row)) ? "bg-[#e8f5ef]" : undefined}>
+                <TableRow key={`${rowKey(row)}-${i}`} className={before && !before.has(rowKey(row)) ? "bg-primary-soft" : undefined}>
                   {bang.cot.map((c) => (
                     <TableCell key={c} className="whitespace-nowrap text-sm">
                       <Cell value={row[c]} />

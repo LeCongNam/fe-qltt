@@ -30,7 +30,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 export type NguoiDung = Schemas["NguoiDungDto"]
 
-const inputClass = "h-10 rounded-md border-[#dfe5df] bg-white text-sm"
+const inputClass = "h-10 rounded-md border-input bg-white text-sm"
 
 /** Form thêm (nguoiDung = undefined) hoặc sửa thông tin người dùng. Trạng thái không đổi ở đây. */
 export function NguoiDungForm({
@@ -87,8 +87,8 @@ export function NguoiDungForm({
 
   return (
     <form className="space-y-7" onSubmit={form.handleSubmit((v) => save.mutate(v))} noValidate>
-      <FieldSet className="border-b border-[#e4e8e2] pb-7">
-        <FieldLegend variant="label" className="text-[#34463d]">Thông tin người dùng</FieldLegend>
+      <FieldSet className="border-b border-border pb-7">
+        <FieldLegend variant="label" className="text-ink">Thông tin người dùng</FieldLegend>
         <FieldDescription>Các trường có dấu * là bắt buộc.</FieldDescription>
         <FieldGroup className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
           <Controller
@@ -97,7 +97,7 @@ export function NguoiDungForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="nd-maNguoiDung">
-                  Mã người dùng <span aria-hidden="true" className="text-[#a35143]">*</span>
+                  Mã người dùng <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
                 <Input {...field} id="nd-maNguoiDung" aria-invalid={fieldState.invalid} maxLength={20} placeholder="Ví dụ: SV2026001" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -110,7 +110,7 @@ export function NguoiDungForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="nd-hoTen">
-                  Họ và tên <span aria-hidden="true" className="text-[#a35143]">*</span>
+                  Họ và tên <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
                 <Input {...field} id="nd-hoTen" aria-invalid={fieldState.invalid} maxLength={160} autoComplete="name" placeholder="Nhập họ và tên" className={inputClass} />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -123,14 +123,14 @@ export function NguoiDungForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor="nd-loaiNguoiDung">
-                  Loại người dùng <span aria-hidden="true" className="text-[#a35143]">*</span>
+                  Loại người dùng <span aria-hidden="true" className="text-destructive">*</span>
                 </FieldLabel>
                 <Select
                   value={field.value ?? null}
                   onValueChange={field.onChange}
                   items={LOAI_NGUOI_DUNG}
                 >
-                  <SelectTrigger id="nd-loaiNguoiDung" aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-[#dfe5df] bg-white">
+                  <SelectTrigger id="nd-loaiNguoiDung" aria-invalid={fieldState.invalid} className="h-10 w-full rounded-md border-input bg-white">
                     <SelectValue placeholder="Chọn loại người dùng" />
                   </SelectTrigger>
                   <SelectContent>
@@ -185,7 +185,7 @@ export function NguoiDungForm({
         <Button type="button" variant="outline" disabled={save.isPending} onClick={onCancel}>
           Hủy
         </Button>
-        <Button type="submit" disabled={save.isPending} className="bg-[#147d64] text-white hover:bg-[#106a55]">
+        <Button type="submit" disabled={save.isPending}>
           {save.isPending && <Loader2 className="animate-spin" aria-hidden="true" />}
           {nguoiDung ? "Lưu thay đổi" : "Lưu người dùng"}
         </Button>

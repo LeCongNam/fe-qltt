@@ -18,7 +18,7 @@ const config: DanhMucConfig<TheLoai> = {
   columns: [
     { header: "Mã", cell: (r) => r.maTheLoai, className: "w-32 font-medium" },
     { header: "Tên thể loại", cell: (r) => r.tenTheLoai },
-    { header: "Mô tả", cell: (r) => r.moTa ?? "—", className: "text-[#5f6b64]" },
+    { header: "Mô tả", cell: (r) => r.moTa ?? "—", className: "text-muted-foreground" },
   ],
   labelOf: (r) => r.tenTheLoai,
   toFormValues: (r) => ({ maTheLoai: r.maTheLoai, tenTheLoai: r.tenTheLoai, moTa: r.moTa ?? "" }),

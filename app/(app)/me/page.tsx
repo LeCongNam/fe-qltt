@@ -31,10 +31,10 @@ export default function MePage() {
 
   return (
     <section className="mx-auto w-full min-w-0 max-w-6xl">
-      <div className="mb-6 border-b border-[#e4e8e2] pb-5">
-        <p className="text-xs font-medium text-[#5f6b64]">Cá nhân</p>
-        <h2 className="mt-1.5 text-xl font-semibold text-[#1c2c26]">Của tôi</h2>
-        <p className="mt-1.5 text-sm text-[#5f6b64]">
+      <div className="mb-6 border-b border-border pb-5">
+        <p className="text-xs font-medium text-muted-foreground">Cá nhân</p>
+        <h2 className="mt-1.5 text-xl font-semibold text-foreground">Của tôi</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground">
           {user ? `${user.hoTen} — ` : ""}sách đang mượn, đặt trước, tiền phạt và lịch sử của riêng bạn.
         </p>
       </div>
@@ -59,9 +59,9 @@ export default function MePage() {
 
       <Tabs value={tab} onValueChange={(v) => v && setTab(String(v))} className="min-w-0">
         <div className="overflow-x-auto">
-          <TabsList variant="line" className="h-auto min-w-max border-b border-[#e4e8e2] pb-1">
+          <TabsList variant="line" className="h-auto min-w-max border-b border-border pb-1">
             {SECTIONS.map((s) => (
-              <TabsTrigger key={s.value} value={s.value} className="flex-none px-3 py-1.5 data-active:text-[#147d64]">
+              <TabsTrigger key={s.value} value={s.value} className="flex-none px-3 py-1.5 data-active:text-primary">
                 {s.label}
               </TabsTrigger>
             ))}
@@ -69,7 +69,7 @@ export default function MePage() {
         </div>
         {SECTIONS.map(({ value, desc, Panel }) => (
           <TabsContent key={value} value={value} className="pt-4">
-            <p className="mb-4 text-sm text-[#5f6b64]">{desc}</p>
+            <p className="mb-4 text-sm text-muted-foreground">{desc}</p>
             <Panel />
           </TabsContent>
         ))}
