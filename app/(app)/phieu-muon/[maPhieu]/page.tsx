@@ -189,8 +189,8 @@ export default function PhieuMuonDetailPage() {
                     {c.phieuPhats.length === 0
                       ? "—"
                       : c.phieuPhats.map((f) => (
-                          <div key={f.id} className="flex items-center gap-1.5 text-xs">
-                            <span>
+                          <div key={f.id} className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs">
+                            <span className="whitespace-nowrap">
                               {LOAI_PHAT.find((l) => l.value === f.loaiPhat)?.label} {formatVnd(f.soTien)}
                             </span>
                             <StatusPill list={TRANG_THAI_PHAT} value={f.trangThai} />

@@ -25,7 +25,7 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 | U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Chưa thực hiện |
 | U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Chưa thực hiện |
 | U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Chưa thực hiện |
-| U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Chưa thực hiện |
+| U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Đã hoàn thành |
 | C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
 | C2 | Phiên đăng nhập: hạn token, quay lại trang cũ sau 401 | P2 | Chưa thực hiện |
 | C3 | Đưa màu hex cứng vào theme token | P2 | Chưa thực hiện |
@@ -97,9 +97,11 @@ Bản phân tích tổng hợp đầy đủ cũng nằm trong agent memory: `mem
 - Mới có 3 chỗ dùng `aria-live`/`role`. Kiểm tra toast, kết quả tìm kiếm, trạng thái tải/lỗi bảng.
 
 ### U7 — Kiểm tra bố cục sau đổi font (P1)
-- **Trạng thái:** Chưa thực hiện
-- Đã xem: `/`, `/sach`, `/nguoi-dung` (desktop) và `/`, `/phat`, `/bao-cao` (mobile, không tràn ngang). **Chưa xem:** `/phieu-muon` (+`moi`, `[maPhieu]`), `/dat-truoc`, `/demo` (SQL và bảng), `/me`, `/nguoi-dung/[id]`, `/sach/[id]`, `/tac-gia`, `/the-loai`, `/nha-xuat-ban`, dialog thêm/sửa, `/login`.
-- Chữ nhỏ hơn và Geist rộng hơn có thể làm cột/nút xuống dòng. Kiểm tra cả desktop (~1000px và 1280px) và mobile 375px, kể cả tràn ngang.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit.
+- Đã xem bằng ADMIN ở 1000px, 1280px và 375px: `/phieu-muon` (+`moi`, `PM000015`), `/dat-truoc`, `/demo` (đủ 5 bước, SQL, bảng), `/me`, `/nguoi-dung/13`, `/sach/7`, `/sach/moi`, `/add-doc-gia`, `/tac-gia`, `/the-loai`, `/nha-xuat-ban`, dialog thêm tác giả và đặt trước hộ (mobile), `/login` (mobile). Không trang nào tràn ngang (`scrollWidth` = `clientWidth`).
+- Lỗi tìm thấy và đã sửa: ở `/phieu-muon/[maPhieu]` ô "Phạt" bị bóp, số tiền "Trả quá hạn 15.000 đ" xuống 5 dòng ở 1000px. Sửa: số tiền `whitespace-nowrap`, hàng phạt `flex-wrap`.
+- Còn lại, không phải lỗi bố cục mới: bảng ở mobile cuộn ngang trong khung (đúng việc U2); tab ở `/demo` và `/me` cuộn ngang trên mobile, tab cuối bị cắt không có gợi ý; tên người mượn xuống 2 dòng ở `/phieu-muon`, `/dat-truoc` ở 1000px (chấp nhận được).
+- Chưa xem: dialog "Trả sách nhanh"/"Gia hạn" và các dialog sửa ở desktop, `/login` ở desktop.
 
 ## Chưa thực hiện — Cấu trúc code
 
