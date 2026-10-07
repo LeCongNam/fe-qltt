@@ -442,6 +442,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/ban-sach": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tìm bản sách theo mã hoặc tên sách
+         * @description Gợi ý khi lập phiếu mượn: `tuKhoa` khớp một phần mã bản hoặc tên sách, `tinhTrang` lọc (lặp tham số để chọn nhiều), tối đa `limit` dòng (mặc định 10, tối đa 50), xếp theo tên sách rồi mã bản. Không ghi nhật ký tra cứu.
+         *
+         *     **Quyền:** `ADMIN`, `THU_THU`
+         */
+        get: operations["Sach_timBanSach"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/ban-sach/{maBanSach}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tra một bản sách theo mã
+         * @description Trả bản sách kèm mã sách, tên sách và tác giả. Mã không có thì 404; không phân biệt hoa thường.
+         *
+         *     **Quyền:** `ADMIN`, `THU_THU`
+         */
+        get: operations["Sach_findBanSach"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ban-sach/{maBanSach}/tinh-trang": {
         parameters: {
             query?: never;
@@ -1211,14 +1255,14 @@ export interface components {
             moTa: string | null;
         };
         CreateTheLoaiDto: {
+            moTa?: string | null;
             maTheLoai: string;
             tenTheLoai: string;
-            moTa?: string;
         };
         UpdateTheLoaiDto: {
+            moTa?: string | null;
             maTheLoai?: string;
             tenTheLoai?: string;
-            moTa?: string;
         };
         NhaXuatBanDto: {
             /** @example 1 */
@@ -1231,20 +1275,20 @@ export interface components {
             sdt: string | null;
         };
         CreateNhaXuatBanDto: {
+            diaChi?: string | null;
+            /** Format: email */
+            email?: string | null;
+            sdt?: string | null;
             maNxb: string;
             tenNxb: string;
-            diaChi?: string;
-            /** Format: email */
-            email?: string;
-            sdt?: string;
         };
         UpdateNhaXuatBanDto: {
+            diaChi?: string | null;
+            /** Format: email */
+            email?: string | null;
+            sdt?: string | null;
             maNxb?: string;
             tenNxb?: string;
-            diaChi?: string;
-            /** Format: email */
-            email?: string;
-            sdt?: string;
         };
         TacGiaDto: {
             /** @example 1 */
@@ -1256,16 +1300,16 @@ export interface components {
             namSinh: number | null;
         };
         CreateTacGiaDto: {
+            quocTich?: string | null;
+            namSinh?: number | null;
             maTacGia: string;
             tenTacGia: string;
-            quocTich?: string;
-            namSinh?: number;
         };
         UpdateTacGiaDto: {
+            quocTich?: string | null;
+            namSinh?: number | null;
             maTacGia?: string;
             tenTacGia?: string;
-            quocTich?: string;
-            namSinh?: number;
         };
         TraCuuSachDto: {
             /**
@@ -1325,16 +1369,16 @@ export interface components {
             nhaXuatBan: components["schemas"]["NhaXuatBanDto"];
         };
         CreateSachDto: {
+            isbn?: string | null;
+            namXuatBan?: number | null;
+            giaBia?: number | null;
+            moTa?: string | null;
             maSach: string;
-            isbn?: string;
             tenSach: string;
             maTheLoai: string;
             maNxb: string;
-            namXuatBan?: number;
             /** @description Phải thuộc danh sách CHECK trong DB (Tiếng Việt, English, ...). */
             ngonNgu?: string;
-            giaBia?: number;
-            moTa?: string;
             maTacGias?: string[];
         };
         SachCoTacGiaDto: {
@@ -1366,16 +1410,16 @@ export interface components {
             sachTacGias: components["schemas"]["SachTacGiaDto"][];
         };
         UpdateSachDto: {
+            isbn?: string | null;
+            namXuatBan?: number | null;
+            giaBia?: number | null;
+            moTa?: string | null;
             maSach?: string;
-            isbn?: string;
             tenSach?: string;
             maTheLoai?: string;
             maNxb?: string;
-            namXuatBan?: number;
             /** @description Phải thuộc danh sách CHECK trong DB (Tiếng Việt, English, ...). */
             ngonNgu?: string;
-            giaBia?: number;
-            moTa?: string;
             maTacGias?: string[];
         };
         SachDto: {
@@ -1428,6 +1472,33 @@ export interface components {
              */
             ngayNhap: string;
             tinhTrang: components["schemas"]["TinhTrangBanSach"];
+        };
+        BanSachKemSachDto: {
+            /** @example 1 */
+            id: string;
+            /**
+             * @description Mã bản sách (dùng khi mượn/trả/gia hạn)
+             * @example BS001
+             */
+            maBanSach: string;
+            /**
+             * @description sach.id
+             * @example 1
+             */
+            sachId: string;
+            /** @example A1-03 */
+            viTriKe: string;
+            /**
+             * Format: date-time
+             * @description Ngày nhập (kiểu DATE)
+             */
+            ngayNhap: string;
+            tinhTrang: components["schemas"]["TinhTrangBanSach"];
+            /** @example S001 */
+            maSach: string;
+            tenSach: string;
+            /** @description Tên các tác giả, cách nhau bằng ", " */
+            tacGia: string | null;
         };
         CreateBanSachDto: {
             /**
@@ -1623,6 +1694,18 @@ export interface components {
             banSachDangMuon: string | null;
             phieuMuon: components["schemas"]["MuonPhieuMaDto"];
         };
+        TaoDatTruocDto: {
+            maSach: string;
+            /** @description Bạn đọc bỏ trống (lấy từ token). Thủ thư/admin đặt hộ thì bắt buộc. */
+            maNguoiDung?: string;
+        };
+        /** @enum {string} */
+        TrangThaiDatTruoc: "CHO_XU_LY" | "SAN_SANG_NHAN" | "DA_NHAN" | "HUY" | "HET_HAN";
+        DatTruocSachDto: {
+            /** @example S004 */
+            maSach: string;
+            tenSach: string;
+        };
         DatTruocDto: {
             /** @example 1 */
             id: string;
@@ -1652,13 +1735,6 @@ export interface components {
             banSachDangGiu: string | null;
             sach: components["schemas"]["DatTruocSachDto"];
             nguoiDung: components["schemas"]["NguoiDungTomTatDto"];
-        };
-        /** @enum {string} */
-        TrangThaiDatTruoc: "CHO_XU_LY" | "SAN_SANG_NHAN" | "DA_NHAN" | "HUY" | "HET_HAN";
-        DatTruocSachDto: {
-            /** @example S004 */
-            maSach: string;
-            tenSach: string;
         };
         HuyDatTruocKetQuaDto: {
             /** @example S004 */
@@ -4371,6 +4447,161 @@ export interface operations {
             };
         };
     };
+    Sach_timBanSach: {
+        parameters: {
+            query?: {
+                /** @description Khớp một phần mã bản (`BS001`) hoặc tên sách; không phân biệt hoa thường, dấu. */
+                tuKhoa?: string;
+                /** @description Chỉ lấy các tình trạng này (lặp tham số để chọn nhiều). */
+                tinhTrang?: components["schemas"]["TinhTrangBanSach"][];
+                /** @description Số dòng tối đa (1–50), mặc định 10. */
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BanSachKemSachDto"][];
+                };
+            };
+            /** @description Dữ liệu gửi lên không hợp lệ (message là mảng lỗi validate) hoặc vi phạm CHECK của CSDL */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Thiếu/sai/hết hạn JWT, hoặc tài khoản/người dùng đang bị khóa hay ngừng hoạt động */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vai trò của tài khoản không được phép gọi endpoint này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Không tìm thấy bản ghi */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Trùng giá trị duy nhất hoặc vi phạm khóa ngoại */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vi phạm quy tắc nghiệp vụ do procedure/trigger của CSDL báo (message là thông báo của CSDL) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    Sach_findBanSach: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                maBanSach: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BanSachKemSachDto"];
+                };
+            };
+            /** @description Dữ liệu gửi lên không hợp lệ (message là mảng lỗi validate) hoặc vi phạm CHECK của CSDL */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Thiếu/sai/hết hạn JWT, hoặc tài khoản/người dùng đang bị khóa hay ngừng hoạt động */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vai trò của tài khoản không được phép gọi endpoint này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Không tìm thấy bản ghi */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Trùng giá trị duy nhất hoặc vi phạm khóa ngoại */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description Vi phạm quy tắc nghiệp vụ do procedure/trigger của CSDL báo (message là thông báo của CSDL) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
     Sach_capNhatTinhTrang: {
         parameters: {
             query?: never;
@@ -4948,7 +5179,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["DatTruocDto"];
+                "application/json": components["schemas"]["TaoDatTruocDto"];
             };
         };
         responses: {

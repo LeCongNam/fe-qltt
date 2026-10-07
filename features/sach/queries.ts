@@ -4,13 +4,14 @@ import { sachApi } from "@/features/sach/api"
 import type { QueryOf } from "@/lib/api"
 import { fetchAllPages } from "@/lib/paging"
 
-/** Khóa gốc `["sach"]` bao cả bản sách và chỉ mục bản sách: làm mới nó là làm mới mọi thứ của sách. */
+/** Khóa gốc `["sach"]` bao cả bản sách và kết quả tra bản sách: làm mới nó là làm mới mọi thứ của sách. */
 export const sachKeys = {
   all: ["sach"] as const,
   list: (params: QueryOf<"/sach">) => [...sachKeys.all, "list", params] as const,
   detail: (id: string) => [...sachKeys.all, "detail", id] as const,
   banSach: (id: string) => [...sachKeys.all, id, "ban-sach"] as const,
-  banSachIndex: () => [...sachKeys.all, "ban-sach-index"] as const,
+  findBanSach: (maBanSach: string) => [...sachKeys.all, "ban-sach-ma", maBanSach] as const,
+  timBanSach: (params: QueryOf<"/ban-sach">) => [...sachKeys.all, "ban-sach-tim", params] as const,
   options: () => [...sachKeys.all, "options"] as const,
 }
 
@@ -29,4 +30,8 @@ export const sachQueries = {
     }),
   detail: (id: string) => queryOptions({ queryKey: sachKeys.detail(id), queryFn: () => sachApi.detail(id) }),
   banSach: (id: string) => queryOptions({ queryKey: sachKeys.banSach(id), queryFn: () => sachApi.banSach(id) }),
+  findBanSach: (maBanSach: string) =>
+    queryOptions({ queryKey: sachKeys.findBanSach(maBanSach), queryFn: () => sachApi.findBanSach(maBanSach), retry: false }),
+  timBanSach: (params: QueryOf<"/ban-sach">) =>
+    queryOptions({ queryKey: sachKeys.timBanSach(params), queryFn: () => sachApi.timBanSach(params) }),
 }

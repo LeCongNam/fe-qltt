@@ -39,8 +39,9 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 | C11 | Form sửa chưa xóa trắng được trường tùy chọn | P3 | Đã hoàn thành |
 | C12 | Báo cáo chưa link được sang người dùng | P3 | Đã hoàn thành |
 | Q1 | Kiểm thử còn thiếu (THU_THU, 401, mobile…) | P1 | Đã hoàn thành (còn dialog Gia hạn) |
-| B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | BE đã sửa, FE đã cập nhật (còn `sapXep`) |
-| B2 | Spec sai body `POST /dat-truoc` (trùng tên class `DatTruocDto`) | P3 | Chờ BE |
+| B1 | Đề xuất sort mặc định phía BE (gửi người phụ trách BE) | P2 | Đã hoàn thành (BE + FE, gồm `sapXep`; còn sort theo độ liên quan khi có `tuKhoa`) |
+| B2 | Spec sai body `POST /dat-truoc` (trùng tên class `DatTruocDto`) | P3 | Đã hoàn thành (BE đổi tên `TaoDatTruocDto`, FE bỏ ép kiểu) |
+| B3 | Spec chưa khai `nullable` ở DTO sửa | P3 | Đã hoàn thành (BE khai `nullable`, FE bỏ `Clearable`) |
 
 ---
 
@@ -111,8 +112,7 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 - `app/(app)/phieu-muon/moi/page.tsx` chỉ còn giữ mutation và nút lập phiếu; hai ô nhập tách ra:
   - `components/phieu-muon/nguoi-muon-picker.tsx`: gõ ≥ 2 ký tự (debounce 300ms) gọi `GET /docgia?tuKhoa&limit=6` (mã, họ tên, email), chọn từ danh sách hoặc Enter khi mã khớp đúng / chỉ còn 1 kết quả. Sau khi chọn hiện thẻ xác nhận (họ tên, mã, loại, khoa/đơn vị, trạng thái) và nút "Đổi". Người dùng không `HOAT_DONG` có cảnh báo `role="alert"` và nút Lập phiếu bị khóa.
   - `components/phieu-muon/ban-sach-picker.tsx`: giữ luồng "nhập mã rồi Enter" (máy quét), thêm gợi ý khi gõ mã hoặc tên sách (không phân biệt dấu, tối đa 8, chỉ bản `SAN_SANG`/`DANG_GIU`, bỏ bản đã chọn). Mỗi bản đã thêm hiện tên sách, mã, kệ, tác giả. Mã không tồn tại, hoặc bản đang mượn/hư hỏng/mất/ngừng phục vụ, bị chặn ngay bằng toast; bản `DANG_GIU` vẫn cho thêm vì có thể giữ cho đúng người mượn (BE quyết định). Nếu chưa tải được danh sách bản sách thì vẫn nhập mã được, BE kiểm tra khi lập phiếu.
-  - `lib/ban-sach-index.ts` (`useBanSachIndex`): BE **không có** endpoint tra bản sách theo mã, nên FE ghép `GET /sach` (không `tuKhoa`, không ghi nhật ký TRA_CUU) + `GET /sach/{id}/ban-sach` từng đầu sách (8 yêu cầu song song), cache 30s, khóa `["/sach","ban-sach-index"]` nên bị làm mới sau khi lập phiếu. Với 15 đầu sách là 16 yêu cầu; dữ liệu lớn sẽ chậm.
-- **Đề xuất BE:** thêm `GET /ban-sach/{maBanSach}` (kèm tên sách) hoặc `GET /ban-sach?tuKhoa&tinhTrang`; khi có thì FE bỏ `useBanSachIndex` và tra theo từng mã.
+  - `components/phieu-muon/ban-sach-picker.tsx`: nhập mã rồi Enter → `GET /ban-sach/{maBanSach}` (404 → "Không tìm thấy bản sách"; lỗi mạng/5xx vẫn cho thêm, BE kiểm tra lại khi lập phiếu); gõ tên/mã → `GET /ban-sach?tuKhoa&tinhTrang=SAN_SANG&tinhTrang=DANG_GIU` (debounce 250ms, không ghi nhật ký TRA_CUU). Trước đây FE tải cả danh mục để dựng chỉ mục (`useBanSachIndex`, 1 + N yêu cầu); đã bỏ khi BE có hai endpoint này (2026-10-07).
 - **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt (ADMIN): gõ `sv00` ra 6 người; `SV007` + Enter hiện thẻ "Tạm khóa" kèm cảnh báo, nút Lập phiếu bị khóa; `SV001` + Enter chọn được; gõ `lap trinh` (không dấu) gợi ý BS007, BS020 "Lập trình Python"; chọn BS020 thêm vào danh sách kèm kệ A2-03 và tác giả; `bs999` + Enter báo "Không tìm thấy bản sách"; 375px không tràn ngang. **Chưa bấm "Lập phiếu" thật** (ghi dữ liệu) và chưa thử bản đang mượn.
 
 ### U6 — Thông báo động cho trình đọc màn hình (P3)
@@ -172,11 +172,11 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 ### C5 — Tầng API có kiểu (P2)
 - **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt). Gỡ `axios`, thêm `openapi-fetch` (`^0.17`).
 - **Lõi** (`lib/api.ts`): `api = createClient<paths>({ baseUrl: "/backend" })` kiểm đường dẫn, tham số, body và kiểu trả về theo `lib/api-types.ts`. Middleware gắn `Authorization` và xóa phiên khi 401 (trừ `/auth/login`). `unwrap(result)` lấy `data` hoặc ném `ApiError { status, message }` (400 nối mảng thông báo, 422 giữ nguyên thông báo DB); `isApiError(error, status?)` thay `axios.isAxiosError`; `getApiErrorMessage` nhận `ApiError`, lỗi mạng (`TypeError` của fetch) cho thông báo "Không thể kết nối". `QueryOf<"/đường-dẫn">` lấy kiểu tham số query từ spec.
-- **Cấu trúc:** `features/<module>/api.ts` (hàm gọi BE có kiểu) và `features/<module>/queries.ts` (key factory + `queryOptions`). Module: `auth`, `sach` (kèm bản sách và `ban-sach-index.ts`), `nguoi-dung`, `danh-muc` (thể loại, NXB, tác giả), `phieu-muon`, `muon-tra`, `dat-truoc`, `phat`, `me`, `bao-cao`, `demo`. Đã chuyển `lib/me.ts`, `lib/bao-cao.ts`, `lib/demo.ts`, `lib/ban-sach-index.ts` vào đây. Thiếu thư mục `schemas`: schema zod của form vẫn nằm cạnh form.
+- **Cấu trúc:** `features/<module>/api.ts` (hàm gọi BE có kiểu) và `features/<module>/queries.ts` (key factory + `queryOptions`). Module: `auth`, `sach` (kèm bản sách), `nguoi-dung`, `danh-muc` (thể loại, NXB, tác giả), `phieu-muon`, `muon-tra`, `dat-truoc`, `phat`, `me`, `bao-cao`, `demo`. Đã chuyển `lib/me.ts`, `lib/bao-cao.ts`, `lib/demo.ts` vào đây. Thiếu thư mục `schemas`: schema zod của form vẫn nằm cạnh form.
 - **Key factory:** mỗi module có khóa gốc (`sachKeys.all = ["sach"]`, `phieuMuonKeys.all`, `datTruocKeys.all`, `phatKeys.all`, `nguoiDungKeys.all`, `meKeys.all`, `baoCaoKeys.all`, `danhMucKeys.all(kind)`, `demoKeys.all`). Làm mới sau mutation dùng `queryClient.invalidateQueries({ queryKey: xxxKeys.all })`. Khóa của sách bao cả bản sách và chỉ mục bản sách. **Tìm kiếm toàn cục dùng khóa riêng `["search", …]`** để làm mới sách không tra cứu lại từ khóa cũ (mỗi lượt tra cứu `/sach?tuKhoa` bị BE ghi `TRA_CUU`).
 - **Danh mục:** `DanhMucConfig<T, TCreate>` nhận `kind` và `api` thay cho `endpoint`; tên trường trong `fields` phải là khóa của DTO tạo mới. Nội dung gửi là `Partial<TCreate>` (form đã bắt buộc các trường bắt buộc) nên có một chỗ ép kiểu ở `features/danh-muc/api.ts`.
 - **Bắt được nhờ kiểu:** lọc theo trạng thái ở `/nguoi-dung`, `/phieu-muon`, `/dat-truoc`, `/phat`, báo cáo "Đặt trước" trước đây là `string` tự do, nay là `Enum | "ALL"` (ép kiểu một chỗ ở `onValueChange`, vì giá trị lấy từ mảng hằng có kiểu).
-- **Ngoại lệ có chủ ý:** `datTruocApi.create` ép body qua `unknown` vì spec sinh sai (xem **B2**).
+- Không còn chỗ ép kiểu nào do spec sai: `datTruocApi.create` dùng `TaoDatTruocDto` (**B2**).
 - **`.gitattributes`:** `lib/api-types.ts linguist-generated=true`.
 - **Chưa làm:** chưa cắt `paths`/`operations` thừa khỏi `api-types.ts` (vẫn ~6000 dòng, chỉ `import type` nên không vào bundle; `openapi-fetch` cần `paths` nên chỉ cắt được `operations`). Chưa viết test.
 - **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU `cb001`): danh sách `/sach`, `/nguoi-dung`, `/phieu-muon`, `/phat`, `/dat-truoc`, `/the-loai`, chi tiết `/sach/7`, `/nguoi-dung/12`, `/nguoi-dung/13`, `/phieu-muon/PM000015`, `/bao-cao` (tab Top có `?limit=10`), `/demo`, `/me`, `/sach/moi` (ba danh sách chọn) đều tải đúng; 404 ở `/sach/99999`, `/nguoi-dung/9999`, `/phieu-muon/PM999999` hiện "Không tìm thấy…" (qua `isApiError`); thêm thể loại trùng mã `TL01` trả 409 và hiện toast lỗi; đặt trước hộ mã `ZZ999` trả 422 với thông báo BE nguyên văn (xác nhận body đặt trước được BE chấp nhận). Không ghi dữ liệu thật.
@@ -192,7 +192,7 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 ### C7 — Select giới hạn 100 dòng (P3)
 - **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
 - **Khảo sát BE:** `/the-loai`, `/nha-xuat-ban`, `/tac-gia` chỉ có `page`/`limit`, **không có `tuKhoa`** nên không tìm phía server được; `/sach?tuKhoa` có nhưng mỗi lượt bị ghi `TRA_CUU` (xem U1). Vì vậy chọn cách: gom mọi trang rồi lọc ở FE, hết bị cắt ở 100 dòng.
-- `lib/paging.ts` `fetchAllPages(fetchPage)`: gọi từng trang `limit=100` đến khi đủ `total`. Đã dùng lại ở `useBanSachIndex` (thay vòng lặp riêng).
+- `lib/paging.ts` `fetchAllPages(fetchPage)`: gọi từng trang `limit=100` đến khi đủ `total`. Dùng cho danh sách chọn dài (`sachQueries.options`, `danhMucQueries.options`).
 - `danhMucQueries.options` (thể loại, NXB, tác giả) và `sachQueries.options()` (khóa mới `sachKeys.options`, dưới `sachKeys.all` nên làm mới cùng sách) đều gom mọi trang.
 - `components/ui/combobox.tsx` `Combobox({ id, name, options, value, onValueChange, placeholder, emptyText, invalid, clearable })`: dựng trên `@base-ui/react/combobox`, giá trị là chuỗi `value`, lọc không phân biệt hoa thường và dấu (`locale="vi"`), là ô nhập thật nên `<label htmlFor>` hoạt động. Dùng ở `sach-form` (thể loại, NXB) và `dat-truoc-dialog` (chọn sách, nhãn kèm "còn N bản / hết bản").
 - Tác giả ở `sach-form` là danh sách checkbox (chọn nhiều, tối đa 20): thêm ô lọc theo tên/mã (không dấu); tác giả đã chọn nhưng bị ẩn bởi bộ lọc vẫn giữ trong form.
@@ -221,7 +221,7 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 - **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
 - **Đối chiếu BE:** thử trên bản ghi tạm (đã xóa): `PATCH` với chuỗi rỗng bị DB từ chối (400 "vi pham rang buoc CHECK"), còn **`null` xóa được** (`@IsOptional` bỏ qua cả `null`, Prisma ghi NULL), áp dụng cho `quocTich`, `namSinh` (tác giả) và `isbn`, `namXuatBan`, `giaBia`, `moTa` (sách); NXB `diaChi`/`email`/`sdt` và thể loại `moTa` cùng kiểu DTO nên tương tự (chưa thử riêng).
 - FE: khi **sửa**, ô tùy chọn để trống gửi `null`; khi **thêm mới** vẫn bỏ trường. `DanhMucPage` (`toPayload(fields, values, clearEmpty)`, trường `required` không bao giờ gửi `null`) và `SachForm` (`toPayload(values, clearEmpty)`); form người dùng vốn đã gửi chuỗi rỗng, không đụng.
-- Kiểu: `Clearable<T>` ở `lib/api.ts`; `update` của `danh-muc` và `sach` nhận `Clearable<…>` rồi ép một lần sang kiểu spec, vì spec chưa khai `nullable` (xem **B3**).
+- Kiểu: spec đã khai `nullable` ở các `Update*Dto` (**B3**) nên `update` của `danh-muc` và `sach` nhận thẳng kiểu sinh ra; không còn `Clearable`.
 - Kiểm chứng: `tsc` + `eslint` sạch. Trên trình duyệt (THU_THU): sách tạm `ZZS01` xóa trắng ISBN, năm xuất bản, giá bìa, mô tả rồi Lưu → BE trả cả bốn `null`; tác giả tạm `ZZTMP2` xóa quốc tịch và năm sinh → cả hai `null`. Đã xóa hai bản ghi tạm. Chưa thử form NXB, thể loại và việc xóa `diaChi`/`email`/`sdt`.
 
 ### C12 — Báo cáo link sang người dùng (P3)
@@ -282,12 +282,12 @@ Tóm tắt trạng thái và quy trình nằm trong agent memory (project `qltv_
 ---
 
 ### B3 — Spec chưa khai `nullable` ở DTO sửa (P3)
-- **Trạng thái:** Chờ người phụ trách BE. Liên quan C11.
+- **Trạng thái:** Đã hoàn thành (2026-10-07): BE thêm `@ApiPropertyOptional({ nullable: true })`, FE sinh lại kiểu và bỏ `Clearable` cùng các chỗ ép kiểu. Liên quan C11.
 - `Update*Dto` (`PartialType` của DTO tạo) khai trường tùy chọn là `string`/`number`, nhưng BE chấp nhận `null` để xóa giá trị. Đề xuất thêm `@ApiPropertyOptional({ nullable: true })` ở các trường tùy chọn (`isbn`, `namXuatBan`, `giaBia`, `moTa`, `diaChi`, `email`, `sdt`, `quocTich`, `namSinh`) rồi chạy lại `npm run api:types`; khi đó bỏ `Clearable` và chỗ ép kiểu ở `features/danh-muc/api.ts`, `features/sach/api.ts`.
 
 ### B2 — Spec sai body `POST /dat-truoc` (P3)
-- **Trạng thái:** Chờ người phụ trách BE.
-- BE có hai class cùng tên `DatTruocDto` (`dat-truoc.dto.ts` là body `{ maSach, maNguoiDung? }`, `dat-truoc.response.dto.ts` là kết quả). `openapi.json` dùng kết quả làm body của `POST /dat-truoc`, nên `lib/api-types.ts` đòi mọi trường (`id`, `sach`, …). FE đang ép kiểu ở `features/dat-truoc/api.ts`. Đề xuất đổi tên class body thành `TaoDatTruocDto` rồi chạy lại `npm run api:types`, sau đó bỏ phần ép kiểu.
+- **Trạng thái:** Đã hoàn thành (2026-10-07): BE đổi tên class body thành `TaoDatTruocDto`, FE bỏ ép kiểu.
+- (Mô tả lỗi ban đầu) BE có hai class cùng tên `DatTruocDto` (`dat-truoc.dto.ts` là body `{ maSach, maNguoiDung? }`, `dat-truoc.response.dto.ts` là kết quả). `openapi.json` dùng kết quả làm body của `POST /dat-truoc`, nên `lib/api-types.ts` đòi mọi trường (`id`, `sach`, …). FE đang ép kiểu ở `features/dat-truoc/api.ts`. Đề xuất đổi tên class body thành `TaoDatTruocDto` rồi chạy lại `npm run api:types`, sau đó bỏ phần ép kiểu.
 
 ## Ghi chú kỹ thuật cần nhớ
 

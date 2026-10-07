@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import type { Clearable, Paged, QueryOf } from "@/lib/api"
+import type { Paged, QueryOf } from "@/lib/api"
 import { fetchAllPages } from "@/lib/paging"
 
 /** Ba danh mục: `/the-loai`, `/nha-xuat-ban`, `/tac-gia`. */
@@ -9,7 +9,7 @@ export type DanhMucKind = "the-loai" | "nha-xuat-ban" | "tac-gia"
 export type DanhMucApi<T, TCreate> = {
   list: (query: QueryOf<"/the-loai">) => Promise<Paged<T>>
   create: (body: Partial<TCreate>) => Promise<unknown>
-  update: (id: string, body: Clearable<TCreate>) => Promise<unknown>
+  update: (id: string, body: Partial<TCreate>) => Promise<unknown>
   remove: (id: string) => Promise<unknown>
 }
 

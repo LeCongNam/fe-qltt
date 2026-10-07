@@ -23,7 +23,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/toast"
 import { useAuth } from "@/hooks/use-auth"
 import { danhMucKeys, danhMucQueries, type DanhMucApi, type DanhMucKind } from "@/features/danh-muc/queries"
-import { getApiErrorMessage, type Clearable } from "@/lib/api"
+import { getApiErrorMessage } from "@/lib/api"
 import { PAGE_SIZE } from "@/lib/constants"
 import { PageHeader } from "@/components/page-header"
 import { ConfirmDialog } from "@/components/confirm-dialog"
@@ -242,7 +242,7 @@ function DanhMucFormDialog<T extends { id: string }, TCreate>({
   const save = useMutation({
     mutationFn: async (values: Record<string, string>) => {
       if (editing && editing !== "new") {
-        await api.update(editing.id, toPayload(fields, values, true) as Clearable<TCreate>)
+        await api.update(editing.id, toPayload(fields, values, true) as Partial<TCreate>)
       } else {
         await api.create(toPayload(fields, values, false) as Partial<TCreate>)
       }
