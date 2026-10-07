@@ -57,7 +57,7 @@ export const navigationGroups: NavGroup[] = [
   },
   {
     label: "NGƯỜI DÙNG",
-    items: [{ label: "Người dùng & tài khoản", icon: UsersRound, href: "/add-doc-gia", roles: STAFF }],
+    items: [{ label: "Người dùng & tài khoản", icon: UsersRound, href: "/nguoi-dung", roles: STAFF }],
   },
   {
     label: "LƯU THÔNG",
@@ -81,7 +81,11 @@ export function canSee(roles: VaiTro[] | undefined, vaiTro: VaiTro | undefined) 
   return !roles || (vaiTro !== undefined && roles.includes(vaiTro))
 }
 
+// Trang con không nằm dưới href của mục menu: coi như thuộc mục đó.
+const PATH_ALIASES: Record<string, string> = { "/add-doc-gia": "/nguoi-dung" }
+
 export function isActivePath(pathname: string, href: string) {
+  pathname = PATH_ALIASES[pathname] ?? pathname
   return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`)
 }
 
