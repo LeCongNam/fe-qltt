@@ -23,7 +23,7 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 | U2 | Bảng nhiều cột trên mobile (chế độ thẻ) | P1 | Đã hoàn thành (còn vài bảng nhỏ chưa áp dụng) |
 | U3 | Quy tắc sắp xếp và sort theo cột | P2 | Đã hoàn thành (sort theo cột chỉ cho bảng có đủ dữ liệu ở FE) |
 | U4 | Biểu đồ "Lưu thông 14 ngày" bị nội suy cong | P2 | Đã hoàn thành |
-| U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Chưa thực hiện |
+| U5 | Lập phiếu mượn: tra cứu và xác nhận người mượn/bản sách | P2 | Đã hoàn thành |
 | U6 | Thông báo động cho trình đọc màn hình (`aria-live`) | P3 | Chưa thực hiện |
 | U7 | Kiểm tra lại bố cục sau đổi font ở các trang chưa xem | P1 | Đã hoàn thành |
 | C1 | Phân quyền tập trung (`RoleGate`) | P1 | Đã hoàn thành |
@@ -103,8 +103,13 @@ Tóm tắt trạng thái và quyết định gần nhất nằm trong agent memo
 - Kiểm chứng: `tsc` + `eslint` sạch; desktop 1024px hiện cột đúng ngày; mobile 375px không tràn ngang (`scrollWidth` = `clientWidth`), biểu đồ cao 230px. Ở mobile nhãn trục X được thưa bớt (`equidistantPreserveStart`), xem ngày chính xác qua tooltip.
 
 ### U5 — Lập phiếu mượn (P2)
-- **Trạng thái:** Chưa thực hiện
-- `app/(app)/phieu-muon/moi/page.tsx`: phải gõ tay mã người mượn và mã bản sách, không có gợi ý, không hiện tên người mượn để xác nhận. Giữ luồng "nhập mã rồi Enter" (hợp máy quét mã vạch), thêm tra cứu người mượn (hiện họ tên, loại, trạng thái) và hiện tên sách của từng bản đã thêm.
+- **Trạng thái:** Đã hoàn thành (2026-10-07), chưa commit (chờ người dùng duyệt).
+- `app/(app)/phieu-muon/moi/page.tsx` chỉ còn giữ mutation và nút lập phiếu; hai ô nhập tách ra:
+  - `components/phieu-muon/nguoi-muon-picker.tsx`: gõ ≥ 2 ký tự (debounce 300ms) gọi `GET /docgia?tuKhoa&limit=6` (mã, họ tên, email), chọn từ danh sách hoặc Enter khi mã khớp đúng / chỉ còn 1 kết quả. Sau khi chọn hiện thẻ xác nhận (họ tên, mã, loại, khoa/đơn vị, trạng thái) và nút "Đổi". Người dùng không `HOAT_DONG` có cảnh báo `role="alert"` và nút Lập phiếu bị khóa.
+  - `components/phieu-muon/ban-sach-picker.tsx`: giữ luồng "nhập mã rồi Enter" (máy quét), thêm gợi ý khi gõ mã hoặc tên sách (không phân biệt dấu, tối đa 8, chỉ bản `SAN_SANG`/`DANG_GIU`, bỏ bản đã chọn). Mỗi bản đã thêm hiện tên sách, mã, kệ, tác giả. Mã không tồn tại, hoặc bản đang mượn/hư hỏng/mất/ngừng phục vụ, bị chặn ngay bằng toast; bản `DANG_GIU` vẫn cho thêm vì có thể giữ cho đúng người mượn (BE quyết định). Nếu chưa tải được danh sách bản sách thì vẫn nhập mã được, BE kiểm tra khi lập phiếu.
+  - `lib/ban-sach-index.ts` (`useBanSachIndex`): BE **không có** endpoint tra bản sách theo mã, nên FE ghép `GET /sach` (không `tuKhoa`, không ghi nhật ký TRA_CUU) + `GET /sach/{id}/ban-sach` từng đầu sách (8 yêu cầu song song), cache 30s, khóa `["/sach","ban-sach-index"]` nên bị làm mới sau khi lập phiếu. Với 15 đầu sách là 16 yêu cầu; dữ liệu lớn sẽ chậm.
+- **Đề xuất BE:** thêm `GET /ban-sach/{maBanSach}` (kèm tên sách) hoặc `GET /ban-sach?tuKhoa&tinhTrang`; khi có thì FE bỏ `useBanSachIndex` và tra theo từng mã.
+- **Kiểm chứng:** `tsc` + `eslint` sạch. Trên trình duyệt (ADMIN): gõ `sv00` ra 6 người; `SV007` + Enter hiện thẻ "Tạm khóa" kèm cảnh báo, nút Lập phiếu bị khóa; `SV001` + Enter chọn được; gõ `lap trinh` (không dấu) gợi ý BS007, BS020 "Lập trình Python"; chọn BS020 thêm vào danh sách kèm kệ A2-03 và tác giả; `bs999` + Enter báo "Không tìm thấy bản sách"; 375px không tràn ngang. **Chưa bấm "Lập phiếu" thật** (ghi dữ liệu) và chưa thử bản đang mượn.
 
 ### U6 — Thông báo động cho trình đọc màn hình (P3)
 - **Trạng thái:** Chưa thực hiện
