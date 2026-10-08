@@ -166,6 +166,7 @@ function NhapBanSachDialog({ sachId, open, onClose }: { sachId: string; open: bo
               id="bs-soBan"
               inputMode="numeric"
               maxLength={3}
+              placeholder="Ví dụ: 3"
             />
             <TextField
               control={form.control}

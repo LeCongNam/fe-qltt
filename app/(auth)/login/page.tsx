@@ -25,6 +25,9 @@ const loginSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>
 
+/** Ảnh nền của trang đăng nhập (public/bg-ss2.jpg, bản 2400px nén từ ảnh gốc `bg-ss2.jpg` ở thư mục dự án). */
+const LOGIN_BACKGROUND = "/bg-ss2.jpg"
+
 function homeFor(vaiTro: VaiTro) {
   return vaiTro === "BAN_DOC" ? "/me" : "/"
 }
@@ -84,8 +87,11 @@ function LoginView() {
   if (!ready || user) return <FullPageSpinner />
 
   return (
-    <main className="flex min-h-svh items-center justify-center bg-canvas px-4 py-10">
-      <div className="w-full max-w-sm rounded-lg border border-border bg-white p-6 shadow-sm sm:p-8">
+    <main
+      className="flex min-h-svh items-center justify-center bg-canvas bg-cover bg-center px-4 py-10"
+      style={{ backgroundImage: `url(${LOGIN_BACKGROUND})` }}
+    >
+      <div className="w-full max-w-sm rounded-xl bg-linear-to-b from-white/95 via-primary-soft/80 to-white/95 p-6 shadow-lg sm:p-8">
         <div className="mb-6 flex items-center gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
             <BookOpen className="size-5" aria-hidden="true" />
@@ -112,6 +118,7 @@ function LoginView() {
               control={form.control}
               name="tenDangNhap"
               label="Tên đăng nhập"
+              placeholder="Nhập tên đăng nhập"
               autoComplete="username"
               autoFocus
               maxLength={80}
@@ -121,6 +128,7 @@ function LoginView() {
               name="matKhau"
               label="Mật khẩu"
               type="password"
+              placeholder="Nhập mật khẩu"
               autoComplete="current-password"
               maxLength={72}
             />

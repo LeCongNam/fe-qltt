@@ -180,6 +180,7 @@ export function SachForm({
             name="isbn"
             label="ISBN"
             maxLength={20}
+            placeholder="Ví dụ: 978-604-1-12345-6"
           />
           <Controller
             name="tenSach"
@@ -281,7 +282,7 @@ export function SachForm({
             render={({ field }) => (
               <Field className="sm:col-span-2">
                 <FieldLabel htmlFor={field.name}>Mô tả</FieldLabel>
-                <Textarea {...field} id={field.name} rows={3} className="rounded-md border-input bg-white text-sm" />
+                <Textarea {...field} id={field.name} rows={3} placeholder="Tóm tắt nội dung sách" className="rounded-md border-input bg-white text-sm" />
               </Field>
             )}
           />

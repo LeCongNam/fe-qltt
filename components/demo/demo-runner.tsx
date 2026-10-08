@@ -85,6 +85,7 @@ function ThamSoForm({
                 id={id}
                 type={p.kieu === "date" ? "date" : "text"}
                 inputMode={p.kieu === "number" ? "numeric" : undefined}
+                placeholder={p.kieu === "date" ? undefined : p.goiY[0] ? `Ví dụ: ${p.goiY[0].giaTri}` : `Nhập ${p.nhan.toLowerCase()}`}
                 list={p.goiY.length > 0 ? `${id}-goi-y` : undefined}
                 value={values[p.ten] ?? ""}
                 onChange={(e) => onChange({ ...values, [p.ten]: e.target.value })}

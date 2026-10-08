@@ -52,7 +52,7 @@ export function HuyPhatDialog({ row, onClose }: { row: Phat | null; onClose: () 
             <FieldLabel htmlFor="phat-ly-do">
               Lý do <span aria-hidden="true" className="text-destructive">*</span>
             </FieldLabel>
-            <Input id="phat-ly-do" value={lyDo} onChange={(e) => setLyDo(e.target.value)} maxLength={200} className="h-10 rounded-md border-input bg-white text-sm" />
+            <Input id="phat-ly-do" value={lyDo} onChange={(e) => setLyDo(e.target.value)} maxLength={200} placeholder="Nhập lý do hủy phiếu phạt" className="h-10 rounded-md border-input bg-white text-sm" />
           </Field>
           <DialogFooter>
             <Button type="button" variant="outline" disabled={huy.isPending} onClick={onClose}>
