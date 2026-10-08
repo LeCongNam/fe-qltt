@@ -2,6 +2,7 @@ import type { ComponentProps } from "react"
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form"
 
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import { PasswordInput } from "@/components/form/password-input"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
@@ -18,6 +19,8 @@ export function TextField<T extends FieldValues>({
   ...inputProps
 }: { control: Control<T>; name: Path<T>; label: string; required?: boolean } & InputProps) {
   const inputId = id ?? name
+  const isPassword = inputProps.type === "password"
+  const inputClass = cn("h-10 rounded-md border-input bg-white text-sm", className)
   return (
     <Controller
       name={name}
@@ -33,7 +36,11 @@ export function TextField<T extends FieldValues>({
               </>
             )}
           </FieldLabel>
-          <Input {...field} {...inputProps} id={inputId} aria-invalid={fieldState.invalid} className={cn("h-10 rounded-md border-input bg-white text-sm", className)} />
+          {isPassword ? (
+            <PasswordInput {...field} {...inputProps} id={inputId} aria-invalid={fieldState.invalid} className={inputClass} />
+          ) : (
+            <Input {...field} {...inputProps} id={inputId} aria-invalid={fieldState.invalid} className={inputClass} />
+          )}
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
       )}

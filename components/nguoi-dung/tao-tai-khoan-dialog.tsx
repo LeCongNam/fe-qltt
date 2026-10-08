@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import { z } from "zod"
 
+import { PasswordInput } from "@/components/form/password-input"
 import { VAI_TRO, labelOf, type LoaiNguoiDung, type VaiTroTaiKhoan, type NguoiDungChiTiet } from "@/components/nguoi-dung/nguoi-dung-meta"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -86,7 +87,7 @@ export function TaoTaiKhoanDialog({ nguoiDung: u, open, onClose }: { nguoiDung: 
                   <FieldLabel htmlFor="tk-matKhau">
                     Mật khẩu <span aria-hidden="true" className="text-destructive">*</span>
                   </FieldLabel>
-                  <Input {...field} id="tk-matKhau" type="password" maxLength={72} autoComplete="new-password" aria-invalid={fieldState.invalid} placeholder="Tối thiểu 8 ký tự" className="h-10 rounded-md border-input bg-white text-sm" />
+                  <PasswordInput {...field} id="tk-matKhau" maxLength={72} autoComplete="new-password" aria-invalid={fieldState.invalid} placeholder="Tối thiểu 8 ký tự" className="h-10 rounded-md border-input bg-white text-sm" />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
