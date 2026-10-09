@@ -9,6 +9,10 @@ import { XIcon, CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Load
 
 const toast = ToastPrimitive.createToastManager()
 
+// Lỗi cần được đọc ngay (role="alertdialog", thông báo gắt) thay vì xếp hàng như thông báo thường.
+const addToast = toast.add.bind(toast)
+toast.add = (options) => addToast(options.type === "error" && options.priority === undefined ? { ...options, priority: "high" } : options)
+
 function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
   return <ToastPrimitive.Provider {...props} />
 }
@@ -117,7 +121,7 @@ function ToastClose({
   return (
     <ToastPrimitive.Close
       data-slot="toast-close"
-      aria-label="Close toast"
+      aria-label="Đóng thông báo"
       render={render}
       className={cn(
         "relative shrink-0 text-muted-foreground after:absolute after:-inset-2 after:content-[''] hover:text-foreground",

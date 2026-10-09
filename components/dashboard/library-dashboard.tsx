@@ -1,67 +1,84 @@
 "use client"
 
-import { useState } from "react"
-import { Bell, ChevronDown, Search } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { Bell, ChevronDown, LogOut } from "lucide-react"
+import { useRouter, usePathname } from "next/navigation"
 
-import { DashboardNavigationContext } from "@/components/dashboard/dashboard-navigation"
+import { GlobalSearch } from "@/components/dashboard/global-search"
 import { LibrarySidebar } from "@/components/dashboard/library-sidebar"
-import { Input } from "@/components/ui/input"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { logout, useAuth } from "@/hooks/use-auth"
+import { findNavLabel, isFitPage } from "@/lib/navigation"
+import { cn } from "@/lib/utils"
+import { initials } from "@/lib/format"
 
 export function LibraryDashboard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [selectedItem, setSelectedItem] = useState("Tổng quan")
-  const activeItem =
-    pathname === "/add-doc-gia"
-      ? "Người dùng & tài khoản"
-      : selectedItem === "Người dùng & tài khoản"
-        ? "Tổng quan"
-        : selectedItem
+  const router = useRouter()
+  const { user } = useAuth()
+  const activeItem = findNavLabel(pathname)
+  const fit = isFitPage(pathname)
+
+  function handleLogout() {
+    logout()
+    router.replace("/login")
+  }
 
   return (
-    <DashboardNavigationContext.Provider value={{ activeItem, onSelect: setSelectedItem }}>
-      <SidebarProvider>
-        <LibrarySidebar activeItem={activeItem} onSelect={setSelectedItem} />
-        <SidebarInset className="min-h-svh bg-[#f6f7f4]">
-        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-[#e7e9e4] bg-white/95 px-4 backdrop-blur sm:px-7">
+    <SidebarProvider>
+      <LibrarySidebar />
+      <SidebarInset className={cn("min-h-svh min-w-0 bg-canvas", fit && "md:h-svh md:min-h-0 md:overflow-hidden")}>
+        <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-3 border-b border-border bg-white/95 px-4 backdrop-blur sm:px-7">
           <div className="flex min-w-0 items-center gap-3">
-            <SidebarTrigger className="-ml-2 text-[#526159]" />
-            <span className="hidden text-sm text-[#87918b] sm:inline">Thư viện</span>
-            <span className="hidden text-sm text-[#b2bab5] sm:inline">/</span>
-            <span className="truncate text-sm font-semibold text-[#293a32]">{activeItem}</span>
+            <SidebarTrigger className="-ml-2 text-ink" />
+            <span className="hidden shrink-0 whitespace-nowrap text-sm text-faint sm:inline">Thư viện</span>
+            <span aria-hidden="true" className="hidden text-sm text-icon sm:inline">/</span>
+            <span className="truncate text-sm font-semibold text-heading">{activeItem}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <label className="relative hidden w-56 md:block">
-              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#8b9690]" aria-hidden="true" />
-              <Input
-                aria-label="Tìm kiếm"
-                placeholder="Tìm kiếm..."
-                className="h-9 rounded-md border-[#e7e9e4] bg-[#fafbf9] pl-9 text-xs shadow-none placeholder:text-[#9ca69f]"
-              />
-            </label>
-            <button type="button" aria-label="Thông báo" className="relative flex size-9 items-center justify-center rounded-md text-[#68756e] transition-colors hover:bg-[#f2f4f1]">
+            <GlobalSearch />
+            <button type="button" aria-label="Thông báo" className="relative flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted">
               <Bell className="size-[18px]" aria-hidden="true" />
-              <span className="absolute right-2 top-2 size-1.5 rounded-full bg-[#d16b53]" />
+              <span className="absolute right-2 top-2 size-1.5 rounded-full bg-destructive" />
             </button>
-            <span className="hidden h-7 w-px bg-[#e7e9e4] sm:block" />
-            <button type="button" className="flex items-center gap-2 rounded-md p-1 text-left hover:bg-[#f6f7f4]">
-              <span className="flex size-8 items-center justify-center rounded-full bg-[#f3e8d8] text-[11px] font-semibold text-[#845c35]">LT</span>
-              <span className="hidden text-xs font-medium text-[#35463d] lg:block">Linh Trần</span>
-              <ChevronDown className="hidden size-3.5 text-[#89938d] lg:block" aria-hidden="true" />
-            </button>
+            <span className="hidden h-7 w-px bg-border sm:block" />
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 rounded-md p-1 text-left outline-none hover:bg-canvas focus-visible:ring-2 focus-visible:ring-primary/40">
+                <span className="flex size-8 items-center justify-center rounded-full bg-sand-soft text-xs font-semibold text-sand">{user ? initials(user.hoTen) : ""}</span>
+                <span className="hidden max-w-40 truncate text-xs font-medium text-ink lg:block">{user?.hoTen}</span>
+                <ChevronDown className="hidden size-3.5 text-icon lg:block" aria-hidden="true" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-48">
+                <div className="px-2 py-1.5">
+                  <p className="text-xs font-semibold text-heading">{user?.hoTen}</p>
+                  <p className="text-xs text-muted-foreground">{user?.maNguoiDung} · {user?.tenDangNhap}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut aria-hidden="true" />
+                  Đăng xuất
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
-          <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-6 px-4 py-6 sm:px-7 sm:py-8">
+        <div className={cn("w-full", fit && "md:min-h-0 md:flex-1 md:overflow-y-auto")}>
+          <div className={cn("mx-auto flex w-full max-w-[1480px] flex-col gap-6 px-4 py-6 sm:px-7 sm:py-8", fit && "md:h-full")}>
             {children}
           </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </DashboardNavigationContext.Provider>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
